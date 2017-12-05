@@ -12,7 +12,9 @@ def validate(ticket, data=None):
     # Lookup ticket.
     # if ticket doesnt exist delete schedule
     # if ticket exists and is not locked
-    #     if invalid and data.close=True then close ticket and delete schedule
+    #     if invalid
+    #        if  data.close=True then close ticket
+    #     delete schedule
     # else
     #     return True
     return True
