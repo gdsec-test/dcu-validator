@@ -16,5 +16,7 @@ def create_app(env):
     )
     api.add_namespace(ns1)
     if env != 'test':
-        app.config['scheduler'] = Scheduler().scheduler.start()
+        scheduler = Scheduler().scheduler
+        scheduler.start()
+        app.config['scheduler'] = scheduler
     return app
