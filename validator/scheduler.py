@@ -1,3 +1,5 @@
+import pymongo
+import os
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.executors.pool import ProcessPoolExecutor
 from pytz import utc
@@ -21,4 +23,16 @@ class Scheduler:
         executers = {'default': ProcessPoolExecutor(5)}
         self.scheduler = BackgroundScheduler(
             job_defaults=job_defaults, executers=executers, timezone=utc)
-        self.scheduler.add_jobstore('mongodb', connect=False)
+        self.scheduler.add_jobstore('mongodb', client=self._get_client())
+
+    def _get_client(self):
+        db_user = os.getenv('DB_USER') or ''
+        db_pass = os.getenv('DB_PASS') or ''
+        db_host = os.getenv('DB_HOST') or 'localhost'
+        db = os.getenv('DB') or 'apscheduler'
+        if db_user and db_pass:
+            db_url = 'mongodb://{}:{}@{}/{}'.format(db_user, db_pass,
+                                                    db_host, db)
+        else:
+            db_url = 'mongodb://{}/{}'.format(db_host, db)
+        return pymongo.MongoClient(db_url, connect=False)

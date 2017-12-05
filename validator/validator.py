@@ -71,12 +71,12 @@ class TicketScheduler(Resource):
         payload = request.json
         period = payload.get('period')
         if job:
-            logger.info("Rescheduling job for {} seconds".format(
-                int(period)))
+            logger.info("Rescheduling ticket {} for {} seconds".format(
+                id, int(period)))
             job.reschedule('interval', seconds=int(period))
         else:
-            logger.info("Scheduling job for {} seconds".format(
-                int(period)))
+            logger.info("Scheduling ticket {} for {} seconds".format(
+                id, int(period)))
             scheduler.add_job(
                 validate, 'interval', seconds=int(period), args=[id, payload], id=id)
         return '', 201
@@ -90,6 +90,6 @@ class TicketScheduler(Resource):
         scheduler = current_app.config.get('scheduler')
         job = scheduler.get_job(id)
         if job:
-            logger.info("Removing job {}".format(id))
+            logger.info("Removing schedule for {}".format(id))
             job.remove()
         return '', 204
