@@ -1,7 +1,6 @@
 import logging
 from flask import current_app, request
 from flask_restplus import Namespace, fields, Resource
-from . scheduler import Scheduler
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -43,26 +42,26 @@ ticket_model = api.model(
 )
 
 
-@api.route('/validate/<string:id>', endpoint='validate')
-@api.doc(params={'id': 'DCU Ticket ID'})
+@api.route('/validate/<string:ticketid>', endpoint='validate')
+@api.doc(params={'ticketid': 'DCU Ticket ID'})
 class Validate(Resource):
 
     @api.marshal_with(ticket_model, 200)
-    def get(self, id):
+    def get(self, ticketid):
         """
         Validate a DCU ticket
         """
-        return {'valid': validate(id)}, 200
+        return {'valid': validate(ticketid)}, 200
 
 
-@api.route('/schedule/<string:id>', endpoint='scheduler')
-@api.doc(params={'id': 'DCU Ticket ID'})
+@api.route('/schedule/<string:ticketid>', endpoint='scheduler')
+@api.doc(params={'ticketid': 'DCU Ticket ID'})
 class TicketScheduler(Resource):
 
     @api.response(201, 'Schedule created')
     @api.response(400, 'Validation Error')
     @api.expect(validator)
-    def post(self, id):
+    def post(self, ticketid):
         """
         Schedule/Re-schedule a ticket for validation
         """
@@ -72,24 +71,27 @@ class TicketScheduler(Resource):
         period = payload.get('period')
         if job:
             logger.info("Rescheduling ticket {} for {} seconds".format(
-                id, int(period)))
+                ticketid, int(period)))
             job.reschedule('interval', seconds=int(period))
         else:
             logger.info("Scheduling ticket {} for {} seconds".format(
-                id, int(period)))
+                ticketid, int(period)))
             scheduler.add_job(
-                validate, 'interval', seconds=int(period), args=[id, payload], id=id)
+                validate, 'interval',
+                seconds=int(period),
+                args=[ticketid, payload],
+                id=ticketid)
         return '', 201
 
     @api.response(204, 'Schedule deleted')
     @api.response(400, 'Validation Error')
-    def delete(self, id):
+    def delete(self, ticketid):
         """
         Delete an existing schedule
         """
         scheduler = current_app.config.get('scheduler')
-        job = scheduler.get_job(id)
+        job = scheduler.get_job(ticketid)
         if job:
-            logger.info("Removing schedule for {}".format(id))
+            logger.info("Removing schedule for {}".format(ticketid))
             job.remove()
         return '', 204

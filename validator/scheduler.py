@@ -25,8 +25,11 @@ class Scheduler:
         jobstores = {
             'default': self._get_jobstore(),
         }
-        self.scheduler = BackgroundScheduler(jobstores=jobstores,
-            job_defaults=job_defaults, executers=executers, timezone=utc)
+        self.scheduler = BackgroundScheduler(
+            jobstores=jobstores,
+            job_defaults=job_defaults,
+            executers=executers,
+            timezone=utc)
 
     def _get_jobstore(self):
         db_user = os.getenv('DB_USER') or ''
