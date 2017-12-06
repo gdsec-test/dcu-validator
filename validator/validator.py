@@ -85,7 +85,7 @@ class TicketScheduler(Resource):
     @api.response(400, 'Validation Error')
     def delete(self, id):
         """
-        Delete and existing schedule
+        Delete an existing schedule
         """
         scheduler = current_app.config.get('scheduler')
         job = scheduler.get_job(id)
