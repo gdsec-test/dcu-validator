@@ -61,6 +61,11 @@ Delete schedule
 curl -XDELETE -H 'Content-Type: application/json' -v http://localhost:5000/validator/schedule/12345
 ```
 
+One time validation
+```
+curl -X GET --header 'Accept: application/json' 'http://localhost:5000/validator/validate/12345'
+```
+
 ## Testing
 In order to run the tests you must first install the required dependencies via
 ```
@@ -87,3 +92,4 @@ python run.py
 1. Flask
 2. Flask-RestPlus
 3. dcdatabase
+4. APS
