@@ -1,0 +1,69 @@
+---
+dcuValidatorVersion: "extensions/v1beta1"
+kind: "Deployment"
+metadata:
+  name: "validator"
+  namespace: "dcu-validator-prod"
+  labels:
+    app: "validator"
+spec:
+  replicas: 2
+  revisionHistoryLimit: 2
+  template:
+    metadata:
+      labels:
+        app: "validator"
+    spec:
+      imagePullSecrets:
+        -
+          name: "k8s-artifactory-creds"
+      containers:
+        -
+          name: "debug"
+          imagePullPolicy: "Always"
+          image: "artifactory.secureserver.net:10014/docker-dcu-local/debug:latest"
+        -
+          name: "validator"
+          imagePullPolicy: "Always"
+          image: "artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator:REPLACE_WITH_GIT_COMMIT"
+          livenessProbe:
+            exec:
+              command:
+              - /app/kubetipper.sh
+            initialDelaySeconds: 120
+            periodSeconds: 120
+            failureThreshold: 1
+          env:
+          - name: BUILD_DATE
+            value: 'THIS_STRING_IS_REPLACED_DURING_BUILD'
+          - name: HTTP_ONLY
+            value: 'true'
+          - name: "LIVENESS_TTL"
+            value: "3600"
+          - name: "LIVENESS_FACTOR"
+            value: "0.2"
+# TODO: Verify if project will use redis for the scheduler
+          - name: REDIS_HOST
+            value: redis.dcu-validator-prod.svc.cluster.local
+          - name: KEYFILE
+            value: /keyfiles/key.txt
+# TODO: What Keyfile items will we need
+          - name: SNOW_PASS
+            valueFrom:
+              secretKeyRef:
+                name: svc-snow
+                key: password
+          - name: BROKER_PASS
+            valueFrom:
+              secretKeyRef:
+                name: amqp-api
+                key: password
+          volumeMounts:
+          - name: encryption-keys
+            mountPath: /keyfiles
+            readOnly: true
+
+      volumes:
+        - name: encryption-keys
+          secret:
+            secretName: encryption-key-files

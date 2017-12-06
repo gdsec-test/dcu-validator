@@ -1,0 +1,18 @@
+---
+  kind: "Service"
+  dcuValidatorVersion: "v1"
+  metadata:
+    labels:
+      app: "test-validator"
+    # this name is accessible via cluster DNS
+    # ("redis" or "validator.<namespace>.svc.cluster.local")
+    name: "test-validator"
+    namespace: dcu-validator-dev
+  spec:
+    ports:
+      -
+        name: "test-validator"
+        port: 5000
+        targetPort: 5000
+    selector:
+      app: "test-validator"
