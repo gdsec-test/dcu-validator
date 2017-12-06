@@ -75,6 +75,11 @@ Optionally, you may provide the flag `--with-coverage` to `nosetests` to determi
 
 ## Running Locally
 TODO
+temporarily you can start mongo via
+```
+docker run -d -name mongo -p 27017:27017 mongo:latest
+python run.py
+```
 
 ## Built With
 
