@@ -6,7 +6,7 @@ COMMIT=
 BUILD_BRANCH=origin/master
 SHELL=/bin/bash
 
-PRIVDEPS="git@github.secureserver.net/ITSecurity/dcdatabase.git"
+PRIVDEPS="git@github.secureserver.net:ITSecurity/dcdatabase.git"
 
 .PHONY: prep dev stage ote prod clean dev-deploy ote-deploy prod-deploy
 
