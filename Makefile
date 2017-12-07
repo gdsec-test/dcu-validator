@@ -61,11 +61,6 @@ dev: prep
 	sed -ie 's/THIS_STRING_IS_REPLACED_DURING_BUILD/$(DATE)/g' $(BUILDROOT)/k8s/dev/dcuvalidator.deployment.yml
 	docker build -t $(DOCKERREPO):dev $(BUILDROOT)
 
-test: prep
-	@echo "----- building $(REPONAME) test -----"
-	sed -ie 's/THIS_STRING_IS_REPLACED_DURING_BUILD/$(DATE)/g' $(BUILDROOT)/k8s/dev/test.dcuvalidator.deployment.yml
-	docker build -t $(DOCKERREPO):test $(BUILDROOT)
-
 prod-deploy: prod
 	@echo "----- deploying $(REPONAME) prod -----"
 	docker push $(DOCKERREPO):$(COMMIT)
@@ -80,11 +75,6 @@ dev-deploy: dev
 	@echo "----- deploying $(REPONAME) dev -----"
 	docker push $(DOCKERREPO):dev
 	kubectl --context dev apply -f $(BUILDROOT)/k8s/dev/dcuvalidator.deployment.yml --record
-
-test-deploy: test
-	@echo "----- deploying $(REPONAME) test -----"
-	docker push $(DOCKERREPO):test
-	kubectl --context dev apply -f $(BUILDROOT)/k8s/dev/test.dcuvalidator.deployment.yml --record
 
 clean:
 	@echo "----- cleaning $(REPONAME) app -----"

@@ -1,13 +1,13 @@
 ---
   kind: "Service"
-  dcuValidatorVersion: "v1"
+  apiVersion: "v1"
   metadata:
     labels:
       app: "validator"
     # this name is accessible via cluster DNS
     # ("redis" or "validator.<namespace>.svc.cluster.local")
     name: "validator"
-    namespace: dcu-validator-dev
+    namespace: abuse-api-dev
   spec:
     ports:
       -

@@ -1,13 +1,13 @@
 ---
-dcuValidatorVersion: "extensions/v1beta1"
+apiVersion: "extensions/v1beta1"
 kind: "Deployment"
 metadata:
   name: "validator"
-  namespace: "dcu-validator-prod"
+  namespace: "abuse-api-prod"
   labels:
     app: "validator"
 spec:
-  replicas: 2
+  replicas: 1
   revisionHistoryLimit: 2
   template:
     metadata:
@@ -42,22 +42,18 @@ spec:
             value: "3600"
           - name: "LIVENESS_FACTOR"
             value: "0.2"
-# TODO: Verify if project will use redis for the scheduler
-          - name: REDIS_HOST
-            value: redis.dcu-validator-prod.svc.cluster.local
+# TODO: Name of Value TBD
+          - name: REDLOCK_HOST
+            value: redis.tbd-prod.svc.cluster.local
           - name: KEYFILE
             value: /keyfiles/key.txt
-# TODO: What Keyfile items will we need
-          - name: SNOW_PASS
+          - name: DB_PASS
             valueFrom:
               secretKeyRef:
-                name: svc-snow
+                name: db-phishnet
                 key: password
-          - name: BROKER_PASS
-            valueFrom:
-              secretKeyRef:
-                name: amqp-api
-                key: password
+          - name: ABUSE_API_UPDATE_URL
+            value: http://api.abuse-api-prod.svc.cluster.local:5000/v1/abuse/tickets
           volumeMounts:
           - name: encryption-keys
             mountPath: /keyfiles
