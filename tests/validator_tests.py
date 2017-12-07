@@ -1,9 +1,9 @@
 import validator
 from flask import url_for
 from mock import patch, MagicMock
-from nose.tools import assert_true
 from flask_testing.utils import TestCase
 import json
+
 
 class TestValidator(TestCase):
 

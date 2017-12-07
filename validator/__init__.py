@@ -1,8 +1,8 @@
 from flask import Flask
-from flask_restplus import Api
 from flask_restplus import Api, Resource, fields
 from . validator import api as ns1
 from . scheduler import Scheduler
+
 
 def create_app(env):
     app = Flask(__name__)
