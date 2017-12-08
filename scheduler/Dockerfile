@@ -1,8 +1,8 @@
-# DCU-Validator
+# dcu-validator-scheduler
 #
 #
 
-FROM alpine:3.5
+FROM artifactory.secureserver.net:10014/docker-dcu-local/grpcio
 MAINTAINER DCUENG <dcueng@godaddy.com>
 
 # Best Practice - Creating a user instead of running as root
@@ -22,7 +22,7 @@ RUN apk update && \
 EXPOSE 50051
 
 # Move files to new directory in docker container
-COPY ./*.ini ./*.sh ./*.py ./*.yml /app/
+COPY ./*.ini ./*.sh ./run.py ./*.yml /app/
 COPY . /tmp
 RUN chown dcu:dcu -R /app
 
