@@ -15,6 +15,8 @@ RUN apk update && \
     libffi-dev \
     linux-headers \
     openssl-dev \
+    pcre \
+    pcre-dev \
     python-dev \
     py-pip
 
@@ -25,12 +27,6 @@ EXPOSE 5000
 COPY ./*.ini ./*.sh ./run.py ./*.yml /app/
 COPY . /tmp
 RUN chown dcu:dcu -R /app
-
-# pip install from our private pips staged by our Makefile
-RUN for dep in dcdatabase; \
-  do \
-  pip install --compile "/tmp/private_deps/$dep"; \
-done
 
 RUN pip install --compile /tmp && rm -rf /tmp/*
 

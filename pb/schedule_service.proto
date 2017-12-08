@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package scheduler;
+
+message Request {
+    string ticket=1;
+    bool close=2;
+    int32 period=3;
+}
+
+message Response {
+
+}
+
+message ValidationResponse {
+    bool valid=1;
+}
+
+service Scheduler {
+    rpc AddSchedule(Request) returns(Response) {}
+    rpc RemoveSchedule(Request) returns(Response) {}
+    rpc ValidateTicket(Request) returns (ValidationResponse) {}
+}

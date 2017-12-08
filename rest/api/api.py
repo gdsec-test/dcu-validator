@@ -1,23 +1,35 @@
 import logging
 from flask import current_app, request
 from flask_restplus import Namespace, fields, Resource
+import schedule_service_pb2
+import schedule_service_pb2_grpc
+import json
+import os
+import grpc
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def validate(ticket, data=None):
-    logger.info('Validating {} with payload {}'.format(ticket, data))
-    # TODO
-    # Lookup ticket.
-    # if ticket doesnt exist delete schedule
-    # if ticket exists and is not locked
-    #     if invalid
-    #        if  data.close=True then close ticket
-    #     delete schedule
-    # else
-    #     return True
-    return True
+def service_connect():
+    scheduler_loc = os.getenv('scheduler') or 'scheduler'
+    channel = grpc.insecure_channel(scheduler_loc + ':50051')
+    return schedule_service_pb2_grpc.SchedulerStub(channel)
 
+
+def AddSchedule(ticketid, period):
+    stub = service_connect()
+    return stub.AddSchedule(schedule_service_pb2.Request(period=period, close=False, ticket=ticketid))
+
+
+def RemoveSchedule(ticketid):
+    stub = service_connect()
+    return stub.RemoveSchedule(schedule_service_pb2.Request(ticket=ticketid))
+
+
+def ValidateTicket(ticketid):
+    stub = service_connect()
+    return stub.ValidateTicket(schedule_service_pb2.Request(ticket=ticketid))
 
 api = Namespace('validator', description='Validator operations')
 
@@ -37,9 +49,10 @@ validator = api.model(
 
 ticket_model = api.model(
     'Ticket', {
-        'valid': fields.Boolean(description='Indicates if the ticket has passed validation')
-    }
-)
+        'valid':
+            fields.Boolean(
+                description='Indicates if the ticket has passed validation')
+    })
 
 
 @api.route('/validate/<string:ticketid>', endpoint='validate')
@@ -51,7 +64,9 @@ class Validate(Resource):
         """
         Validate a DCU ticket
         """
-        return {'valid': validate(ticketid)}, 200
+        response = ValidateTicket(ticketid)
+        data = dict(valid=response.valid)
+        return data, 200
 
 
 @api.route('/schedule/<string:ticketid>', endpoint='scheduler')
@@ -65,22 +80,9 @@ class TicketScheduler(Resource):
         """
         Schedule/Re-schedule a ticket for validation
         """
-        scheduler = current_app.config.get('scheduler')
-        job = scheduler.get_job(id)
         payload = request.json
         period = payload.get('period')
-        if job:
-            logger.info("Rescheduling ticket {} for {} seconds".format(
-                ticketid, int(period)))
-            job.reschedule('interval', seconds=int(period))
-        else:
-            logger.info("Scheduling ticket {} for {} seconds".format(
-                ticketid, int(period)))
-            scheduler.add_job(
-                validate, 'interval',
-                seconds=int(period),
-                args=[ticketid, payload],
-                id=ticketid)
+        AddSchedule(ticketid, period)
         return '', 201
 
     @api.response(204, 'Schedule deleted')
@@ -89,9 +91,6 @@ class TicketScheduler(Resource):
         """
         Delete an existing schedule
         """
-        scheduler = current_app.config.get('scheduler')
-        job = scheduler.get_job(ticketid)
-        if job:
-            logger.info("Removing schedule for {}".format(ticketid))
-            job.remove()
+        logger.info("Removing schedule for {}".format(ticketid))
+        RemoveSchedule(ticketid)
         return '', 204
