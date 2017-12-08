@@ -44,13 +44,16 @@ class Parked(object):
             dnsresolver.timeout = 1
             dnsresolver.lifetime = 1
             ip = dnsresolver.query(domain_name, 'A')[0].address
+            self._logger.info('Domain {} has IP: {}', domain_name, ip)
         else:
             ip = domain_name
         if all_matching_cidrs(ip, self.parkweb):
+            self._logger.info('Matched {} for parked IP', domain_name)
             return True
         else:
             parked = filter(None, [x.search(content) for x in self.parked_regex])
             suspended = [x.search(url) for x in self.suspended_regex]
+            #ToDo not sure about logging here
             return any(suspended) or len(parked) >= 2
 
     def _is_ip(self, source_domain_or_ip):
