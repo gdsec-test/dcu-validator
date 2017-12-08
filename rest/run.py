@@ -1,7 +1,6 @@
 import os
 import logging
 import logging.config
-import os
 import yaml
 from api import create_app
 

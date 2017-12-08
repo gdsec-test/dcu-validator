@@ -1,6 +1,6 @@
 import rest.api
 from flask import url_for
-from mock import patch, MagicMock
+from mock import patch
 from flask_testing.utils import TestCase
 from collections import namedtuple
 import json

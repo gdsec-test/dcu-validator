@@ -1,6 +1,7 @@
 import grpc_stub.schedule_service_pb2
 import grpc_stub.schedule_service_pb2_grpc
-from server.service import Scheduler
+from schedulers.aps import APS
+from server.service import Service
 import logging
 import logging.config
 import grpc
@@ -25,12 +26,16 @@ def serve():
         logging.basicConfig(level=logging.INFO)
     logging.raiseExceptions = True
     logger = logging.getLogger(__name__)
+
+    # Create and start our APScheduler
+    aps = APS()
+    aps.scheduler.start()
+    scheduler = Service(aps)
+
+    # Configure and start service
     server = grpc.server(thread_pool=futures.ThreadPoolExecutor(max_workers=10))
-    scheduler = Scheduler()
-    scheduler.start()
     grpc_stub.schedule_service_pb2_grpc.add_SchedulerServicer_to_server(
         scheduler, server)
-
     logger.info("Listening on port 50051...")
     server.add_insecure_port('[::]:50051')
     server.start()
