@@ -1,7 +1,6 @@
-REPONAME=ITSecurity/dcu-validator-scheduler
-BUILDROOT=$(HOME)/dockerbuild/$(REPONAME)
-DOCKERREPO=artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-scheduler
-DATE=$(shell date)
+IMAGENAME=docker-dcu-local/dcu-validator-scheduler
+BUILDROOT=$(HOME)/dockerbuild/$(IMAGENAME)
+DOCKERREPO=artifactory.secureserver.net:10014/$(IMAGENAME)
 SHELL=/bin/bash
 
 PRIVDEPS="git@github.secureserver.net:ITSecurity/dcdatabase.git"
@@ -12,28 +11,29 @@ all: prep dev
 
 
 prep:
-	@echo "----- preparing $(REPONAME) build -----"
+	@echo "----- preparing $(IMAGENAME) build -----"
 	# stage pips we will need to install in Docker build
 	mkdir -p $(BUILDROOT)/private_deps && rm -rf $(BUILDROOT)/private_deps/*
 	for entry in $(PRIVDEPS) ; do \
 		cd $(BUILDROOT)/private_deps && git clone $$entry ; \
 	done
-
+	@echo "Generating gRPC stubs"
+	python -m grpc_tools.protoc -I../pb --python_out=./grpc_stub --grpc_python_out=./grpc_stub ../pb/schedule_service.proto
 	# copy the app code to the build root
 	cp -rp ./* $(BUILDROOT)
 
 prod: prep
-	@echo "----- building $(REPONAME) prod -----"
-	docker build -t $(DOCKERREPO):prod $(BUILDROOT)
+	@echo "----- building $(IMAGENAME) prod -----"
+	docker build -t $(DOCKERREPO):$(TAG) $(BUILDROOT)
 
 ote: prep
-	@echo "----- building $(REPONAME) ote -----"
+	@echo "----- building $(IMAGENAME) ote -----"
 	docker build -t $(DOCKERREPO):ote $(BUILDROOT)
 
 dev: prep
-	@echo "----- building $(REPONAME) dev -----"
+	@echo "----- building $(IMAGENAME) dev -----"
 	docker build -t $(DOCKERREPO):dev $(BUILDROOT)
 
 clean:
-	@echo "----- cleaning $(REPONAME) app -----"
+	@echo "----- cleaning $(IMAGENAME) app -----"
 	rm -rf $(BUILDROOT)
