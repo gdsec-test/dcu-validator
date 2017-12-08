@@ -3,6 +3,7 @@ from flask_restplus import Api, Resource, fields
 from .api import api as ns1
 import os
 
+
 def create_app(env):
     app = Flask(__name__)
     api = Api(

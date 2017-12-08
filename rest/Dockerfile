@@ -1,8 +1,8 @@
-# DCU-Validator
+# dcu-validator-api
 #
 #
 
-FROM alpine:3.5
+FROM artifactory.secureserver.net:10014/docker-dcu-local/grpcio
 MAINTAINER DCUENG <dcueng@godaddy.com>
 
 # Best Practice - Creating a user instead of running as root

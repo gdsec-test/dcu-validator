@@ -1,8 +1,8 @@
 import logging
 from flask import current_app, request
 from flask_restplus import Namespace, fields, Resource
-import schedule_service_pb2
-import schedule_service_pb2_grpc
+from grpc_stub.schedule_service_pb2 import Request
+import grpc_stub.schedule_service_pb2_grpc
 import json
 import os
 import grpc
@@ -14,22 +14,22 @@ logger = logging.getLogger(__name__)
 def service_connect():
     scheduler_loc = os.getenv('scheduler') or 'scheduler'
     channel = grpc.insecure_channel(scheduler_loc + ':50051')
-    return schedule_service_pb2_grpc.SchedulerStub(channel)
+    return grpc_stub.schedule_service_pb2_grpc.SchedulerStub(channel)
 
 
 def AddSchedule(ticketid, period):
     stub = service_connect()
-    return stub.AddSchedule(schedule_service_pb2.Request(period=period, close=False, ticket=ticketid))
+    return stub.AddSchedule(Request(period=period, close=False, ticket=ticketid))
 
 
 def RemoveSchedule(ticketid):
     stub = service_connect()
-    return stub.RemoveSchedule(schedule_service_pb2.Request(ticket=ticketid))
+    return stub.RemoveSchedule(Request(ticket=ticketid))
 
 
 def ValidateTicket(ticketid):
     stub = service_connect()
-    return stub.ValidateTicket(schedule_service_pb2.Request(ticket=ticketid))
+    return stub.ValidateTicket(Request(ticket=ticketid))
 
 api = Namespace('validator', description='Validator operations')
 
