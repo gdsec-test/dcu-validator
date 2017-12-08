@@ -1,9 +1,8 @@
 import logging
-from flask import current_app, request
+from flask import request
 from flask_restplus import Namespace, fields, Resource
 from grpc_stub.schedule_service_pb2 import Request
 import grpc_stub.schedule_service_pb2_grpc
-import json
 import os
 import grpc
 
