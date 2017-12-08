@@ -2,6 +2,8 @@
 
 This project provides a mechanism to periodically validate DCU abuse complaints. Complaints that are determined to be false positives are closed.
 
+The project is broken into two major components. A REST server and a gRPC scheduling service.
+
 ## Cloning
 To clone the repository via SSH perform the following
 ```
@@ -10,7 +12,7 @@ git clone https://github.secureserver.net/ITSecurity/dcu-validator.git
 It is recommended that you clone this project into a pyvirtualenv or equivalent virtual enviornment.
 
 ## Installing Dependencies
-You can install the required private dependencies via:
+You can install the required private dependencies for each component via:
 ```
 pip install -r private_pips.txt
 ```
@@ -18,7 +20,7 @@ You may also manually pip install private pips using this command:
 ```
 pip install git+ssh://git@github.secureserver.net/{orgname}/{reponame}.git
 ```
-You can install the required dependencies via
+You can install the required dependencies for each component via
 ```
 pip install -r requirements.txt
 ```
@@ -43,6 +45,7 @@ Swaggar documentation can be found at
 ```
 /doc
 ```
+After starting each component.
 
 ## Examples
 
@@ -67,29 +70,55 @@ curl -X GET --header 'Accept: application/json' 'http://localhost:5000/validator
 ```
 
 ## Testing
-In order to run the tests you must first install the required dependencies via
+In order to run the tests you must first install the required dependencies for each component via
 ```
 pip install -r test_requirements.txt
 ```
 
 After this you may run the tests via
 ```
-nosetests tests/ --cover-package=validator/
+nosetests -w rest/tests/ --cover-package=rest
+nosetests -w scheduler/tests/ --cover-package=scheduler
 ```
 Optionally, you may provide the flag `--with-coverage` to `nosetests` to determine the test coverage of this project.
 
 ## Running Locally
 TODO
-temporarily you can start mongo via
+Temporarily
+Install docker-compose
 ```
-docker run -d -name mongo -p 27017:27017 mongo:latest
-python run.py
+pip install docker-compose
 ```
+Use the below file to test (docker-compose.yml)
+```
+api:
+  image: artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-api:dev
+  links:
+    - validationscheduler:scheduler
+  ports:
+    - 5000:5000
+
+validationscheduler:
+  image: artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-scheduler:dev
+  environment:
+    - DB_HOST=mongo
+  ports:
+    - 50051:50051
+  links:
+    - mongo:mongo
+
+mongo:
+  image: mongo:latest
+  ports:
+     - 27017:27017
+```
+This will enable you to run basic scheduling.
 
 ## Built With
 
 *dcu-validator* is built utilizing the following key technologies
-1. Flask
-2. Flask-RestPlus
+1. [Flask](http://flask.pocoo.org/)
+2. [Flask-RestPlus](http://flask-restplus.readthedocs.io/en/stable/)
 3. dcdatabase
-4. APS
+4. [APS](https://apscheduler.readthedocs.io/en/latest/#)
+5. [gRPC](https://grpc.io)
