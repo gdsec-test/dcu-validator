@@ -1,0 +1,62 @@
+---
+apiVersion: "extensions/v1beta1"
+kind: "Deployment"
+metadata:
+  name: "validator"
+  namespace: "abuse-api-ote"
+  labels:
+    app: "validator"
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  template:
+    metadata:
+      labels:
+        app: "validator"
+    spec:
+      imagePullSecrets:
+        -
+          name: "k8s-artifactory-creds"
+      containers:
+        -
+          name: "validator"
+          imagePullPolicy: "Always"
+          image: "artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator:ote"
+# TODO: research liveness probe api example, ote and prod much different here
+          livenessProbe:
+            exec:
+              command:
+              - /app/kubetipper.sh
+            initialDelaySeconds: 120
+            periodSeconds: 120
+            failureThreshold: 1
+          env:
+          - name: BUILD_DATE
+            value: 'THIS_STRING_IS_REPLACED_DURING_BUILD'
+          - name: HTTP_ONLY
+            value: 'true'
+          - name: "LIVENESS_TTL"
+            value: "3600"
+          - name: "LIVENESS_FACTOR"
+            value: "0.2"
+# TODO: Name of Value TBD
+          - name: REDLOCK_HOST
+            value: redis.tbd-ote.svc.cluster.local
+          - name: KEYFILE
+            value: /keyfiles/key.txt
+          - name: DB_PASS
+            valueFrom:
+              secretKeyRef:
+                name: db-phishnet
+                key: password
+          - name: ABUSE_API_UPDATE_URL
+            value: http://api.abuse-api-ote.svc.cluster.local:5000/v1/abuse/tickets
+          volumeMounts:
+          - name: encryption-keys
+            mountPath: /keyfiles
+            readOnly: true
+
+      volumes:
+        - name: encryption-keys
+          secret:
+            secretName: encryption-key-files
