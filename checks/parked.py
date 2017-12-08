@@ -4,7 +4,7 @@ from dns import resolver
 from netaddr.ip import all_matching_cidrs
 
 
-class TicketSweeper(object):
+class Parked(object):
 
     # URL redirects to error/suspension page
     suspended_regex = [
