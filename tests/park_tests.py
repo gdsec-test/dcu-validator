@@ -7,5 +7,7 @@ class TestParked():
 
     def __init__(self):
         self._park = Parked()
+        self.domain = 'comicsn.tech'
 
     def test_is_parked(self):
+        pass

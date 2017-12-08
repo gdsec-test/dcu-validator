@@ -27,11 +27,8 @@ class TicketSweeper(object):
         re.compile(r'Future home of something quite cool.')
     ]
 
-    def __init__(self, age, settings):
+    def __init__(self):
         self._logger = logging.getLogger(__name__)
-        self._ttl = settings.TTL * 1000
-        self._age = age
-        self._user = 'ticketsweeper'
 
     def is_parked(self, domain_name, content, url):
         """
