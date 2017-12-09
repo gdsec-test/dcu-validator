@@ -1,9 +1,9 @@
-import pymongo
-import os
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.executors.pool import ProcessPoolExecutor
 from apscheduler.jobstores.mongodb import MongoDBJobStore
 from pytz import utc
+import pymongo
+import os
 
 
 class Singleton(type):
@@ -16,7 +16,7 @@ class Singleton(type):
         return cls._instances[cls]
 
 
-class Scheduler:
+class APS:
     __metaclass__ = Singleton
 
     def __init__(self):
@@ -37,8 +37,8 @@ class Scheduler:
         db_host = os.getenv('DB_HOST') or 'localhost'
         db = os.getenv('DB') or 'apscheduler'
         if db_user and db_pass:
-            db_url = 'mongodb://{}:{}@{}/{}'.format(db_user, db_pass,
-                                                    db_host, db)
+            db_url = 'mongodb://{}:{}@{}/{}'.format(db_user, db_pass, db_host,
+                                                    db)
         else:
             db_url = 'mongodb://{}/{}'.format(db_host, db)
         client = pymongo.MongoClient(db_url, connect=False)

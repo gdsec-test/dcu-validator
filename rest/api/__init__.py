@@ -1,7 +1,7 @@
+import os
 from flask import Flask
 from flask_restplus import Api, Resource, fields
-from . validator import api as ns1
-from . scheduler import Scheduler
+from .api import api as ns1
 
 
 def create_app(env):
@@ -15,8 +15,4 @@ def create_app(env):
         doc='/doc',
     )
     api.add_namespace(ns1)
-    if env != 'test':
-        scheduler = Scheduler().scheduler
-        scheduler.start()
-        app.config['scheduler'] = scheduler
     return app

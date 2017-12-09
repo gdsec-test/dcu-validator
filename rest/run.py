@@ -1,12 +1,13 @@
-from validator import create_app
 import os
 import logging
 import logging.config
-import os
 import yaml
+from api import create_app
+
+env = os.getenv('sysenv') or 'dev'
+app = create_app(env)
 
 if __name__ == '__main__':
-    env = os.getenv('sysenv') or 'dev'
     path = os.path.dirname(os.path.abspath(__file__)) + '/' + 'logging.yml'
     value = os.getenv('LOG_CFG', None)
     if value:
@@ -18,5 +19,4 @@ if __name__ == '__main__':
     else:
         logging.basicConfig(level=logging.INFO)
     logging.raiseExceptions = True
-    app = create_app(env)
     app.run()
