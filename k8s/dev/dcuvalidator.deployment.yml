@@ -51,6 +51,18 @@ spec:
                 key: password
           - name: ABUSE_API_UPDATE_URL
             value: http://api.abuse-api-dev.svc.cluster.local:5000/v1/abuse/tickets
+          - name: DB_USER
+            value: devuser
+          - name: DB_HOST
+            value: 10.22.188.208:27017
+          - name: DB
+            value: devphishstory
+          - name: scheduler
+            value: # TODO
+          - name: LOG_CFG
+            value: # TODO
+          - name: sysenv
+            value: dev
           volumeMounts:
           - name: encryption-keys
             mountPath: /keyfiles

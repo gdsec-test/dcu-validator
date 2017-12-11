@@ -54,6 +54,18 @@ spec:
                 key: password
           - name: ABUSE_API_UPDATE_URL
             value: http://api.abuse-api-prod.svc.cluster.local:5000/v1/abuse/tickets
+          - name: DB_USER
+            value: sau_p_phish
+          - name: DB_HOST
+            value: 10.22.9.209:27017
+          - name: DB
+            value: phishstory
+          - name: scheduler
+            value: # TODO
+          - name: LOG_CFG
+            value: # TODO
+          - name: sysenv
+            value: prod
           volumeMounts:
           - name: encryption-keys
             mountPath: /keyfiles
