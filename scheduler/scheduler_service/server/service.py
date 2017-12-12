@@ -18,7 +18,7 @@ def validate(ticket, data=None):
     Runs validation on the provided ticket
     :param ticket:
     :param data: Dictionary containing properties used for scheduling
-    :return:
+    :return: Boolean indicating whether the ticket will be scheduled again
     '''
     LOGGER.info("Validating {} with payload {}".format(ticket, data))
     lock = get_redlock(ticket)
@@ -27,7 +27,7 @@ def validate(ticket, data=None):
 
     if ticket_data is None or ticket_data.get('phishstory_status', 'OPEN') == 'CLOSED':
        try:
-           APS().scheduler.remove_job(ticket)
+           get_scheduler().remove_job(ticket)
        except Exception as e:
            LOGGER.error('Unable to remove job {}:{}'.format(ticket, e))
     else:
@@ -37,12 +37,14 @@ def validate(ticket, data=None):
                     if data and data.get('close', False):
                         # close ticket
                         LOGGER.info('Closing ticket {}'.format(ticket))
-                    APS().scheduler.remove_job(ticket)
+                    get_scheduler().remove_job(ticket)
+                else:
+                    return True
             except Exception as e:
                LOGGER.error('Unable to validate {}:{}'.format(ticket, e))
             finally:
                lock.release()
-    return True
+    return False
 
 def get_redlock(ticket):
     '''
@@ -59,6 +61,12 @@ def phishstory_db():
     '''
     return PhishstoryMongo(create_db_settings())
 
+def get_scheduler():
+    '''
+    Retrieves a APS instance
+    :return:
+    '''
+    return APS().scheduler
 
 class Service(SchedulerServicer):
     '''
