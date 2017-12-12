@@ -59,4 +59,4 @@ dev-deploy: dev
 
 clean:
 	@echo "----- cleaning $(REPONAME) app -----"
-	rm -rf $(BUILDROOT)
+rm -rf $(BUILDROOT)
