@@ -1,12 +1,9 @@
 REPONAME=ITSecurity/dcu-validator
 BUILDROOT=$(HOME)/dockerbuild/$(REPONAME)
-DOCKERREPO=artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator
 DATE=$(shell date)
-COMMIT=
+GIT_COMMIT=
 BUILD_BRANCH=origin/master
 SHELL=/bin/bash
-
-PRIVDEPS="git@github.secureserver.net:ITSecurity/dcdatabase.git"
 
 .PHONY: prep dev stage ote prod clean dev-deploy ote-deploy prod-deploy
 
@@ -15,29 +12,10 @@ all: prep dev
 
 prep:
 	@echo "----- preparing $(REPONAME) build -----"
-	# stage pips we will need to install in Docker build
-	mkdir -p $(BUILDROOT)/private_deps && rm -rf $(BUILDROOT)/private_deps/*
-	for entry in $(PRIVDEPS) ; do \
-		IFS=";" read repo revision <<< "$$entry" ; \
-		cd $(BUILDROOT)/private_deps && git clone $$repo ; \
-		if [ "$$revision" != "" ] ; then \
-			name=$$(echo $$repo | awk -F/ '{print $$NF}' | sed -e 's/.git$$//') ; \
-			cd $(BUILDROOT)/private_deps/$$name ; \
-			current_revision=$$(git rev-parse HEAD) ; \
-			echo $$repo HEAD is currently at revision: $$current_revision ; \
-			echo Dependency specified in the Makefile for $$name is set to revision: $$revision ; \
-			if [ "$$revision" != "$$current_revision" ] ; then \
-				read -p "Update to latest revision? (Y/N): " response ; \
-				if [[ $$response == 'N' || $$response == 'n' ]] ; then \
-					echo Reverting to revision: $$revision in $$repo ; \
-					git reset --hard $$revision; \
-				fi ; \
-			fi ; \
-		fi ; \
-	done
+	mkdir -p $(BUILDROOT)/k8s && rm -rf $(BUILDROOT)/k8s/*
+	# copy k8s configs to BUILDROOT
+	cp -rp ./k8s/* $(BUILDROOT)/k8s
 
-	# copy the app code to the build root
-	cp -rp ./* $(BUILDROOT)
 
 prod: prep
 	@echo "----- building $(REPONAME) prod -----"
@@ -45,21 +23,24 @@ prod: prep
 	if [[ $$response == 'N' || $$response == 'n' ]] ; then exit 1 ; fi
 	if [[ `git status --porcelain | wc -l` -gt 0 ]] ; then echo "You must stash your changes before proceeding" ; exit 1 ; fi
 	git fetch && git checkout $(BUILD_BRANCH)
-	$(eval COMMIT:=$(shell git rev-parse --short HEAD))
+	$(eval GIT_COMMIT:=$(shell git rev-parse --short HEAD))
 	sed -ie 's/THIS_STRING_IS_REPLACED_DURING_BUILD/$(DATE)/' $(BUILDROOT)/k8s/prod/dcuvalidator.deployment.yml
-	sed -ie 's/REPLACE_WITH_GIT_COMMIT/$(COMMIT)/' $(BUILDROOT)/k8s/prod/dcuvalidator.deployment.yml
-	docker build -t $(DOCKERREPO):$(COMMIT) $(BUILDROOT)
+	sed -ie 's/REPLACE_WITH_GIT_COMMIT/$(GIT_COMMIT)/' $(BUILDROOT)/k8s/prod/dcuvalidator.deployment.yml
+	cd rest && $(MAKE) TAG=$(GIT_COMMIT) prod
+	cd scheduler && $(MAKE) TAG=$(GIT_COMMIT) prod
 	git checkout -
 
 ote: prep
 	@echo "----- building $(REPONAME) ote -----"
 	sed -ie 's/THIS_STRING_IS_REPLACED_DURING_BUILD/$(DATE)/g' $(BUILDROOT)/k8s/ote/dcuvalidator.deployment.yml
-	docker build -t $(DOCKERREPO):ote $(BUILDROOT)
+	cd rest && $(MAKE) ote
+	cd scheduler && $(MAKE) ote
 
 dev: prep
 	@echo "----- building $(REPONAME) dev -----"
 	sed -ie 's/THIS_STRING_IS_REPLACED_DURING_BUILD/$(DATE)/g' $(BUILDROOT)/k8s/dev/dcuvalidator.deployment.yml
-	docker build -t $(DOCKERREPO):dev $(BUILDROOT)
+	cd rest && $(MAKE) dev
+	cd scheduler && $(MAKE) dev
 
 prod-deploy: prod
 	@echo "----- deploying $(REPONAME) prod -----"
@@ -78,4 +59,4 @@ dev-deploy: dev
 
 clean:
 	@echo "----- cleaning $(REPONAME) app -----"
-	rm -rf $(BUILDROOT)
+rm -rf $(BUILDROOT)

@@ -1,5 +1,4 @@
-apscheduler
 flask-restplus
 pyaml
-dnspython
-netaddr==0.7.19
+grpcio
+uwsgi
