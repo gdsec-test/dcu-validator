@@ -27,6 +27,25 @@ spec:
           imagePullPolicy: "Always"
           image: "artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-rest:prod"
           env:
+          - name: BUILD_DATE
+            value: 'THIS_STRING_IS_REPLACED_DURING_BUILD'
+          - name: REDIS
+            value: phishnet-redis.abuse-api-prod.svc.cluster.local
+         - name: DB_PASS
+            valueFrom:
+              secretKeyRef:
+                name: db-phishnet
+                key: password
+          - name: ABUSE_API_UPDATE_URL
+            value: http://api.abuse-api-prod.svc.cluster.local:5000/v1/abuse/tickets
+          - name: DB_USER
+            value: sau_p_phish
+          - name: DB_HOST
+            value: 10.22.9.209:27017
+          - name: DB
+            value: phishstory
+          - name: sysenv
+            value: prod
           - name: scheduler
             value: localhost
         -
@@ -37,7 +56,7 @@ spec:
           - name: BUILD_DATE
             value: 'THIS_STRING_IS_REPLACED_DURING_BUILD'
           - name: REDIS
-            value: phishnet-redis.abuse-api-dev.svc.cluster.local
+            value: phishnet-redis.abuse-api-prod.svc.cluster.local
          - name: DB_PASS
             valueFrom:
               secretKeyRef:
