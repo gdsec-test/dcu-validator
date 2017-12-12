@@ -27,5 +27,3 @@ class Resolvable(object):
             return False
 
         return True
-
-
