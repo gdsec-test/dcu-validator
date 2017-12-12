@@ -3,3 +3,4 @@ grpcio
 apscheduler
 netaddr
 dnspython
+requests
