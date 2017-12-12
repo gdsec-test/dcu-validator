@@ -19,31 +19,21 @@ spec:
           name: "k8s-artifactory-creds"
       containers:
         -
-          name: "validator"
+          name: "validator-rest"
           imagePullPolicy: "Always"
-          image: "artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator:dev"
-# TODO: research liveness probe, much different from prod in api example
-          livenessProbe:
-            exec:
-              command:
-              - /app/kubetipper.sh
-            initialDelaySeconds: 120
-            periodSeconds: 120
-            failureThreshold: 1
+          image: "artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-rest:dev"
+          env:
+          - name: scheduler
+            value: localhost
+        -
+          name: "validator-scheduler"
+          imagePullPolicy: "Always"
+          image: "artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-scheduler:dev"
           env:
           - name: BUILD_DATE
             value: 'THIS_STRING_IS_REPLACED_DURING_BUILD'
-          - name: HTTP_ONLY
-            value: 'true'
-          - name: "LIVENESS_TTL"
-            value: "3600"
-          - name: "LIVENESS_FACTOR"
-            value: "0.2"
-# TODO: Name of Value TBD
-          - name: REDLOCK_HOST
-            value: redis.tbd-dev.svc.cluster.local
-          - name: KEYFILE
-            value: /keyfiles/key.txt
+          - name: REDIS
+            value: phishnet-redis.abuse-api-dev.svc.cluster.local
           - name: DB_PASS
             valueFrom:
               secretKeyRef:
@@ -57,18 +47,5 @@ spec:
             value: 10.22.188.208:27017
           - name: DB
             value: devphishstory
-          - name: scheduler
-            value: # TODO
-          - name: LOG_CFG
-            value: # TODO
           - name: sysenv
             value: dev
-          volumeMounts:
-          - name: encryption-keys
-            mountPath: /keyfiles
-            readOnly: true
-
-      volumes:
-        - name: encryption-keys
-          secret:
-            secretName: encryption-key-files
