@@ -1,52 +1,63 @@
 import logging
 import os
-from collections import namedtuple
 from scheduler_service.grpc_stub.schedule_service_pb2_grpc import SchedulerServicer
 from scheduler_service.grpc_stub.schedule_service_pb2 import Response, ValidationResponse
 from scheduler_service.schedulers.aps import APS
 from redlock import RedLockFactory
 from dcdatabase.phishstorymongo import PhishstoryMongo
+from scheduler_service.utils.db_settings import create_db_settings
+from scheduler_service.utils.lock import Lock
 
 LOGGER = logging.getLogger(__name__)
+TTL = os.getenv('TTL') or 300
+TTL *= 1000
 
 
 def validate(ticket, data=None):
+    '''
+    Runs validation on the provided ticket
+    :param ticket:
+    :param data: Dictionary containing properties used for scheduling
+    :return:
+    '''
     LOGGER.info("Validating {} with payload {}".format(ticket, data))
     lock = get_redlock(ticket)
     db_handle = phishstory_db()
     ticket_data = db_handle.get_incident(ticket)
 
     if ticket_data is None or ticket_data.get('phishstory_status', 'OPEN') == 'CLOSED':
-        APS().scheduler.remove_job(ticket)
+       try:
+           APS().scheduler.remove_job(ticket)
+       except Exception as e:
+           LOGGER.error('Unable to remove job {}:{}'.format(ticket, e))
     else:
         if lock.acquire():
-            if False:  # TODO call validate funcion
-                if data and data.get('close', False):
-                    # close ticket
-                    LOGGER.info('Closing ticket {}'.format(ticket))
-                APS().scheduler.remove_job(ticket)
+            try:
+                if False:  # TODO call validate funcion
+                    if data and data.get('close', False):
+                        # close ticket
+                        LOGGER.info('Closing ticket {}'.format(ticket))
+                    APS().scheduler.remove_job(ticket)
+            except Exception as e:
+               LOGGER.error('Unable to validate {}:{}'.format(ticket, e))
+            finally:
+               lock.release()
     return True
 
 def get_redlock(ticket):
-    redis = os.getenv('REDIS') or 'localhost'
-    ttl = os.getenv('TTL') or 300
-    ttl *= 1000
-    lock = RedLockFactory(connection_details=redis)
-    ticket_lock = lock.create_lock(ticket, ttl=ttl)
+    '''
+    Retrieves RedLock lock
+    :param ticket:
+    :return:
+    '''
+    return Lock().lock.create_lock(ticket, ttl=TTL)
 
 
 def phishstory_db():
     '''
     Retrieves a PhishstoryMongo instance
     '''
-    db_user = os.getenv('DB_USER') or ''
-    db_pass = os.getenv('DB_PASS') or ''
-    db_host = os.getenv('DB_HOST') or 'localhost'
-    db = os.getenv('DB') or 'test'
-    collection = os.getenv('COLLECTION') or 'test'
-    db_url = 'mongodb://{}:{}@{}/{}'.format(db_user, db_pass, db_host, db)
-    settings = namedtuple('settings', 'DB COLLECTION DBURL')
-    return PhishstoryMongo(settings(DB=db, COLLECTION=collection, DBURL=db_url))
+    return PhishstoryMongo(create_db_settings())
 
 
 class Service(SchedulerServicer):
