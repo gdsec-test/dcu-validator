@@ -18,7 +18,7 @@ prep:
 		cd $(BUILDROOT)/private_deps && git clone $$entry ; \
 	done
 	@echo "Generating gRPC stubs"
-	python -m grpc_tools.protoc -I../pb --python_out=./grpc_stub --grpc_python_out=./grpc_stub ../pb/schedule_service.proto
+	python -m grpc_tools.protoc -I../pb --python_out=./scheduler_service/grpc_stub --grpc_python_out=./scheduler_service/grpc_stub ../pb/schedule_service.proto
 	# copy the app code to the build root
 	cp -rp ./* $(BUILDROOT)
 

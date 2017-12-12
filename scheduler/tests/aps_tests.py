@@ -1,4 +1,4 @@
-from scheduler.schedulers.aps import APS
+from scheduler_service.schedulers.aps import APS
 from apscheduler.schedulers.background import BackgroundScheduler
 
 

@@ -3,3 +3,4 @@ grpcio
 apscheduler
 netaddr
 dnspython
+redlock==1.2.0

@@ -1,14 +1,14 @@
-import grpc_stub.schedule_service_pb2
-import grpc_stub.schedule_service_pb2_grpc
-from schedulers.aps import APS
-from server.service import Service
 import logging
 import logging.config
-import grpc
+from concurrent import futures
 import time
 import os
+import grpc
 import yaml
-from concurrent import futures
+import scheduler_service.grpc_stub.schedule_service_pb2
+import scheduler_service.grpc_stub.schedule_service_pb2_grpc
+from scheduler_service.schedulers.aps import APS
+from scheduler_service.server.service import Service
 
 _ONE_DAY_IN_SECONDS = 86400
 
@@ -34,7 +34,7 @@ def serve():
 
     # Configure and start service
     server = grpc.server(thread_pool=futures.ThreadPoolExecutor(max_workers=10))
-    grpc_stub.schedule_service_pb2_grpc.add_SchedulerServicer_to_server(
+    scheduler_service.grpc_stub.schedule_service_pb2_grpc.add_SchedulerServicer_to_server(
         scheduler, server)
     logger.info("Listening on port 50051...")
     server.add_insecure_port('[::]:50051')

@@ -2,7 +2,7 @@ import os
 import logging
 import logging.config
 import yaml
-from api import create_app
+from rest_service.api import create_app
 
 env = os.getenv('sysenv') or 'dev'
 app = create_app(env)
