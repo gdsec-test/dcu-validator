@@ -4,3 +4,4 @@ apscheduler
 netaddr
 dnspython
 redlock==1.2.0
+requests
