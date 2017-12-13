@@ -30,7 +30,7 @@ class Parked(object):
     def __init__(self):
         self._logger = logging.getLogger(__name__)
 
-    def is_parked(self, domain_name, content, url):
+    def is_not_parked(self, domain_name, content, url):
         """
         Checks domain's IP Address against parkweb servers and falls back to check the page
         content and url against known park/landing page regexes
@@ -49,12 +49,14 @@ class Parked(object):
             ip = domain_name
         if all_matching_cidrs(ip, self.parkweb):
             self._logger.info('Matched {} for parked IP', domain_name)
-            return True
+            return False
         else:
             parked = filter(None, [x.search(content) for x in self.parked_regex])
             suspended = [x.search(url) for x in self.suspended_regex]
-            #ToDo not sure about logging here
-            return any(suspended) or len(parked) >= 2
+
+            if any(suspended) or len(parked) >= 2:
+                self._logger.info('{} has been found parked/suspended', domain_name)
+                return False
 
     def _is_ip(self, source_domain_or_ip):
         """
