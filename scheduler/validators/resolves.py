@@ -20,7 +20,7 @@ class Resolvable(object):
                 resp = session.request(method='GET', url=source_url, timeout=60)
                 status = str(resp.status_code)
                 resolves = status[0] in ["1", "2", "3"] or status in ["403", "406"]
-            if not proxy and not resolves:
+            if not resolves:
                 return False
         except ConnectionError as e:
             self._logger.error(e)
