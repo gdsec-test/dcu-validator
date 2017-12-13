@@ -77,8 +77,8 @@ pip install -r test_requirements.txt
 
 After this you may run the tests via
 ```
-nosetests -w rest/tests/ --cover-package=rest
-nosetests -w scheduler/tests/ --cover-package=scheduler
+nosetests -w rest/tests/ --cover-package=rest_service
+nosetests -w scheduler/tests/ --cover-package=scheduler_service
 ```
 Optionally, you may provide the flag `--with-coverage` to `nosetests` to determine the test coverage of this project.
 
