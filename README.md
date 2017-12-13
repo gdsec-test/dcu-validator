@@ -102,15 +102,22 @@ validationscheduler:
   image: artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-scheduler:dev
   environment:
     - DB_HOST=mongo
+    - COLLECTION=incidents
   ports:
     - 50051:50051
   links:
     - mongo:mongo
+    - redis:redis
 
 mongo:
   image: mongo:latest
   ports:
      - 27017:27017
+
+redis:
+  image: redis:latest
+  ports:
+     - 6379:6379
 ```
 This will enable you to run basic scheduling.
 
