@@ -59,11 +59,3 @@ class TestResolvable:
         result = self._resolvable.resolves(self.url)
 
         return assert_false(result)
-
-    @patch.object(Session, 'request')
-    def test_not_resolves_proxy(self, request):
-        request.return_value = MagicMock(status_code=404)
-
-        result = self._resolvable.resolves(self.url, proxy=True)
-
-        return assert_true(result)
