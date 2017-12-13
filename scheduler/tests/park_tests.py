@@ -1,5 +1,5 @@
 from nose.tools import assert_true, assert_false
-
+from mock import patch
 from scheduler.validators.parked import Parked
 
 
@@ -8,7 +8,9 @@ class TestParked:
     def __init__(self):
         self._park = Parked()
 
-    def test_is_parked_domain_ip(self):
+    @patch('scheduler.validators.parked.Parked.is_parked')
+    def test_is_parked_domain_ip(self, ip):
+        ip.return_value = '184.168.221.47'
         domain = 'comicsn.tech'
         content = ''
         url = 'http://comicsn.tech/test.html'
@@ -17,7 +19,9 @@ class TestParked:
 
         return assert_true(result)
 
-    def test_is_parked_regex(self):
+    @patch('scheduler.validators.parked.Parked.is_parked')
+    def test_is_parked_regex(self, ip):
+        ip.return_value = '160.153.77.227'
         domain = 'comicsn.beer'
         content = 'OMG, its a Future home of something quite cool!!!!1!!1!!! Coming Soon'
         url = 'http://comicsn.beer/test.html'
@@ -26,7 +30,9 @@ class TestParked:
 
         return assert_true(result)
 
-    def test_is_parked_suspended(self):
+    @patch('scheduler.validators.parked.Parked.is_parked')
+    def test_is_parked_suspended(self, ip):
+        ip.return_value = '160.153.77.227'
         domain = 'comicsn.beer'
         content = ''
         url = 'http://comicsn.beer/cgi-sys/suspendedpage.cgi'
