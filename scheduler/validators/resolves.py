@@ -8,11 +8,10 @@ class Resolvable(object):
     def __init__(self):
         self._logger = logging.getLogger(__name__)
 
-    def resolves(self, source_url, proxy=False):
+    def resolves(self, source_url):
         """
         Returns whether or not a ticket should be closed
         :param source_url:
-        :param proxy:
         :return False if ticket is not resolvable, return True otherwise:
         """
         try:
