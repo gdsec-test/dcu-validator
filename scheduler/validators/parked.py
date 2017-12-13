@@ -54,9 +54,7 @@ class Parked(object):
             parked = filter(None, [x.search(content) for x in self.parked_regex])
             suspended = [x.search(url) for x in self.suspended_regex]
 
-            if any(suspended) or len(parked) >= 2:
-                self._logger.info('{} has been found parked/suspended', domain_name)
-                return False
+            return not (any(suspended) or len(parked) >= 2)
 
     def _is_ip(self, source_domain_or_ip):
         """
