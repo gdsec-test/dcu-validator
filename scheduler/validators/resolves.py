@@ -16,7 +16,7 @@ class Resolvable(object):
         """
         try:
             with sessions.Session() as session:
-                resp = session.request(method='GET', url=source_url, timeout=60)
+                resp = session.request(method='GET', url=source_url, timeout=10)
                 status = str(resp.status_code)
                 resolves = status[0] in ["1", "2", "3"] or status in ["403", "406"]
             if not resolves:
