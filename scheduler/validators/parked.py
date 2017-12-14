@@ -48,13 +48,8 @@ class Parked(object):
         else:
             ip = domain_name
         if all_matching_cidrs(ip, self.parkweb):
-<<<<<<< HEAD:scheduler/validators/parked.py
-            self._logger.info('Matched {} for parked IP', domain_name)
-            return False
-=======
             self._logger.info('Matched {} for parked IP'.format(domain_name))
-            return True
->>>>>>> master:scheduler/scheduler_service/validators/parked.py
+            return False
         else:
             parked = filter(None, [x.search(content) for x in self.parked_regex])
             suspended = [x.search(url) for x in self.suspended_regex]
