@@ -1,5 +1,5 @@
 from nose.tools import assert_true, assert_false
-from scheduler.validators.parked import Parked
+from scheduler_service.validators.parked import Parked
 
 
 class TestParked:
