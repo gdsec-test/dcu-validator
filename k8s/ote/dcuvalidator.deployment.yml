@@ -21,25 +21,12 @@ spec:
         -
           name: "validator-rest"
           imagePullPolicy: "Always"
-          image: "artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-rest:ote"
+          image: "artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-api:ote"
           env:
           - name: BUILD_DATE
             value: 'THIS_STRING_IS_REPLACED_DURING_BUILD'
           - name: REDIS
             value: phishnet-redis.abuse-api-ote.svc.cluster.local
-          - name: DB_PASS
-            valueFrom:
-              secretKeyRef:
-                name: db-validator
-                key: password
-          - name: ABUSE_API_UPDATE_URL
-            value: http://api.abuse-api-ote.svc.cluster.local:5000/v1/abuse/tickets
-          - name: DB_USER
-            value: sau_o_phish
-          - name: DB_HOST
-            value: 10.22.9.209:27017
-          - name: DB
-            value: otephishstory
           - name: sysenv
             value: ote
           - name: scheduler
@@ -66,5 +53,7 @@ spec:
             value: 10.22.9.209:27017
           - name: DB
             value: otephishstory
+          - name: COLLECTION
+            value: incidents
           - name: sysenv
             value: ote

@@ -1,8 +1,8 @@
 import logging
 from flask import request
 from flask_restplus import Namespace, fields, Resource
-from grpc_stub.schedule_service_pb2 import Request
-import grpc_stub.schedule_service_pb2_grpc
+from rest_service.grpc_stub.schedule_service_pb2 import Request
+import rest_service.grpc_stub.schedule_service_pb2_grpc
 import os
 import grpc
 
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 def service_connect():
     scheduler_loc = os.getenv('scheduler') or 'scheduler'
     channel = grpc.insecure_channel(scheduler_loc + ':50051')
-    return grpc_stub.schedule_service_pb2_grpc.SchedulerStub(channel)
+    return rest_service.grpc_stub.schedule_service_pb2_grpc.SchedulerStub(channel)
 
 
 def AddSchedule(ticketid, period):
