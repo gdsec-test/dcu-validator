@@ -30,7 +30,7 @@ spec:
           - name: DB_PASS
             valueFrom:
               secretKeyRef:
-                name: db-phishnet
+                name: db-validator
                 key: password
           - name: ABUSE_API_UPDATE_URL
             value: http://api.abuse-api-ote.svc.cluster.local:5000/v1/abuse/tickets
