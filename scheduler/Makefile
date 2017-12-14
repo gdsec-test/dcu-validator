@@ -1,17 +1,16 @@
-IMAGENAME=docker-dcu-local/dcu-validator-scheduler
-BUILDROOT=$(HOME)/dockerbuild/$(IMAGENAME)
-DOCKERREPO=artifactory.secureserver.net:10014/$(IMAGENAME)
+BUILDNAME=ITSecurity/dcu-validator-scheduler
+BUILDROOT=$(HOME)/dockerbuild/$(BUILDNAME)
 SHELL=/bin/bash
 
 PRIVDEPS="git@github.secureserver.net:ITSecurity/dcdatabase.git"
 
-.PHONY: prep dev stage ote prod clean
+.PHONY: prep build
 
-all: prep dev
+all: prep build
 
 
 prep:
-	@echo "----- preparing $(IMAGENAME) build -----"
+	@echo "----- preparing $(IMAGE) build -----"
 	# stage pips we will need to install in Docker build
 	mkdir -p $(BUILDROOT)/private_deps && rm -rf $(BUILDROOT)/private_deps/*
 	for entry in $(PRIVDEPS) ; do \
@@ -22,18 +21,10 @@ prep:
 	# copy the app code to the build root
 	cp -rp ./* $(BUILDROOT)
 
-prod: prep
-	@echo "----- building $(IMAGENAME) prod -----"
-	docker build -t $(DOCKERREPO):$(TAG) $(BUILDROOT)
-
-ote: prep
-	@echo "----- building $(IMAGENAME) ote -----"
-	docker build -t $(DOCKERREPO):ote $(BUILDROOT)
-
-dev: prep
-	@echo "----- building $(IMAGENAME) dev -----"
-	docker build -t $(DOCKERREPO):dev $(BUILDROOT)
+build: prep
+	@echo "----- building $(IMAGE):$(TAG) -----"
+	docker build -t $(IMAGE):$(TAG) $(BUILDROOT)
 
 clean:
-	@echo "----- cleaning $(IMAGENAME) app -----"
+	@echo "----- cleaning $(BUILDROOT) -----"
 	rm -rf $(BUILDROOT)

@@ -21,7 +21,7 @@ spec:
         -
           name: "validator-rest"
           imagePullPolicy: "Always"
-          image: "artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-rest:dev"
+          image: "artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-api:dev"
           env:
           - name: BUILD_DATE
             value: 'THIS_STRING_IS_REPLACED_DURING_BUILD'
@@ -34,12 +34,6 @@ spec:
                 key: password
           - name: ABUSE_API_UPDATE_URL
             value: http://api.abuse-api-dev.svc.cluster.local:5000/v1/abuse/tickets
-          - name: DB_USER
-            value: devuser
-          - name: DB_HOST
-            value: 10.22.188.208:27017
-          - name: DB
-            value: devphishstory
           - name: sysenv
             value: dev
           - name: scheduler
@@ -56,15 +50,17 @@ spec:
           - name: DB_PASS
             valueFrom:
               secretKeyRef:
-                name: db-phishnet
+                name: db-validator
                 key: password
           - name: ABUSE_API_UPDATE_URL
             value: http://api.abuse-api-dev.svc.cluster.local:5000/v1/abuse/tickets
           - name: DB_USER
             value: devuser
           - name: DB_HOST
-            value: 10.22.188.208:27017
+            value: 10.22.188.208
           - name: DB
             value: devphishstory
+          - name: COLLECTION
+            value: incidents
           - name: sysenv
             value: dev
