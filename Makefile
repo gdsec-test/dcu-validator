@@ -66,3 +66,5 @@ dev-deploy: dev
 clean:
 	@echo "----- cleaning $(BUILDNAME) app -----"
 	rm -rf $(BUILDROOT)
+	cd rest && $(MAKE) clean
+	cd scheduler && $(MAKE) clean

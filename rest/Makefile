@@ -1,4 +1,5 @@
-BUILDROOT=$(HOME)/dockerbuild/$(IMAGE)
+BUILDNAME=ITSecurity/dcu-validator-rest
+BUILDROOT=$(HOME)/dockerbuild/$(BUILDNAME)
 SHELL=/bin/bash
 
 PRIVDEPS=
@@ -21,9 +22,9 @@ prep:
 	cp -rp ./* $(BUILDROOT)
 
 build: prep
-	@echo "----- building $(IMAGE) prod -----"
+	@echo "----- building $(IMAGE):$(TAG) -----"
 	docker build -t $(IMAGE):$(TAG) $(BUILDROOT)
 
 clean:
-	@echo "----- cleaning $(BUILDROOT) app -----"
+	@echo "----- cleaning $(BUILDROOT) -----"
 	rm -rf $(BUILDROOT)
