@@ -77,8 +77,8 @@ pip install -r test_requirements.txt
 
 After this you may run the tests via
 ```
-nosetests -w rest/tests/ --cover-package=rest
-nosetests -w scheduler/tests/ --cover-package=scheduler
+nosetests -w rest/tests/ --cover-package=rest_service
+nosetests -w scheduler/tests/ --cover-package=scheduler_service
 ```
 Optionally, you may provide the flag `--with-coverage` to `nosetests` to determine the test coverage of this project.
 
@@ -102,15 +102,22 @@ validationscheduler:
   image: artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-scheduler:dev
   environment:
     - DB_HOST=mongo
+    - COLLECTION=incidents
   ports:
     - 50051:50051
   links:
     - mongo:mongo
+    - redis:redis
 
 mongo:
   image: mongo:latest
   ports:
      - 27017:27017
+
+redis:
+  image: redis:latest
+  ports:
+     - 6379:6379
 ```
 This will enable you to run basic scheduling.
 

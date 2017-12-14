@@ -23,43 +23,52 @@ spec:
           imagePullPolicy: "Always"
           image: "artifactory.secureserver.net:10014/docker-dcu-local/debug:latest"
         -
-          name: "validator"
+          name: "validator-rest"
           imagePullPolicy: "Always"
-          image: "artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator:REPLACE_WITH_GIT_COMMIT"
-          livenessProbe:
-            exec:
-              command:
-              - /app/kubetipper.sh
-            initialDelaySeconds: 120
-            periodSeconds: 120
-            failureThreshold: 1
+          image: "artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-rest:prod"
           env:
           - name: BUILD_DATE
             value: 'THIS_STRING_IS_REPLACED_DURING_BUILD'
-          - name: HTTP_ONLY
-            value: 'true'
-          - name: "LIVENESS_TTL"
-            value: "3600"
-          - name: "LIVENESS_FACTOR"
-            value: "0.2"
-# TODO: Name of Value TBD
-          - name: REDLOCK_HOST
-            value: redis.tbd-prod.svc.cluster.local
-          - name: KEYFILE
-            value: /keyfiles/key.txt
-          - name: DB_PASS
+          - name: REDIS
+            value: phishnet-redis.abuse-api-prod.svc.cluster.local
+         - name: DB_PASS
             valueFrom:
               secretKeyRef:
                 name: db-phishnet
                 key: password
           - name: ABUSE_API_UPDATE_URL
             value: http://api.abuse-api-prod.svc.cluster.local:5000/v1/abuse/tickets
-          volumeMounts:
-          - name: encryption-keys
-            mountPath: /keyfiles
-            readOnly: true
-
-      volumes:
-        - name: encryption-keys
-          secret:
-            secretName: encryption-key-files
+          - name: DB_USER
+            value: sau_p_phish
+          - name: DB_HOST
+            value: 10.22.9.209:27017
+          - name: DB
+            value: phishstory
+          - name: sysenv
+            value: prod
+          - name: scheduler
+            value: localhost
+        -
+          name: "validator-scheduler"
+          imagePullPolicy: "Always"
+          image: "artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-scheduler:prod"
+          env:
+          - name: BUILD_DATE
+            value: 'THIS_STRING_IS_REPLACED_DURING_BUILD'
+          - name: REDIS
+            value: phishnet-redis.abuse-api-prod.svc.cluster.local
+         - name: DB_PASS
+            valueFrom:
+              secretKeyRef:
+                name: db-phishnet
+                key: password
+          - name: ABUSE_API_UPDATE_URL
+            value: http://api.abuse-api-prod.svc.cluster.local:5000/v1/abuse/tickets
+          - name: DB_USER
+            value: sau_p_phish
+          - name: DB_HOST
+            value: 10.22.9.209:27017
+          - name: DB
+            value: phishstory
+          - name: sysenv
+            value: prod
