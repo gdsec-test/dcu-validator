@@ -2,7 +2,7 @@
 
 This project provides a mechanism to periodically validate DCU abuse complaints. Complaints that are determined to be false positives are closed.
 
-The project is broken into two major components. A REST server and a gRPC scheduling service.
+The project is broken into two major components. A REST server and a gRPC scheduling and validation service.
 
 ## Cloning
 To clone the repository via SSH perform the following
