@@ -32,32 +32,12 @@ class ValidatorInterface(object):
     def validate_ticket(self, ticket):
         raise(NotImplementedError)
 
-
-# implementation classes
-class ParkedValidator(ValidatorInterface):
-    handlers = ['PHISHING', 'MALWARE', 'NETWORK_ABUSE']
-
-    def validate_ticket(self, ticket):
-        print "Parked Validator handles {}".format(self.handlers)
-        print "Received {}".format(ticket)
-
-
-class ResolvesValidator(ValidatorInterface):
-    handlers = ['PHISHING', 'MALWARE']
-
-    def validate_ticket(self, ticket):
-        print "Resolves validator handles {}".format(self.handlers)
-        print "Received {}".format(ticket)
-
-
 # Route tickets based on type
 def route(ticket):
     handlers = ValidatorInterface.registry.get(ticket.get('type'))
     for clazz in handlers:
-        clazz().validate_ticket(ticket)  # construct class and run interface function
+        ret = clazz().validate_ticket(ticket)  # construct class and run interface function
+        if not ret[0]:
+            return ret
 
-
-if __name__ == '__main__':
-    tickets = [dict(id='123', type='NETWORK_ABUSE'), dict(id='456', type='PHISHING'), dict(id='789', type='MALWARE')]
-    for ticket in tickets:
-        route(ticket)
+    return (True,)

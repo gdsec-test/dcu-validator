@@ -25,9 +25,8 @@ class ResolvesValidator(ValidatorInterface):
                 status = str(resp.status_code)
                 resolves = status[0] in ["1", "2", "3"] or status in ["403", "406"]
             if not resolves:
-                return (False, 'Unresolvable')
+                return (False, 'unresolvable')
         except ConnectionError as e:
             self._logger.error(e)
-            return (False, 'Connection Error')
 
-        return (True, 'Resolves')
+        return (True,)

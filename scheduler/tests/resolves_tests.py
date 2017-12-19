@@ -18,7 +18,7 @@ class TestResolvable:
 
         result = self._resolvable.validate_ticket(self.doc)
 
-        return assert_true(result == (True, 'Resolves'))
+        return assert_true(result == (True,))
 
     @patch.object(Session, 'request')
     def test_resolves_2xx(self, request):
@@ -26,7 +26,7 @@ class TestResolvable:
 
         result = self._resolvable.validate_ticket(self.doc)
 
-        return assert_true(result == (True, 'Resolves'))
+        return assert_true(result == (True,))
 
     @patch.object(Session, 'request')
     def test_resolves_3xx(self, request):
@@ -34,7 +34,7 @@ class TestResolvable:
 
         result = self._resolvable.validate_ticket(self.doc)
 
-        return assert_true(result == (True, 'Resolves'))
+        return assert_true(result == (True,))
 
     @patch.object(Session, 'request')
     def test_resolves_403(self, request):
@@ -42,7 +42,7 @@ class TestResolvable:
 
         result = self._resolvable.validate_ticket(self.doc)
 
-        return assert_true(result == (True, 'Resolves'))
+        return assert_true(result == (True,))
 
     @patch.object(Session, 'request')
     def test_resolves_406(self, request):
@@ -50,7 +50,7 @@ class TestResolvable:
 
         result = self._resolvable.validate_ticket(self.doc)
 
-        return assert_true(result == (True, 'Resolves'))
+        return assert_true(result == (True,))
 
     @patch.object(Session, 'request')
     def test_not_resolves_404(self, request):
@@ -58,4 +58,4 @@ class TestResolvable:
 
         result = self._resolvable.validate_ticket(self.doc)
 
-        return assert_true(result == (False, 'Unresolvable'))
+        return assert_true(result == (False, 'unresolvable'))
