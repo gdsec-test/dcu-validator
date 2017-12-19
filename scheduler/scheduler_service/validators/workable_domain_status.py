@@ -9,11 +9,14 @@ class IsWorkable(object):
     WORKABLE_STATES = ['ACTIVE']
 
     def __init__(self, endpoint):
+        logging.basicConfig(filename='workable_domain_status.log', level=logging.DEBUG,
+                            format="[%(levelname)s:%(asctime)s:%(filename)s:%(lineno)s - %(funcName)20s() ] %(message)s"
+                            )
         self._logger = logging.getLogger(__name__)
         domain_uri = 'http://{}/v1/domains'.format(endpoint)
         self._query_domain_endpoint = '{}/domaininfo'.format(domain_uri)
 
-    def domain_status(self, domain_name):
+    def get_domain_status(self, domain_name):
         """
         Get a status for a domain name
         :param domain_name: 
@@ -59,21 +62,30 @@ class IsWorkable(object):
 
     def workable_domain_status(self, domain_name):
         """
-        Returns a tuple (True, '') or (False, 'Close Reason') based on whether the status of a domain name is a status
-        we should continue to work or if the domain name is in a status that we should not work
+        Returns a tuple (True, '') or (False, 'Reason') based on whether the status of a domain name is a status
+        we should continue to work or if the domain name is in a status that we should not work, will default to True
+        if the check errors
         :param domain_name:
-        :return:
+        :return: A tuple (bool, string)
         """
-        workable = False
+        workable = True
         reason = ''
 
-        try:
-            if self.domain_status(domain_name) not in self.WORKABLE_STATES:
-                reason = 'Unworkable domain status'
-                self._logger.info('{} - domain status is unworkable').format(domain_name)
-            else:
-                workable = True
-                self._logger.info('{} - domain status is workable').format(domain_name)
-        except Exception as e:
-            self._logger.error('Exception: {}'.format(e))
+        if self.get_domain_status(domain_name) not in self.WORKABLE_STATES:
+            workable = False
+            reason = 'Unworkable domain status'
+            self._logger.info('{} - domain status is unworkable - {}').format(domain_name,
+                                                                              self.get_domain_status(domain_name))
+        else:
+            self._logger.info('{} - domain status is workable').format(domain_name)
+
         return workable, reason
+
+
+if __name__ == '__main__':
+    # ote_ep = 'domainservice-rest.abuse-api-ote.svc.cluster.local:8080'
+    ote_ep = 'domain.api.int.ote-godaddy.com:443'
+    domain = 'dcutestdomain.com'
+    check = IsWorkable(ote_ep)
+    status = check.get_domain_status(domain)
+    print status
