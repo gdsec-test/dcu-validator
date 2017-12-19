@@ -15,7 +15,7 @@ class ResolvesValidator(ValidatorInterface):
         """
          Returns whether or not a ticket should be closed
         :param ticket:
-        :return tuple: False and reason if ticket is not resolvable, return True, 'Resolves' otherwise:
+        :return tuple: (False,'unresolvable') and reason if ticket is not resolvable, return (True,) otherwise:
         """
         source_url = ticket.get('source')
 
