@@ -13,9 +13,9 @@ class ResolvesValidator(ValidatorInterface):
 
     def validate_ticket(self, ticket):
         """
-        Returns whether or not a ticket should be closed
+         Returns whether or not a ticket should be closed
         :param ticket:
-        :return False if ticket is not resolvable, return True otherwise:
+        :return tuple: False and reason if ticket is not resolvable, return True, 'Resolves' otherwise:
         """
         source_url = ticket.get('source')
 
