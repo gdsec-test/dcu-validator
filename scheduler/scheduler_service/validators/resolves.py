@@ -18,6 +18,7 @@ class ResolvesValidator(ValidatorInterface):
         :return tuple: (False,'unresolvable') and reason if ticket is not resolvable, return (True,) otherwise:
         """
         source_url = ticket.get('source')
+        self._logger.info('{} Checking if {} resolves'.format(__name__, source_url))
 
         try:
             with sessions.Session() as session:

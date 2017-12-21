@@ -59,5 +59,12 @@ spec:
             value: phishstory
           - name: COLLECTION
             value: incidents
+          - name: ABUSE_API_UPDATE_URL
+            value: http://api.abuse-api-prod.svc.cluster.local:5000/v1/abuse/tickets
+          - name: API_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: validator-token
+                key: token
           - name: sysenv
             value: prod

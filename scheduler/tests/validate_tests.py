@@ -1,19 +1,23 @@
 from scheduler_service.server.service import validate, phishstory_db, get_redlock
-from apscheduler.schedulers.background import BackgroundScheduler
 from scheduler_service.schedulers.aps import APS
+import scheduler_service.validators.route
+from apscheduler.schedulers.background import BackgroundScheduler
 from redlock import RedLockFactory
 from mock import patch, MagicMock
+from scheduler_service.utils.api_helper import APIHelper
 
 
 class TestValidate:
 
     @patch('scheduler_service.server.service.get_redlock')
     @patch('scheduler_service.server.service.phishstory_db')
-    def test_valid(self, phishstory, redlock):
+    @patch('scheduler_service.validators.route.route')
+    def test_valid(self, route, phishstory, redlock):
+        route.return_value = (True,)
         ticket_data = dict(phishstory_status='OPEN')
         redlock.return_value = MagicMock(spec=RedLockFactory, acquire=lambda: True, create_lock=lambda x: True, release=lambda: True)
         phishstory.return_value = MagicMock(get_incident=lambda x: ticket_data)
-        assert(validate('12345') is True)
+        assert(validate('12345') is 0)
 
     @patch('scheduler_service.server.service.get_redlock')
     @patch('scheduler_service.server.service.phishstory_db')
@@ -23,4 +27,18 @@ class TestValidate:
         scheduler.return_value = MagicMock(remove_job=lambda x: True)
         redlock.return_value = MagicMock(spec=RedLockFactory, create_lock=lambda x: True)
         phishstory.return_value = MagicMock(get_incident=lambda x: ticket_data)
-        assert(validate('12345') is False)
+        assert(validate('12345') is 1)
+
+    @patch.object(APIHelper, 'close_incident')
+    @patch('scheduler_service.server.service.get_redlock')
+    @patch('scheduler_service.server.service.phishstory_db')
+    @patch('scheduler_service.server.service.get_scheduler')
+    @patch('scheduler_service.server.service.route')
+    def test_invalid(self, route, scheduler, phishstory, redlock, apihelper):
+        route.return_value = (False,)
+        scheduler.return_value = MagicMock(remove_job=lambda x: True)
+        ticket_data = dict(phishstory_status='OPEN')
+        phishstory.return_value = MagicMock(get_incident=lambda x: ticket_data)
+        apihelper.return_value = True
+        redlock.return_value = MagicMock(spec=RedLockFactory, acquire=lambda: True, create_lock=lambda x: True, release=lambda: True)
+        assert(validate('12345') is 1)

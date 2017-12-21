@@ -28,7 +28,11 @@ def RemoveSchedule(ticketid):
 
 def ValidateTicket(ticketid):
     stub = service_connect()
-    return stub.ValidateTicket(Request(ticket=ticketid))
+    ret = stub.ValidateTicket(Request(ticket=ticketid))
+    return rest_service.grpc_stub.schedule_service_pb2.Result.Name(
+        ret.result
+    )
+
 
 api = Namespace('validator', description='Validator operations')
 
@@ -48,9 +52,9 @@ validator = api.model(
 
 ticket_model = api.model(
     'Ticket', {
-        'valid':
-            fields.Boolean(
-                description='Indicates if the ticket has passed validation')
+        'result':
+            fields.String(
+                description='Result of the validation checks', enum=['VALID', 'INVALID', 'LOCKED'])
     })
 
 
@@ -64,7 +68,7 @@ class Validate(Resource):
         Validate a DCU ticket
         """
         response = ValidateTicket(ticketid)
-        data = dict(valid=response.valid)
+        data = dict(result=response)
         return data, 200
 
 

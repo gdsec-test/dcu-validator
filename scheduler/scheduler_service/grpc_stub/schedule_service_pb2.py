@@ -3,6 +3,7 @@
 
 import sys
 _b=sys.version_info[0]<3 and (lambda x:x) or (lambda x:x.encode('latin1'))
+from google.protobuf.internal import enum_type_wrapper
 from google.protobuf import descriptor as _descriptor
 from google.protobuf import message as _message
 from google.protobuf import reflection as _reflection
@@ -19,9 +20,39 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='schedule_service.proto',
   package='scheduler',
   syntax='proto3',
-  serialized_pb=_b('\n\x16schedule_service.proto\x12\tscheduler\"8\n\x07Request\x12\x0e\n\x06ticket\x18\x01 \x01(\t\x12\r\n\x05\x63lose\x18\x02 \x01(\x08\x12\x0e\n\x06period\x18\x03 \x01(\x05\"\n\n\x08Response\"#\n\x12ValidationResponse\x12\r\n\x05valid\x18\x01 \x01(\x08\x32\xc9\x01\n\tScheduler\x12\x38\n\x0b\x41\x64\x64Schedule\x12\x12.scheduler.Request\x1a\x13.scheduler.Response\"\x00\x12;\n\x0eRemoveSchedule\x12\x12.scheduler.Request\x1a\x13.scheduler.Response\"\x00\x12\x45\n\x0eValidateTicket\x12\x12.scheduler.Request\x1a\x1d.scheduler.ValidationResponse\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\x16schedule_service.proto\x12\tscheduler\"8\n\x07Request\x12\x0e\n\x06ticket\x18\x01 \x01(\t\x12\r\n\x05\x63lose\x18\x02 \x01(\x08\x12\x0e\n\x06period\x18\x03 \x01(\x05\"\n\n\x08Response\"7\n\x12ValidationResponse\x12!\n\x06result\x18\x01 \x01(\x0e\x32\x11.scheduler.Result*,\n\x06Result\x12\t\n\x05VALID\x10\x00\x12\x0b\n\x07INVALID\x10\x01\x12\n\n\x06LOCKED\x10\x02\x32\xc9\x01\n\tScheduler\x12\x38\n\x0b\x41\x64\x64Schedule\x12\x12.scheduler.Request\x1a\x13.scheduler.Response\"\x00\x12;\n\x0eRemoveSchedule\x12\x12.scheduler.Request\x1a\x13.scheduler.Response\"\x00\x12\x45\n\x0eValidateTicket\x12\x12.scheduler.Request\x1a\x1d.scheduler.ValidationResponse\"\x00\x62\x06proto3')
 )
 
+_RESULT = _descriptor.EnumDescriptor(
+  name='Result',
+  full_name='scheduler.Result',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='VALID', index=0, number=0,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='INVALID', index=1, number=1,
+      options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='LOCKED', index=2, number=2,
+      options=None,
+      type=None),
+  ],
+  containing_type=None,
+  options=None,
+  serialized_start=164,
+  serialized_end=208,
+)
+_sym_db.RegisterEnumDescriptor(_RESULT)
+
+Result = enum_type_wrapper.EnumTypeWrapper(_RESULT)
+VALID = 0
+INVALID = 1
+LOCKED = 2
 
 
 
@@ -102,9 +133,9 @@ _VALIDATIONRESPONSE = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='valid', full_name='scheduler.ValidationResponse.valid', index=0,
-      number=1, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
+      name='result', full_name='scheduler.ValidationResponse.result', index=0,
+      number=1, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
@@ -121,12 +152,14 @@ _VALIDATIONRESPONSE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=107,
-  serialized_end=142,
+  serialized_end=162,
 )
 
+_VALIDATIONRESPONSE.fields_by_name['result'].enum_type = _RESULT
 DESCRIPTOR.message_types_by_name['Request'] = _REQUEST
 DESCRIPTOR.message_types_by_name['Response'] = _RESPONSE
 DESCRIPTOR.message_types_by_name['ValidationResponse'] = _VALIDATIONRESPONSE
+DESCRIPTOR.enum_types_by_name['Result'] = _RESULT
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Request = _reflection.GeneratedProtocolMessageType('Request', (_message.Message,), dict(
@@ -158,8 +191,8 @@ _SCHEDULER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   options=None,
-  serialized_start=145,
-  serialized_end=346,
+  serialized_start=211,
+  serialized_end=412,
   methods=[
   _descriptor.MethodDescriptor(
     name='AddSchedule',
