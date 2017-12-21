@@ -5,7 +5,9 @@ from validator_interface import ValidatorInterface
 
 
 class DomainStatusValidator(ValidatorInterface):
-    """Determines if a domain name is workable, based on its status"""
+    """Determines if a domain name is workable based on its status. The only time a ticket should validate as False
+    is if the domain name is registered with us and has a domain status of something other than 'ACTIVE'
+    """
 
     workable_states = ['ACTIVE', 'NO_DOMAIN_STATUS']
     handlers = ['PHISHING', 'MALWARE', 'SPAM']
