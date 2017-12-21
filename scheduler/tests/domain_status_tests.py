@@ -1,47 +1,83 @@
-from nose.tools import assert_true, assert_false
+from nose.tools import assert_true
 from scheduler_service.validators.domain_status import DomainStatusValidator
-from mock import patch, MagicMock
+from mock import patch
 from requests.sessions import Session
-
-
 import requests
 
 
 class TestDomainStatus:
+    """Tests for the Domain Status Validator"""
 
+    _ticket = {'sourceDomainOrIp': 'dmvsuspension.com', 'number': '123'}
 
-
-    def __init__(self):
+    def setUp(self):
         self._domain_status = DomainStatusValidator('domain-service-end-point')
 
     @patch.object(Session, 'request')
-    def test_get_domain_status_active(self, request):
-        ticket = {'sourceDomainOrIp': 'dmvsuspension.com', 'number': '123'}
+    def test_get_domain_status_404(self, request):
 
-        request.return_value = MagicMock(status_code=200)
-        domain_status_result = self._domain_status.get_domain_status(ticket)
+        domain_service_resp = requests.Response()
+        domain_service_resp.status_code = 404
+        domain_service_resp._content = 'Not Found\n'
+        request.return_value = domain_service_resp
 
-        assert_true(domain_status_result, 'ACTIVE')
+        domain_status_result = self._domain_status.validate_ticket(self._ticket)
 
-
-        # {"domain": "dmvsuspension.com",
-        # "shopperId": "12345",
-        # "domainId": 85789,
-        # "createDate": "10-05-2006",
-        # "status": "ACTIVE"}
+        assert_true(domain_status_result, (True, ''))
 
     @patch.object(Session, 'request')
-    def test_get_domain_status_not_active(self, request):
-        ticket = {'sourceDomainOrIp': 'dmvsuspension.com', 'number': '123'}
+    def test_get_domain_status_not_active_400(self, request):
 
-        request.return_value = MagicMock(status_code=404)
-        domain_status_result = self._domain_status.get_domain_status(ticket)
+        domain_service_resp = requests.Response()
+        domain_service_resp.status_code = 400
+        domain_service_resp._content = '{"error":"invalid character \'d\' looking for beginning of value","code":3}'
+        request.return_value = domain_service_resp
 
-        assert_true(domain_status_result, 'Unable to query domain status')
+        domain_status_result = self._domain_status.validate_ticket(self._ticket)
 
-    @patch.object(DomainStatusValidator, 'get_domain_status')
-    def test_validate_ticket_true(self, get_domain_status):
-        ticket = {'sourceDomainOrIp': 'dmvsuspension.com', 'number': '123'}
-        get_domain_status.return_value = MagicMock(status='ACTIVE')
-        result = self._domain_status.validate_ticket(ticket)
+        assert_true(domain_status_result, 'NO_DOMAIN_STATUS')
+
+    @patch.object(Session, 'request')
+    def test_get_domain_status_500(self, request):
+
+        domain_service_resp = requests.Response()
+        domain_service_resp.status_code = 500
+        domain_service_resp._content = '{"error":"No Active shoppers for this Domain Name","code":13}'
+        request.return_value = domain_service_resp
+
+        domain_status_result = self._domain_status.validate_ticket(self._ticket)
+
+        assert_true(domain_status_result, 'NO_DOMAIN_STATUS')
+
+    @patch.object(Session, 'request')
+    def test_validate_ticket_true(self, request):
+
+        domain_service_resp = requests.Response()
+        domain_service_resp.status_code = 200
+        domain_service_resp._content = '{"domain":"dmvsuspension.com",' \
+                                       '"shopperId":"187897", ' \
+                                       '"domainId":12345, ' \
+                                       '"createDate":"10-15-2017", ' \
+                                       '"status":"ACTIVE"}'
+        request.return_value = domain_service_resp
+
+        result = self._domain_status.validate_ticket(self._ticket)
+
         assert_true(result, (True, ''))
+
+    @patch.object(Session, 'request')
+    def test_validate_ticket_false(self, request):
+
+        domain_service_resp = requests.Response()
+        domain_service_resp.status_code = 200
+        domain_service_resp._content = '{"domain":"dmvsuspension.com",' \
+                                       '"shopperId":"187897", ' \
+                                       '"domainId":12345, ' \
+                                       '"createDate":"10-15-2017", ' \
+                                       '"status":"SUSPENDED"}'
+
+        request.return_value = domain_service_resp
+
+        result = self._domain_status.validate_ticket(self._ticket)
+
+        assert_true(result, (False, 'Domain Status is NOT ACTIVE'))
