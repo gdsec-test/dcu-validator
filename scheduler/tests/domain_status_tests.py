@@ -80,4 +80,4 @@ class TestDomainStatus:
 
         result = self._domain_status.validate_ticket(self._ticket)
 
-        assert_true(result, (False, 'Domain Status is NOT ACTIVE'))
+        assert_true(result, (False, 'unworkable'))

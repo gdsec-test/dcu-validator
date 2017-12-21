@@ -30,7 +30,7 @@ class DomainStatusValidator(ValidatorInterface):
 
         if self._get_domain_status(domain_name) not in self.workable_states:
             workable = False
-            reason = 'Domain Status is NOT ACTIVE'
+            reason = 'unworkable'
             self._logger.info('{} - domain status is NOT ACTIVE'.format(domain_name))
         else:
             self._logger.info('{} - domain status is ACTIVE, FOREIGN, or Failed lookup'.format(domain_name))
