@@ -65,17 +65,17 @@ class TestValidator(TestCase):
     @patch('rest_service.api.api.ValidateTicket')
     @patch('rest_service.api.api.service_connect')
     def test_validate_true(self, service, validate):
+        validate.return_value = 'VALID'
         response = self.client.get(url_for('validate', ticketid=12345))
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
-        self.assertTrue(data.get('valid'))
+        self.assertEqual(data.get('result'), 'VALID')
 
     @patch('rest_service.api.api.ValidateTicket')
     @patch('rest_service.api.api.service_connect')
     def test_validate_false(self, service, validate):
-        resp = namedtuple('ValidationResponse', 'valid')
-        validate.return_value = resp(False)
+        validate.return_value = 'INVALID'
         response = self.client.get(url_for('validate', ticketid=12345))
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.data)
-        self.assertFalse(data.get('valid'))
+        self.assertEqual(data.get('result'), 'INVALID')

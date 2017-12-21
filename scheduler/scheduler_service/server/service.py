@@ -1,12 +1,13 @@
 import logging
 import os
 from scheduler_service.grpc_stub.schedule_service_pb2_grpc import SchedulerServicer
-from scheduler_service.grpc_stub.schedule_service_pb2 import Response, ValidationResponse
+from scheduler_service.grpc_stub.schedule_service_pb2 import Response, ValidationResponse, INVALID, VALID, LOCKED
 from scheduler_service.schedulers.aps import APS
-from redlock import RedLockFactory
-from dcdatabase.phishstorymongo import PhishstoryMongo
 from scheduler_service.utils.db_settings import create_db_settings
 from scheduler_service.utils.lock import Lock
+from scheduler_service.validators.route import route
+from scheduler_service.utils.api_helper import APIHelper
+from dcdatabase.phishstorymongo import PhishstoryMongo
 
 LOGGER = logging.getLogger(__name__)
 TTL = os.getenv('TTL') or 300
@@ -18,33 +19,43 @@ def validate(ticket, data=None):
     Runs validation on the provided ticket
     :param ticket:
     :param data: Dictionary containing properties used for scheduling
-    :return: Boolean indicating whether the ticket will be scheduled again
+    :return: Enumeration indicating the result of the validation
     '''
-    LOGGER.info("Validating {} with payload {}".format(ticket, data))
+    LOGGER.info('Validating {} with payload {}'.format(ticket, data))
     lock = get_redlock(ticket)
     db_handle = phishstory_db()
     ticket_data = db_handle.get_incident(ticket)
 
     if ticket_data is None or ticket_data.get('phishstory_status', 'OPEN') == 'CLOSED':
-       try:
-           get_scheduler().remove_job(ticket)
-       except Exception as e:
-           LOGGER.error('Unable to remove job {}:{}'.format(ticket, e))
+        remove_job(ticket)
+        return INVALID
     else:
         if lock.acquire():
             try:
-                if False:  # TODO call validate funcion
+                resp = route(ticket_data)
+                if not resp[0]:
                     if data and data.get('close', False):
                         # close ticket
                         LOGGER.info('Closing ticket {}'.format(ticket))
-                    get_scheduler().remove_job(ticket)
-                else:
-                    return True
+                        if not APIHelper().close_incident(ticket, resp[1]):
+                            LOGGER.error('Unable to close ticket {}'.format(ticket))
+                    remove_job(ticket)
+                    return INVALID
             except Exception as e:
-               LOGGER.error('Unable to validate {}:{}'.format(ticket, e))
+                LOGGER.error('Unable to validate {}:{}'.format(ticket, e))
             finally:
-               lock.release()
-    return False
+                lock.release()
+        else:
+            return LOCKED
+    return VALID
+
+
+def remove_job(ticket):
+    try:
+        get_scheduler().remove_job(ticket)
+    except Exception as e:
+        LOGGER.warning('Unable to remove job {}:{}'.format(ticket, e))
+
 
 def get_redlock(ticket):
     '''
@@ -61,12 +72,14 @@ def phishstory_db():
     '''
     return PhishstoryMongo(create_db_settings())
 
+
 def get_scheduler():
     '''
     Retrieves a APS instance
     :return:
     '''
     return APS().scheduler
+
 
 class Service(SchedulerServicer):
     '''
@@ -110,6 +123,6 @@ class Service(SchedulerServicer):
 
     def ValidateTicket(self, request, context):
         self._logger.info("Validating {}".format(request))
-        valid = validate(request.ticket)
+        res = validate(request.ticket)
         return ValidationResponse(
-            valid=valid)
+            result=res)

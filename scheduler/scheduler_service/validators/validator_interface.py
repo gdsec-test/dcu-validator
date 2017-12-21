@@ -31,13 +31,3 @@ class ValidatorInterface(object):
 
     def validate_ticket(self, ticket):
         raise(NotImplementedError)
-
-# Route tickets based on type
-def route(ticket):
-    handlers = ValidatorInterface.registry.get(ticket.get('type'))
-    for clazz in handlers:
-        ret = clazz().validate_ticket(ticket)  # construct class and run interface function
-        if not ret[0]:
-            return ret
-
-    return (True,)

@@ -2,6 +2,12 @@ syntax = "proto3";
 
 package scheduler;
 
+enum Result {
+    VALID=0;
+    INVALID=1;
+    LOCKED=2;
+}
+
 message Request {
     string ticket=1;
     bool close=2;
@@ -13,7 +19,7 @@ message Response {
 }
 
 message ValidationResponse {
-    bool valid=1;
+    Result result=1;
 }
 
 service Scheduler {

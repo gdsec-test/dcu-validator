@@ -20,13 +20,10 @@ class TestScheduler:
         request = Request(ticket='12345')
         resp = service.RemoveSchedule(request, None)
 
-    @patch('scheduler_service.server.service.get_redlock')
-    @patch('scheduler_service.server.service.phishstory_db')
-    def test_validate_ticket(self, phishstory, redlock):
-        ticket_data = dict(phishstory_status='OPEN')
-        redlock.return_value=MagicMock(create_lock=lambda x: True, acquire=lambda: True)
-        phishstory.return_value=MagicMock(get_incident=lambda x: ticket_data)
+    @patch('scheduler_service.server.service.validate')
+    def test_validate_ticket(self, validate):
+        validate.return_value = 0
         service = Service(MagicMock())
         request = Request(ticket='12345')
         resp = service.ValidateTicket(request, None)
-        assert(resp.valid is True)
+        assert(resp.result is 0)
