@@ -10,7 +10,7 @@ class DomainStatusValidator(ValidatorInterface):
     """
 
     workable_states = ['ACTIVE', 'NO_DOMAIN_STATUS']
-    handlers = ['PHISHING', 'MALWARE', 'SPAM']
+    handlers = ['PHISHING', 'MALWARE']
 
     def __init__(self, endpoint):
         self._logger = logging.getLogger(__name__)
