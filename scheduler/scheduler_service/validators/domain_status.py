@@ -26,7 +26,7 @@ class DomainStatusValidator(ValidatorInterface):
         """
         domain_name = ticket.get('sourceDomainOrIp')
         workable = True
-        reason = ''
+        reason = None
 
         if self._get_domain_status(domain_name) not in self.workable_states:
             workable = False

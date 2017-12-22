@@ -14,40 +14,40 @@ class TestDomainStatus:
         self._domain_status = DomainStatusValidator('domain-service-end-point')
 
     @patch.object(Session, 'request')
-    def test_get_domain_status_404(self, request):
+    def test_validate_ticket_true_404(self, request):
 
         domain_service_resp = requests.Response()
         domain_service_resp.status_code = 404
         domain_service_resp._content = 'Not Found\n'
         request.return_value = domain_service_resp
 
-        domain_status_result = self._domain_status.validate_ticket(self._ticket)
+        result = self._domain_status.validate_ticket(self._ticket)
 
-        assert_true(domain_status_result, (True, ''))
+        assert_true(result, (True,))
 
     @patch.object(Session, 'request')
-    def test_get_domain_status_not_active_400(self, request):
+    def test_get_validate_ticket_true_400(self, request):
 
         domain_service_resp = requests.Response()
         domain_service_resp.status_code = 400
         domain_service_resp._content = '{"error":"invalid character \'d\' looking for beginning of value","code":3}'
         request.return_value = domain_service_resp
 
-        domain_status_result = self._domain_status.validate_ticket(self._ticket)
+        result = self._domain_status.validate_ticket(self._ticket)
 
-        assert_true(domain_status_result, 'NO_DOMAIN_STATUS')
+        assert_true(result, (True,))
 
     @patch.object(Session, 'request')
-    def test_get_domain_status_500(self, request):
+    def test_validate_ticket_true_500(self, request):
 
         domain_service_resp = requests.Response()
         domain_service_resp.status_code = 500
         domain_service_resp._content = '{"error":"No Active shoppers for this Domain Name","code":13}'
         request.return_value = domain_service_resp
 
-        domain_status_result = self._domain_status.validate_ticket(self._ticket)
+        result = self._domain_status.validate_ticket(self._ticket)
 
-        assert_true(domain_status_result, 'NO_DOMAIN_STATUS')
+        assert_true(result, (True,))
 
     @patch.object(Session, 'request')
     def test_validate_ticket_true(self, request):
@@ -63,7 +63,7 @@ class TestDomainStatus:
 
         result = self._domain_status.validate_ticket(self._ticket)
 
-        assert_true(result, (True, ''))
+        assert_true(result, (True,))
 
     @patch.object(Session, 'request')
     def test_validate_ticket_false(self, request):
