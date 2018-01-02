@@ -2,9 +2,12 @@ import logging
 import re
 from dns import resolver
 from netaddr.ip import all_matching_cidrs
+from validator_interface import ValidatorInterface
 
 
-class Parked(object):
+class ParkedValidator(ValidatorInterface):
+
+    handlers = ['PHISHING', 'MALWARE']
 
     # URL redirects to error/suspension page
     suspended_regex = [
@@ -30,15 +33,21 @@ class Parked(object):
     def __init__(self):
         self._logger = logging.getLogger(__name__)
 
-    def is_not_parked(self, domain_name, content, url):
+    def validate_ticket(self, ticket):
         """
         Checks domain's IP Address against parkweb servers and falls back to check the page
         content and url against known park/landing page regexes
+        returns either (False, 'parked') or (True, )
         :param domain_name:
         :param content:
         :param url:
         :return:
         """
+
+        domain_name = ticket.get('sourceDomainOrIp')
+        url = ticket.get('source')
+        content = self._get_content(url)
+
         if not self._is_ip(domain_name):
             dnsresolver = resolver.Resolver()
             dnsresolver.timeout = 1
@@ -49,12 +58,12 @@ class Parked(object):
             ip = domain_name
         if all_matching_cidrs(ip, self.parkweb):
             self._logger.info('Matched {} for parked IP'.format(domain_name))
-            return False
+            return False, 'parked'
         else:
             parked = filter(None, [x.search(content) for x in self.parked_regex])
             suspended = [x.search(url) for x in self.suspended_regex]
 
-            return not (any(suspended) or len(parked) >= 2)
+            return not (any(suspended) or len(parked) >= 2),
 
     def _is_ip(self, source_domain_or_ip):
         """
@@ -64,3 +73,6 @@ class Parked(object):
         """
         pattern = re.compile(r"((([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])[ (\[]?(\.|dot)[ )\]]?){3}[0-9]{1,3})")
         return pattern.match(source_domain_or_ip) is not None
+
+    def _get_content(self, url):
+        pass
