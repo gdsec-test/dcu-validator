@@ -3,6 +3,7 @@ import re
 from dns import resolver
 from netaddr.ip import all_matching_cidrs
 from validator_interface import ValidatorInterface
+from requests import sessions
 
 
 class ParkedValidator(ValidatorInterface):
@@ -38,9 +39,7 @@ class ParkedValidator(ValidatorInterface):
         Checks domain's IP Address against parkweb servers and falls back to check the page
         content and url against known park/landing page regexes
         returns either (False, 'parked') or (True, )
-        :param domain_name:
-        :param content:
-        :param url:
+        :param ticket:
         :return:
         """
 
@@ -60,7 +59,9 @@ class ParkedValidator(ValidatorInterface):
             self._logger.info('Matched {} for parked IP'.format(domain_name))
             return False, 'parked'
         else:
-            parked = filter(None, [x.search(content) for x in self.parked_regex])
+            with sessions.Session() as session:
+                check = session.request(method='GET', url=ticket.get('source'), timeout=60)
+            parked = filter(None, [x.search(check.content) for x in self.parked_regex])
             suspended = [x.search(url) for x in self.suspended_regex]
 
             return not (any(suspended) or len(parked) >= 2),
