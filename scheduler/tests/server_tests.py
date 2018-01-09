@@ -1,6 +1,6 @@
 from scheduler_service.server.service import Service
 from mock import MagicMock, patch
-from grpc_stub.schedule_service_pb2 import Request
+from scheduler_service.grpc_stub.schedule_service_pb2 import Request
 
 
 class TestScheduler:
