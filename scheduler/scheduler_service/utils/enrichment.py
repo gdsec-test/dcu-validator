@@ -33,7 +33,7 @@ def nutrition_label(hostname):
     elif dc == 'VPH':
         product = 'Open'
 
-    elif dc == 'Check VAT':
+    elif dc == 'vert':
         os = 'Check VAT'
         product = 'Open'
 
