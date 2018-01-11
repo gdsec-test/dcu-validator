@@ -38,7 +38,7 @@ class ParkedValidator(ValidatorInterface):
         """
         Checks domain's IP Address against parkweb servers and falls back to check the page
         content and url against known park/landing page regexes
-        returns either (False, 'not parked') or (True, )
+        returns either (True, ) or (False, 'not parked')
         :param ticket:
         :return:
         """
