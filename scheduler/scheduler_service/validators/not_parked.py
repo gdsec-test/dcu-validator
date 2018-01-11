@@ -77,4 +77,4 @@ class ParkedValidator(ValidatorInterface):
 
     def _get_content(self, url):
         with sessions.Session() as session:
-            return session.request(method='GET', url=url, timeout=60).text
+            return session.get(url=url, timeout=60).text
