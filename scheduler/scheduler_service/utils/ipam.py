@@ -44,7 +44,7 @@ class Ipam:
         ips = []
 
         # Make sure the object is a list, and contains a 'IPAddress' key.
-        if obj is not None and hasattr(obj, '__iter__') and 'IPAddress' in obj:
+        if obj and hasattr(obj, '__iter__') and 'IPAddress' in obj:
             # If the object is a list already, just return it.
             if isinstance(obj['IPAddress'], list):
                 ips = obj['IPAddress']
