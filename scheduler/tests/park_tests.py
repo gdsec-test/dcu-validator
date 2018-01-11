@@ -1,44 +1,46 @@
-from nose.tools import assert_true, assert_false
-from scheduler_service.validators.parked import Parked
+from nose.tools import assert_equal
+from mock import patch, MagicMock
+from ..scheduler_service.validators.not_parked import ParkedValidator
 
 
 class TestParked:
 
     def __init__(self):
-        self._park = Parked()
+        self._park = ParkedValidator()
 
-    def test_is_not_parked_regex(self):
-        domain = '160.153.77.227'
-        content = 'OMG, its a Future home of something quite cool!!!!1!!1!!! Coming Soon'
-        url = 'http://comicsn.beer/test.html'
+    @patch.object(ParkedValidator, '_get_content')
+    def test_is_parked_regex(self, _get_content):
 
-        result = self._park.is_not_parked(domain, content, url)
+        ticket = {'sourceDomainOrIp' : '160.153.77.227', 'source': 'http://comicsn.beer/test.html'}
+        _get_content.return_value = MagicMock(content='OMG, its a Future home of something quite cool!!!!1!!1!!! Coming Soon')
 
-        return assert_false(result)
+        result = self._park.validate_ticket(ticket)
 
-    def test_is_not_parked_suspended(self):
-        domain = '160.153.77.227'
-        content = ''
-        url = 'http://comicsn.beer/cgi-sys/suspendedpage.cgi'
+        return assert_equal(result, (False, 'parked'))
 
-        result = self._park.is_not_parked(domain, content, url)
+    @patch.object(ParkedValidator, '_get_content')
+    def test_is_parked_suspended(self, _get_content):
+        ticket = {'sourceDomainOrIp': '160.153.77.227', 'source': 'http://comicsn.beer/cgi-sys/suspendedpage.cgi'}
+        _get_content.return_value = MagicMock(content='')
 
-        return assert_false(result)
+        result = self._park.validate_ticket(ticket)
 
-    def test_is_not_parked_true(self):
-        domain = '160.153.77.227'
-        content = 'just a website'
-        url = 'http://comicsn.beer/index.php'
+        return assert_equal(result, (False, 'parked'))
 
-        result = self._park.is_not_parked(domain, content, url)
+    @patch.object(ParkedValidator, '_get_content')
+    def test_is_not_parked_true(self, _get_content):
+        ticket = {'sourceDomainOrIp': '160.153.77.227', 'source': 'http://comicsn.beer/index.php'}
+        _get_content.return_value = MagicMock(content='just a website')
 
-        return assert_true(result)
+        result = self._park.validate_ticket(ticket)
 
-    def test_is_not_parked_ip_ip(self):
-        domain = '184.168.221.47'
-        content = ''
-        url = '184.168.221.47/index.php'
+        return assert_equal(result, (True, ))
 
-        result = self._park.is_not_parked(domain, content, url)
+    @patch.object(ParkedValidator, '_get_content')
+    def test_is_parked_ip(self, _get_content):
+        ticket = {'sourceDomainOrIp': '184.168.221.47', 'source': '184.168.221.47/index.php'}
+        _get_content.return_value = MagicMock(content='')
 
-        return assert_false(result)
+        result = self._park.validate_ticket(ticket)
+
+        return assert_equal(result, (False, 'parked'))

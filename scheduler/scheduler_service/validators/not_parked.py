@@ -38,7 +38,7 @@ class ParkedValidator(ValidatorInterface):
         """
         Checks domain's IP Address against parkweb servers and falls back to check the page
         content and url against known park/landing page regexes
-        returns either (False, 'parked') or (True, )
+        returns either (False, 'not parked') or (True, )
         :param ticket:
         :return:
         """
@@ -59,12 +59,12 @@ class ParkedValidator(ValidatorInterface):
             self._logger.info('Matched {} for parked IP'.format(domain_name))
             return False, 'parked'
         else:
-            with sessions.Session() as session:
-                check = session.request(method='GET', url=ticket.get('source'), timeout=60)
-            parked = filter(None, [x.search(check.content) for x in self.parked_regex])
+            parked = filter(None, [x.search(content.content) for x in self.parked_regex])
             suspended = [x.search(url) for x in self.suspended_regex]
 
-            return not (any(suspended) or len(parked) >= 2),
+            if any(suspended) or len(parked) >= 2:
+                return False, 'parked'
+            return True,
 
     def _is_ip(self, source_domain_or_ip):
         """
@@ -76,4 +76,5 @@ class ParkedValidator(ValidatorInterface):
         return pattern.match(source_domain_or_ip) is not None
 
     def _get_content(self, url):
-        pass
+        with sessions.Session() as session:
+            return session.request(method='GET', url=url, timeout=60).text
