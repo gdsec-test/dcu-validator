@@ -10,7 +10,7 @@ def nutrition_label(hostname):
         os = hostname[4]
         os = os_finder(os)
 
-        if hostname[5] == 8:
+        if hostname[5] == '8':
             product = '4GH'
 
         elif hostname[5] == 'v' and hostname[7] == 'w':
@@ -20,7 +20,7 @@ def nutrition_label(hostname):
         else:
             product = product_finder(product)
 
-    elif dc == 'P3' and hostname[4] == 8:
+    elif dc == 'P3' and hostname[4] == '8':
         os = 'Windows'
         product = '2GH'
 
@@ -54,39 +54,19 @@ def nutrition_label(hostname):
 
 
 def dc_finder(dc):
-
-    if dc == 'p3':
-        return 'P3'
-
-    elif dc == 'n1':
-        return 'N1'
-
-    elif dc == 'p1':
-        return 'P1'
-
-    elif dc == 's2':
-        return 'S2'
-
-    elif dc == 'sg':
-        return 'SG2'
-
-    elif dc == 'a2':
-        return 'A2'
-
-    elif dc == 've':
-        return 'Check VAT'
-
-    elif dc == 'cn':
-        return 'DNS'
-
-    elif dc == 'vp':
-        return 'VPH'
-
-    elif dc == 'fw':
-        return 'Corp'
-
-    else:
-        return 'Failed'
+    result = {
+        'p3': 'P3',
+        'n1': 'N1',
+        'p1': 'P1',
+        's2': 'S2',
+        'sg': 'SG2',
+        'a2': 'A2',
+        've': 'vert',
+        'cn': 'DNS',
+        'vp': 'VPH',
+        'fw': 'Corp'
+    }.get(dc, 'Failed')
+    return result
 
 
 def os_finder(os):
