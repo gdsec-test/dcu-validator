@@ -14,7 +14,7 @@ class DedicatedIpValidator(ValidatorInterface):
     def validate_ticket(self, ticket):
         """
         Check IP to determine if Dedicated or shared hosting product
-        Returns either (True, ) or (False, 'Shared IP')
+        Returns either (True, ) or (False, 'shared ip')
         :param ticket:
         :return:
         """
