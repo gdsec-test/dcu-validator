@@ -1,7 +1,7 @@
 import logging
 from validator_interface import ValidatorInterface
-from scheduler.scheduler_service.utils.enrichment import nutrition_label
-from scheduler.scheduler_service.utils.ipam import Ipam
+from scheduler_service.utils.enrichment import nutrition_label
+from scheduler_service.utils.ipam import Ipam
 
 
 class DedicatedIpValidator(ValidatorInterface):
