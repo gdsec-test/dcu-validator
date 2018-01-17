@@ -16,9 +16,9 @@ def service_connect():
     return rest_service.grpc_stub.schedule_service_pb2_grpc.SchedulerStub(channel)
 
 
-def AddSchedule(ticketid, period):
+def AddSchedule(ticketid, period, close):
     stub = service_connect()
-    return stub.AddSchedule(Request(period=period, close=False, ticket=ticketid))
+    return stub.AddSchedule(Request(period=period, close=close, ticket=ticketid))
 
 
 def RemoveSchedule(ticketid):
@@ -26,9 +26,9 @@ def RemoveSchedule(ticketid):
     return stub.RemoveSchedule(Request(ticket=ticketid))
 
 
-def ValidateTicket(ticketid):
+def ValidateTicket(ticketid, close):
     stub = service_connect()
-    ret = stub.ValidateTicket(Request(ticket=ticketid))
+    ret = stub.ValidateTicket(Request(ticket=ticketid, close=close))
     return rest_service.grpc_stub.schedule_service_pb2.Result.Name(
         ret.result
     )
@@ -50,11 +50,19 @@ validator = api.model(
                 description='Close the ticket if validation fails')
     })
 
+options = api.model(
+    'Options', {
+        'close':
+            fields.Boolean(
+                default=True,
+                description='Close the ticket if validation fails')
+    })
+
 ticket_model = api.model(
     'Ticket', {
         'result':
             fields.String(
-                description='Result of the validation checks', enum=['VALID', 'INVALID', 'LOCKED'])
+                description='Result of the validation checks', enum=['VALID', 'INVALID', 'LOCKED']),
     })
 
 
@@ -63,11 +71,14 @@ ticket_model = api.model(
 class Validate(Resource):
 
     @api.marshal_with(ticket_model, 200)
-    def get(self, ticketid):
+    @api.expect(options)
+    def post(self, ticketid):
         """
         Validate a DCU ticket
         """
-        response = ValidateTicket(ticketid)
+        payload = request.json
+        close = payload.get('close', False)
+        response = ValidateTicket(ticketid, close)
         data = dict(result=response)
         return data, 200
 
@@ -85,7 +96,8 @@ class TicketScheduler(Resource):
         """
         payload = request.json
         period = payload.get('period')
-        AddSchedule(ticketid, period)
+        close = payload.get('close', False)
+        AddSchedule(ticketid, period, close)
         return '', 201
 
     @api.response(204, 'Schedule deleted')

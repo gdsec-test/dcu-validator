@@ -31,7 +31,7 @@ RUN for dep in dcdatabase; \
   do \
   pip install --compile "/tmp/private_deps/$dep"; \
 done
-
-RUN pip install --compile /tmp && rm -rf /tmp/*
+COPY certs/* /usr/local/share/ca-certificates/
+RUN update-ca-certificates && pip install --compile /tmp && rm -rf /tmp/*
 
 ENTRYPOINT ["/app/runserver.sh"]

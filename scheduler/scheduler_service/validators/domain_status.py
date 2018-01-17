@@ -1,4 +1,5 @@
 import logging
+import os
 import requests
 import json
 from validator_interface import ValidatorInterface
@@ -12,8 +13,9 @@ class DomainStatusValidator(ValidatorInterface):
     workable_states = ['ACTIVE', 'NO_DOMAIN_STATUS']
     handlers = ['PHISHING', 'MALWARE']
 
-    def __init__(self, endpoint):
+    def __init__(self):
         self._logger = logging.getLogger(__name__)
+        endpoint = os.getenv('DOMAIN_SERVICE') or 'domainservice:8080'
         domain_uri = 'http://{}/v1/domains'.format(endpoint)
         self._query_domain_endpoint = '{}/domaininfo'.format(domain_uri)
 

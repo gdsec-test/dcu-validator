@@ -59,7 +59,7 @@ class ParkedValidator(ValidatorInterface):
             self._logger.info('Matched {} for parked IP'.format(domain_name))
             return False, 'parked'
         else:
-            parked = filter(None, [x.search(content.content) for x in self.parked_regex])
+            parked = filter(None, [x.search(content) for x in self.parked_regex])
             suspended = [x.search(url) for x in self.suspended_regex]
 
             if any(suspended) or len(parked) >= 2:
