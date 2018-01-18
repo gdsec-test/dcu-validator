@@ -70,6 +70,8 @@ ticket_model = api.model(
 @api.doc(params={'ticketid': 'DCU Ticket ID'})
 class Validate(Resource):
 
+    @api.response(400, 'Validation Error')
+    @api.response(200, 'Success')
     @api.marshal_with(ticket_model, 200)
     @api.expect(options)
     def post(self, ticketid):
