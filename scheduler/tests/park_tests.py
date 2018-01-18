@@ -1,6 +1,6 @@
 from nose.tools import assert_equal
 from mock import patch, MagicMock
-from ..scheduler_service.validators.not_parked import ParkedValidator
+from scheduler_service.validators.not_parked import ParkedValidator
 
 
 class TestParked:

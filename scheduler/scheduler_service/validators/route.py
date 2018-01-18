@@ -1,6 +1,6 @@
 from validator_interface import ValidatorInterface
 from resolves import ResolvesValidator
-from parked import Parked
+from not_parked import ParkedValidator
 
 
 # Route tickets based on type

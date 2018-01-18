@@ -1,7 +1,7 @@
 from mock import patch, MagicMock
 from nose.tools import assert_true
 from requests.sessions import Session
-from ..scheduler_service.validators.resolves import ResolvesValidator
+from scheduler_service.validators.resolves import ResolvesValidator
 
 
 class TestResolvable:
