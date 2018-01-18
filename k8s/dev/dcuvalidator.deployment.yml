@@ -25,15 +25,6 @@ spec:
           env:
           - name: BUILD_DATE
             value: 'THIS_STRING_IS_REPLACED_DURING_BUILD'
-          - name: REDIS
-            value: phishnet-redis.abuse-api-dev.svc.cluster.local
-          - name: DB_PASS
-            valueFrom:
-              secretKeyRef:
-                name: db-validator
-                key: password
-          - name: ABUSE_API_UPDATE_URL
-            value: http://api.abuse-api-dev.svc.cluster.local:5000/v1/abuse/tickets
           - name: sysenv
             value: dev
           - name: scheduler
@@ -45,6 +36,8 @@ spec:
           env:
           - name: BUILD_DATE
             value: 'THIS_STRING_IS_REPLACED_DURING_BUILD'
+          - name: sysenv
+            value: dev
           - name: REDIS
             value: phishnet-redis.abuse-api-dev.svc.cluster.local
           - name: DB_PASS
@@ -52,8 +45,6 @@ spec:
               secretKeyRef:
                 name: db-validator
                 key: password
-          - name: ABUSE_API_UPDATE_URL
-            value: http://api.abuse-api-dev.svc.cluster.local:5000/v1/abuse/tickets
           - name: DB_USER
             value: devuser
           - name: DB_HOST
@@ -62,12 +53,22 @@ spec:
             value: devphishstory
           - name: COLLECTION
             value: incidents
-          - name: ABUSE_API_UPDATE_URL
+          - name: API_UPDATE_URL
             value: http://api.abuse-api-dev.svc.cluster.local:5000/v1/abuse/tickets
           - name: API_TOKEN
             valueFrom:
               secretKeyRef:
-                name: validator-token
+                name: api-token
                 key: token
-          - name: sysenv
-            value: dev
+          - name: SMDB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: smdb-validator
+                key: username
+          - name: SMDB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: smdb-validator
+                key: password
+          - name: DOMAIN_SERVICE
+            value: domainservice.abuse-api-dev.svc.cluster.local:9000
