@@ -6,7 +6,7 @@ from scheduler_service.utils.ipam import Ipam
 
 class DedicatedIpValidator(ValidatorInterface):
 
-    handlers = ['NETABUSE']
+    handlers = ['NETWORK_ABUSE']
 
     def __init__(self):
         self._logger = logging.getLogger(__name__)

@@ -1,6 +1,8 @@
 from validator_interface import ValidatorInterface
 from resolves import ResolvesValidator
 from not_parked import ParkedValidator
+from domain_status import DomainStatusValidator
+from dedicated_ip import DedicatedIpValidator
 
 
 # Route tickets based on type

@@ -108,7 +108,7 @@ class Service(SchedulerServicer):
                 seconds=int(period),
                 args=[
                     ticketid,
-                    dict(period=period, close=request.period, ticket=ticketid)
+                    dict(period=period, close=request.close, ticket=ticketid)
                 ],
                 id=ticketid)
         return Response()
@@ -123,6 +123,6 @@ class Service(SchedulerServicer):
 
     def ValidateTicket(self, request, context):
         self._logger.info("Validating {}".format(request))
-        res = validate(request.ticket)
+        res = validate(request.ticket, dict(close=request.close))
         return ValidationResponse(
             result=res)
