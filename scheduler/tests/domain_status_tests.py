@@ -11,7 +11,7 @@ class TestDomainStatus:
     _ticket = {'sourceDomainOrIp': 'dmvsuspension.com', 'number': '123'}
 
     def setUp(self):
-        self._domain_status = DomainStatusValidator('domain-service-end-point')
+        self._domain_status = DomainStatusValidator()
 
     @patch.object(Session, 'request')
     def test_validate_ticket_true_404(self, request):
