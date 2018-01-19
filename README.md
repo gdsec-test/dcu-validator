@@ -64,9 +64,14 @@ Delete schedule
 curl -XDELETE -H 'Content-Type: application/json' -v http://localhost:5000/validator/schedule/12345
 ```
 
-One time validation
+One time validation (keep open)
 ```
-curl -X GET --header 'Accept: application/json' 'http://localhost:5000/validator/validate/12345'
+curl -XPOST -H 'Content-Type: application/json' -v http://localhost:5000/validator/validate/12345 -d '{"close":false}'
+```
+
+One time validation (close if invalid)
+```
+curl -XPOST -H 'Content-Type: application/json' -v http://localhost:5000/validator/validate/12345 -d '{"close":true}'
 ```
 
 ## Testing
