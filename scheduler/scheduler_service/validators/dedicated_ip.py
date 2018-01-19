@@ -19,12 +19,14 @@ class DedicatedIpValidator(ValidatorInterface):
         :return:
         """
 
-        ipam = Ipam()
-        data = ipam.get_properties_for_ip(ticket.get('sourceDomainOrIp'))
-
-        if data.HostName:
-
-            if nutrition_label(data.HostName)[2] == 'Open':
-                return True,
-
-            return False, 'shared ip'
+        try:
+            ipam = Ipam()
+            ip = ticket.get('sourceDomainOrIp')
+            data = ipam.get_properties_for_ip(ticket.get(ip))
+            if data.HostName:
+                if nutrition_label(data.HostName)[2] == 'Open':
+                    return True,
+                return False, 'shared ip'
+        except Exception as e:
+            self._logger.error("Unable to determine if {} is dedicated ip:{}".format(ip, e))
+        return True,
