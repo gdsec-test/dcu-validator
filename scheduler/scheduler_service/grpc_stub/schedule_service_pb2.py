@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='schedule_service.proto',
   package='scheduler',
   syntax='proto3',
-  serialized_pb=_b('\n\x16schedule_service.proto\x12\tscheduler\"8\n\x07Request\x12\x0e\n\x06ticket\x18\x01 \x01(\t\x12\r\n\x05\x63lose\x18\x02 \x01(\x08\x12\x0e\n\x06period\x18\x03 \x01(\x05\"\n\n\x08Response\"7\n\x12ValidationResponse\x12!\n\x06result\x18\x01 \x01(\x0e\x32\x11.scheduler.Result*,\n\x06Result\x12\t\n\x05VALID\x10\x00\x12\x0b\n\x07INVALID\x10\x01\x12\n\n\x06LOCKED\x10\x02\x32\xc9\x01\n\tScheduler\x12\x38\n\x0b\x41\x64\x64Schedule\x12\x12.scheduler.Request\x1a\x13.scheduler.Response\"\x00\x12;\n\x0eRemoveSchedule\x12\x12.scheduler.Request\x1a\x13.scheduler.Response\"\x00\x12\x45\n\x0eValidateTicket\x12\x12.scheduler.Request\x1a\x1d.scheduler.ValidationResponse\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\x16schedule_service.proto\x12\tscheduler\"8\n\x07Request\x12\x0e\n\x06ticket\x18\x01 \x01(\t\x12\r\n\x05\x63lose\x18\x02 \x01(\x08\x12\x0e\n\x06period\x18\x03 \x01(\x05\"\n\n\x08Response\"G\n\x12ValidationResponse\x12!\n\x06result\x18\x01 \x01(\x0e\x32\x11.scheduler.Result\x12\x0e\n\x06reason\x18\x02 \x01(\t*,\n\x06Result\x12\t\n\x05VALID\x10\x00\x12\x0b\n\x07INVALID\x10\x01\x12\n\n\x06LOCKED\x10\x02\x32\xc9\x01\n\tScheduler\x12\x38\n\x0b\x41\x64\x64Schedule\x12\x12.scheduler.Request\x1a\x13.scheduler.Response\"\x00\x12;\n\x0eRemoveSchedule\x12\x12.scheduler.Request\x1a\x13.scheduler.Response\"\x00\x12\x45\n\x0eValidateTicket\x12\x12.scheduler.Request\x1a\x1d.scheduler.ValidationResponse\"\x00\x62\x06proto3')
 )
 
 _RESULT = _descriptor.EnumDescriptor(
@@ -44,8 +44,8 @@ _RESULT = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=164,
-  serialized_end=208,
+  serialized_start=180,
+  serialized_end=224,
 )
 _sym_db.RegisterEnumDescriptor(_RESULT)
 
@@ -139,6 +139,13 @@ _VALIDATIONRESPONSE = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
+    _descriptor.FieldDescriptor(
+      name='reason', full_name='scheduler.ValidationResponse.reason', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
   ],
   extensions=[
   ],
@@ -152,7 +159,7 @@ _VALIDATIONRESPONSE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=107,
-  serialized_end=162,
+  serialized_end=178,
 )
 
 _VALIDATIONRESPONSE.fields_by_name['result'].enum_type = _RESULT
@@ -191,8 +198,8 @@ _SCHEDULER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   options=None,
-  serialized_start=211,
-  serialized_end=412,
+  serialized_start=227,
+  serialized_end=428,
   methods=[
   _descriptor.MethodDescriptor(
     name='AddSchedule',
