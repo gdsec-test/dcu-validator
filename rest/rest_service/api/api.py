@@ -66,7 +66,7 @@ ticket_model = api.model(
                 description='Result of the validation checks', enum=['VALID', 'INVALID', 'LOCKED']),
         'reason':
             fields.String(
-                description='Reason ticket is INVALID'
+                description='Reason for the given result'
             )
     })
 
