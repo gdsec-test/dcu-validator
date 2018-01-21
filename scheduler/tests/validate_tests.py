@@ -13,11 +13,12 @@ class TestValidate:
     @patch('scheduler_service.server.service.phishstory_db')
     @patch('scheduler_service.validators.route.route')
     def test_valid(self, route, phishstory, redlock):
-        route.return_value = (True,)
+        route.return_value = (True, 'alls well')
         ticket_data = dict(phishstory_status='OPEN')
         redlock.return_value = MagicMock(spec=RedLockFactory, acquire=lambda: True, create_lock=lambda x: True, release=lambda: True)
         phishstory.return_value = MagicMock(get_incident=lambda x: ticket_data)
-        assert(validate('12345') is 0)
+        res = validate('12345')
+        assert(res[0] is 0)
 
     @patch('scheduler_service.server.service.get_redlock')
     @patch('scheduler_service.server.service.phishstory_db')
@@ -27,7 +28,8 @@ class TestValidate:
         scheduler.return_value = MagicMock(remove_job=lambda x: True)
         redlock.return_value = MagicMock(spec=RedLockFactory, create_lock=lambda x: True)
         phishstory.return_value = MagicMock(get_incident=lambda x: ticket_data)
-        assert(validate('12345') is 1)
+        res = validate('12345')
+        assert(res[0] is 1)
 
     @patch.object(APIHelper, 'close_incident')
     @patch('scheduler_service.server.service.get_redlock')
@@ -35,10 +37,11 @@ class TestValidate:
     @patch('scheduler_service.server.service.get_scheduler')
     @patch('scheduler_service.server.service.route')
     def test_invalid(self, route, scheduler, phishstory, redlock, apihelper):
-        route.return_value = (False,)
+        route.return_value = (False, 'unresolvable')
         scheduler.return_value = MagicMock(remove_job=lambda x: True)
         ticket_data = dict(phishstory_status='OPEN')
         phishstory.return_value = MagicMock(get_incident=lambda x: ticket_data)
         apihelper.return_value = True
         redlock.return_value = MagicMock(spec=RedLockFactory, acquire=lambda: True, create_lock=lambda x: True, release=lambda: True)
-        assert(validate('12345') is 1)
+        res = validate('12345')
+        assert(res[0] is 1)
