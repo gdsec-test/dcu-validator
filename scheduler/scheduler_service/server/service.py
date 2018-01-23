@@ -47,7 +47,7 @@ def validate(ticket, data=None):
                 lock.release()
         else:
             return (LOCKED, 'being worked')
-    return (VALID, 'alls well')
+    return (VALID, '')
 
 
 def remove_job(ticket):
