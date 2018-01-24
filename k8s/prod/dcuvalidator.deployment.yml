@@ -21,7 +21,7 @@ spec:
         -
           name: "validator-rest"
           imagePullPolicy: "Always"
-          image: "artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-api:prod"
+          image: "artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-api:REPLACE_WITH_GIT_COMMIT"
           env:
           - name: BUILD_DATE
             value: 'THIS_STRING_IS_REPLACED_DURING_BUILD'
@@ -32,7 +32,7 @@ spec:
         -
           name: "validator-scheduler"
           imagePullPolicy: "Always"
-          image: "artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-scheduler:prod"
+          image: "artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-scheduler:REPLACE_WITH_GIT_COMMIT"
           env:
           - name: BUILD_DATE
             value: 'THIS_STRING_IS_REPLACED_DURING_BUILD'
