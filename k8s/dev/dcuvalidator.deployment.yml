@@ -71,4 +71,4 @@ spec:
                 name: smdb-validator
                 key: password
           - name: DOMAIN_SERVICE
-            value: domainservice.abuse-api-dev.svc.cluster.local:9000
+            value: domainservice-rest.abuse-api-dev.svc.cluster.local:8080

@@ -21,7 +21,7 @@ class APIHelper:
         :return True on success, false otherwise:
         """
 
-        payload = {"closed": "true", "close_reason:": reason}
+        payload = {"closed": "true", "close_reason": reason}
         data = False
         try:
             r = requests.patch(
