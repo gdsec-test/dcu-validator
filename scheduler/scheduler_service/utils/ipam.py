@@ -21,6 +21,7 @@ class Ipam:
     smdbUrls = {
         'dev': 'https://smdb.int.dev-godaddy.com/IPService/ipam.asmx?WSDL',
         'test': 'https://smdb.test.intranet.gdg/ipservice/ipam.asmx?WSDL',
+        'ote': 'https://smdb.int.godaddy.com/IPService/ipam.asmx?WSDL',
         'prod': 'https://smdb.int.godaddy.com/IPService/ipam.asmx?WSDL'
     }
 

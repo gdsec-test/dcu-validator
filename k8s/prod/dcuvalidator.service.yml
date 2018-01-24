@@ -12,7 +12,7 @@
     ports:
       -
         name: "validator"
-        port: 80
+        port: 5000
         targetPort: 5000
     selector:
       app: "validator"

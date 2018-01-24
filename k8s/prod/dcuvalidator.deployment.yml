@@ -19,18 +19,12 @@ spec:
           name: "k8s-artifactory-creds"
       containers:
         -
-          name: "debug"
-          imagePullPolicy: "Always"
-          image: "artifactory.secureserver.net:10014/docker-dcu-local/debug:latest"
-        -
           name: "validator-rest"
           imagePullPolicy: "Always"
-          image: "artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-api:REPLACE_WITH_GIT_COMMIT"
+          image: "artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-api:prod"
           env:
           - name: BUILD_DATE
             value: 'THIS_STRING_IS_REPLACED_DURING_BUILD'
-          - name: REDIS
-            value: phishnet-redis.abuse-api-prod.svc.cluster.local
           - name: sysenv
             value: prod
           - name: scheduler
@@ -38,10 +32,12 @@ spec:
         -
           name: "validator-scheduler"
           imagePullPolicy: "Always"
-          image: "artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-scheduler:REPLACE_WITH_GIT_COMMIT"
+          image: "artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-scheduler:prod"
           env:
           - name: BUILD_DATE
             value: 'THIS_STRING_IS_REPLACED_DURING_BUILD'
+          - name: sysenv
+            value: prod
           - name: REDIS
             value: phishnet-redis.abuse-api-prod.svc.cluster.local
           - name: DB_PASS
@@ -49,22 +45,30 @@ spec:
               secretKeyRef:
                 name: db-validator
                 key: password
-          - name: ABUSE_API_UPDATE_URL
-            value: http://api.abuse-api-prod.svc.cluster.local:5000/v1/abuse/tickets
           - name: DB_USER
             value: sau_p_phish
           - name: DB_HOST
-            value: 10.22.9.209:27017
+            value: 10.22.9.209
           - name: DB
             value: phishstory
           - name: COLLECTION
             value: incidents
-          - name: ABUSE_API_UPDATE_URL
+          - name: API_UPDATE_URL
             value: http://api.abuse-api-prod.svc.cluster.local:5000/v1/abuse/tickets
           - name: API_TOKEN
             valueFrom:
               secretKeyRef:
-                name: validator-token
+                name: api-token
                 key: token
-          - name: sysenv
-            value: prod
+          - name: SMDB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: smdb-validator
+                key: username
+          - name: SMDB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: smdb-validator
+                key: password
+          - name: DOMAIN_SERVICE
+            value: domainservice-rest.abuse-api-prod.svc.cluster.local:8080
