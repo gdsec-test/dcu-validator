@@ -22,7 +22,7 @@ class TestScheduler:
 
     @patch('scheduler_service.server.service.validate')
     def test_validate_ticket(self, validate):
-        validate.return_value = 0
+        validate.return_value = (0, 'blah')
         service = Service(MagicMock())
         request = Request(ticket='12345')
         resp = service.ValidateTicket(request, None)

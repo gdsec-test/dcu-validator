@@ -28,7 +28,7 @@ def validate(ticket, data=None):
 
     if ticket_data is None or ticket_data.get('phishstory_status', 'OPEN') == 'CLOSED':
         remove_job(ticket)
-        return INVALID
+        return (INVALID, 'unworkable')
     else:
         if lock.acquire():
             try:
@@ -40,14 +40,14 @@ def validate(ticket, data=None):
                         if not APIHelper().close_incident(ticket, resp[1]):
                             LOGGER.error('Unable to close ticket {}'.format(ticket))
                     remove_job(ticket)
-                    return INVALID
+                    return (INVALID, resp[1])
             except Exception as e:
                 LOGGER.error('Unable to validate {}:{}'.format(ticket, e))
             finally:
                 lock.release()
         else:
-            return LOCKED
-    return VALID
+            return (LOCKED, 'being worked')
+    return (VALID, '')
 
 
 def remove_job(ticket):
@@ -125,4 +125,5 @@ class Service(SchedulerServicer):
         self._logger.info("Validating {}".format(request))
         res = validate(request.ticket, dict(close=request.close))
         return ValidationResponse(
-            result=res)
+            result=res[0],
+            reason=res[1])

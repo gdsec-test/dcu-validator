@@ -29,8 +29,9 @@ def RemoveSchedule(ticketid):
 def ValidateTicket(ticketid, close):
     stub = service_connect()
     ret = stub.ValidateTicket(Request(ticket=ticketid, close=close))
-    return rest_service.grpc_stub.schedule_service_pb2.Result.Name(
-        ret.result
+    return dict(result=rest_service.grpc_stub.schedule_service_pb2.Result.Name(
+        ret.result),
+        reason=ret.reason
     )
 
 
@@ -63,6 +64,10 @@ ticket_model = api.model(
         'result':
             fields.String(
                 description='Result of the validation checks', enum=['VALID', 'INVALID', 'LOCKED']),
+        'reason':
+            fields.String(
+                description='Reason for the given result'
+            )
     })
 
 
@@ -71,7 +76,7 @@ ticket_model = api.model(
 class Validate(Resource):
 
     @api.response(400, 'Validation Error')
-    @api.response(200, 'Success')
+    @api.response(200, 'Success', model=ticket_model)
     @api.marshal_with(ticket_model, 200)
     @api.expect(options)
     def post(self, ticketid):
@@ -81,8 +86,7 @@ class Validate(Resource):
         payload = request.json
         close = payload.get('close', False)
         response = ValidateTicket(ticketid, close)
-        data = dict(result=response)
-        return data, 200
+        return response, 200
 
 
 @api.route('/schedule/<string:ticketid>', endpoint='scheduler')
