@@ -16,12 +16,12 @@ spec:
     spec:
       imagePullSecrets:
         -
-          name: "k8s-artifactory-creds"
+          name: "dcu-artifactory-creds"
       containers:
         -
           name: "validator-rest"
           imagePullPolicy: "Always"
-          image: "artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-api:ote"
+          image: "docker-dcu-local.artifactory.secureserver.net/dcu-validator-api:ote"
           env:
           - name: BUILD_DATE
             value: 'THIS_STRING_IS_REPLACED_DURING_BUILD'
@@ -32,7 +32,7 @@ spec:
         -
           name: "validator-scheduler"
           imagePullPolicy: "Always"
-          image: "artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-scheduler:ote"
+          image: "docker-dcu-local.artifactory.secureserver.net/dcu-validator-scheduler:ote"
           env:
           - name: BUILD_DATE
             value: 'THIS_STRING_IS_REPLACED_DURING_BUILD'

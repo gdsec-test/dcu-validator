@@ -1,12 +1,12 @@
 BUILDNAME=ITSecurity/dcu-validator
-DOCKERREPO=artifactory.secureserver.net:10014
+DOCKERREPO=docker-dcu-local.artifactory.secureserver.net
 BUILDROOT=$(HOME)/dockerbuild/$(BUILDNAME)
 DATE=$(shell date)
 GIT_COMMIT=
 BUILD_BRANCH=origin/master
 SHELL=/bin/bash
-API_IMAGE=$(DOCKERREPO)/docker-dcu-local/dcu-validator-api
-SCHEDULER_IMAGE=$(DOCKERREPO)/docker-dcu-local/dcu-validator-scheduler
+API_IMAGE=$(DOCKERREPO)/dcu-validator-api
+SCHEDULER_IMAGE=$(DOCKERREPO)/dcu-validator-scheduler
 
 .PHONY: prep dev stage ote prod clean dev-deploy ote-deploy prod-deploy
 
