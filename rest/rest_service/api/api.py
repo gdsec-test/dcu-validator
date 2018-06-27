@@ -42,7 +42,7 @@ validator = api.model(
         'period':
             fields.Integer(
                 min=300,
-                max=86400,
+                max=90000,
                 default=86400,
                 description='The period to validate a ticket'),
         'close':
