@@ -1,6 +1,7 @@
 import os
 from collections import namedtuple
 
+
 def create_db_settings():
     db_user = os.getenv('DB_USER') or ''
     db_pass = os.getenv('DB_PASS') or ''

@@ -1,5 +1,6 @@
-from scheduler_service.schedulers.aps import APS
 from apscheduler.schedulers.background import BackgroundScheduler
+
+from scheduler_service.schedulers.aps import APS
 
 
 class TestAPS:

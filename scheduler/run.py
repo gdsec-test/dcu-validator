@@ -1,10 +1,12 @@
 import logging
 import logging.config
-from concurrent import futures
-import time
 import os
+import time
+from concurrent import futures
+
 import grpc
 import yaml
+
 import scheduler_service.grpc_stub.schedule_service_pb2
 import scheduler_service.grpc_stub.schedule_service_pb2_grpc
 from scheduler_service.schedulers.aps import APS

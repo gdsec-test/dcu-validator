@@ -1,6 +1,7 @@
+from mock import MagicMock, patch
+from nose.tools import assert_false, assert_true
+
 from scheduler_service.utils.api_helper import APIHelper
-from mock import patch, MagicMock
-from nose.tools import assert_true, assert_false
 
 
 class TestAPIHelper:
@@ -14,4 +15,3 @@ class TestAPIHelper:
     def test_bad_close_incident(self, mock):
         mock.return_value = MagicMock(status_code=500)
         assert_false(APIHelper().close_incident('123', 'some reason'))
-

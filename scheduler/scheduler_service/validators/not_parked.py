@@ -1,9 +1,11 @@
 import logging
 import re
+
 from dns import resolver
 from netaddr.ip import all_matching_cidrs
-from validator_interface import ValidatorInterface
 from requests import sessions
+
+from validator_interface import ValidatorInterface
 
 
 class ParkedValidator(ValidatorInterface):

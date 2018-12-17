@@ -1,9 +1,7 @@
-from scheduler_service.server.service import validate, phishstory_db, get_redlock
-from scheduler_service.schedulers.aps import APS
-import scheduler_service.validators.route
-from apscheduler.schedulers.background import BackgroundScheduler
+from mock import MagicMock, patch
 from redlock import RedLockFactory
-from mock import patch, MagicMock
+
+from scheduler_service.server.service import validate
 from scheduler_service.utils.api_helper import APIHelper
 
 

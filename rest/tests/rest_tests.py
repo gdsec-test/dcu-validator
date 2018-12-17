@@ -1,9 +1,10 @@
-import rest_service.api
-from flask import url_for
-from mock import patch
-from flask_testing.utils import TestCase
-from collections import namedtuple
 import json
+
+from flask import url_for
+from flask_testing.utils import TestCase
+from mock import patch
+
+import rest_service.api
 
 
 class TestValidator(TestCase):

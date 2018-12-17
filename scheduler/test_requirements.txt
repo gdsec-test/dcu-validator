@@ -1,3 +1,5 @@
 coverage
 mock
 nose
+flake8
+isort

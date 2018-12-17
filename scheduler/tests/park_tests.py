@@ -1,5 +1,6 @@
+from mock import patch
 from nose.tools import assert_equal
-from mock import patch, MagicMock
+
 from scheduler_service.validators.not_parked import ParkedValidator
 
 
@@ -11,7 +12,7 @@ class TestParked:
     @patch.object(ParkedValidator, '_get_content')
     def test_is_parked_regex(self, _get_content):
 
-        ticket = {'sourceDomainOrIp' : '160.153.77.227', 'source': 'http://comicsn.beer/test.html'}
+        ticket = {'sourceDomainOrIp': '160.153.77.227', 'source': 'http://comicsn.beer/test.html'}
         _get_content.return_value = 'OMG, its a Future home of something quite cool!!!!1!!1!!! Coming Soon'
 
         result = self._park.validate_ticket(ticket)

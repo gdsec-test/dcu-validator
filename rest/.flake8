@@ -1,0 +1,7 @@
+[flake8]
+# E501 line too long
+ignore = E501
+exclude =
+    # Don't check proto generated files as these shouldn't be edited
+    rest_service/grpc_stub/schedule_service_pb2.py,
+    rest_service/grpc_stub/schedule_service_pb2_grpc.py

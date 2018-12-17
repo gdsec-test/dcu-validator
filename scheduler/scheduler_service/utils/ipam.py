@@ -1,8 +1,9 @@
+import os
+from urllib2 import URLError
+
 from suds import WebFault
 from suds.client import Client
 from suds.transport.https import WindowsHttpAuthenticated
-from urllib2 import URLError
-import os
 
 
 # This class calls into the IPAM SOAP Service to retrieve and modify IP data.

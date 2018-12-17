@@ -6,7 +6,25 @@ PRIVDEPS="git@github.secureserver.net:ITSecurity/dcdatabase.git"
 
 .PHONY: prep build
 
-all: prep build
+all: env
+
+env:
+	pip install -r test_requirements.txt
+	pip install -r private_pips.txt
+	pip install -r requirements.txt
+
+.PHONY: flake8
+flake8:
+	@echo "----- Running linter -----"
+	flake8 --config ./.flake8 .
+
+.PHONY: isort
+isort:
+	@echo "----- Optimizing imports -----"
+	isort -rc --atomic --skip scheduler_service/grpc_stub .
+
+.PHONY: tools
+tools: flake8 isort
 
 
 prep:
@@ -28,3 +46,4 @@ build: prep
 clean:
 	@echo "----- cleaning $(BUILDROOT) -----"
 	rm -rf $(BUILDROOT)
+	

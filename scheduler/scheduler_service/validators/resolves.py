@@ -1,6 +1,8 @@
 import logging
+
 from requests import sessions
 from requests.exceptions import ConnectionError
+
 from validator_interface import ValidatorInterface
 
 

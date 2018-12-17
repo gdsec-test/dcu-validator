@@ -2,3 +2,5 @@ nose
 mock
 flask_testing
 coverage
+flake8
+isort

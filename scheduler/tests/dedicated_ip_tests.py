@@ -1,6 +1,7 @@
+from mock import MagicMock, patch
 from nose.tools import assert_equal
+
 from scheduler_service.validators.dedicated_ip import DedicatedIpValidator
-from mock import patch, MagicMock
 
 
 class TestDedicated:

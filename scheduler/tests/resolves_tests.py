@@ -1,6 +1,7 @@
-from mock import patch, MagicMock
+from mock import MagicMock, patch
 from nose.tools import assert_true
 from requests.sessions import Session
+
 from scheduler_service.validators.resolves import ResolvesValidator
 
 

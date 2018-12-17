@@ -1,13 +1,18 @@
 import logging
 import os
-from scheduler_service.grpc_stub.schedule_service_pb2_grpc import SchedulerServicer
-from scheduler_service.grpc_stub.schedule_service_pb2 import Response, ValidationResponse, INVALID, VALID, LOCKED
+
+from dcdatabase.phishstorymongo import PhishstoryMongo
+
+from scheduler_service.grpc_stub.schedule_service_pb2 import (INVALID, LOCKED,
+                                                              VALID, Response,
+                                                              ValidationResponse)
+from scheduler_service.grpc_stub.schedule_service_pb2_grpc import \
+    SchedulerServicer
 from scheduler_service.schedulers.aps import APS
+from scheduler_service.utils.api_helper import APIHelper
 from scheduler_service.utils.db_settings import create_db_settings
 from scheduler_service.utils.lock import Lock
 from scheduler_service.validators.route import route
-from scheduler_service.utils.api_helper import APIHelper
-from dcdatabase.phishstorymongo import PhishstoryMongo
 
 LOGGER = logging.getLogger(__name__)
 TTL = os.getenv('TTL') or 300

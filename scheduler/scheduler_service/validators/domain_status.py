@@ -1,7 +1,9 @@
+import json
 import logging
 import os
+
 import requests
-import json
+
 from validator_interface import ValidatorInterface
 
 

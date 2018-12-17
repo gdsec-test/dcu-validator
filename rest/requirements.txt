@@ -2,3 +2,4 @@ flask-restplus
 pyaml
 grpcio
 uwsgi
+protobuf

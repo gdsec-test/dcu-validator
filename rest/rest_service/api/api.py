@@ -1,10 +1,12 @@
 import logging
-from flask import request
-from flask_restplus import Namespace, fields, Resource
-from rest_service.grpc_stub.schedule_service_pb2 import Request
-import rest_service.grpc_stub.schedule_service_pb2_grpc
 import os
+
 import grpc
+from flask import request
+from flask_restplus import Namespace, Resource, fields
+
+import rest_service.grpc_stub.schedule_service_pb2_grpc
+from rest_service.grpc_stub.schedule_service_pb2 import Request
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

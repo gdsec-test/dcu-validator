@@ -1,6 +1,9 @@
 import os
-from singleton import Singleton
+
 from redlock import RedLockFactory
+
+from singleton import Singleton
+
 
 class Lock:
     __metaclass__ = Singleton

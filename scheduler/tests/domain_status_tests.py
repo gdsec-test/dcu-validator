@@ -1,8 +1,9 @@
-from nose.tools import assert_true
-from scheduler_service.validators.domain_status import DomainStatusValidator
-from mock import patch
-from requests.sessions import Session
 import requests
+from mock import patch
+from nose.tools import assert_true
+from requests.sessions import Session
+
+from scheduler_service.validators.domain_status import DomainStatusValidator
 
 
 class TestDomainStatus:

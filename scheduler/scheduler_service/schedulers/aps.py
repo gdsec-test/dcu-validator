@@ -1,11 +1,11 @@
-import os
 import pymongo
-from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.executors.pool import ProcessPoolExecutor
 from apscheduler.jobstores.mongodb import MongoDBJobStore
-from scheduler_service.utils.singleton import Singleton
-from scheduler_service.utils.db_settings import create_db_settings
+from apscheduler.schedulers.background import BackgroundScheduler
 from pytz import utc
+
+from scheduler_service.utils.db_settings import create_db_settings
+from scheduler_service.utils.singleton import Singleton
 
 
 class APS:
