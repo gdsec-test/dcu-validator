@@ -6,7 +6,7 @@ PRIVDEPS="git@github.secureserver.net:ITSecurity/dcdatabase.git"
 
 .PHONY: prep build
 
-all: env
+all: build
 
 env:
 	pip install -r test_requirements.txt
