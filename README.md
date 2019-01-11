@@ -9,35 +9,46 @@ To clone the repository via SSH perform the following
 ```
 git clone https://github.secureserver.net/ITSecurity/dcu-validator.git
 ```
-It is recommended that you clone this project into a pyvirtualenv or equivalent virtual enviornment.
+It is recommended that you clone this project into a pyvirtualenv or equivalent virtual environment.
 
 ## Installing Dependencies
-You can install the required private dependencies for each component via:
-```
-pip install -r private_pips.txt
-```
-You may also manually pip install private pips using this command:
-```
-pip install git+ssh://git@github.secureserver.net/{orgname}/{reponame}.git
-```
-You can install the required dependencies for each component via
-```
-pip install -r requirements.txt
-```
+To install all dependencies for development and testing simply run `make` from the parent or sub-project levels.
 
 ## Building
-Building a local Docker image for the respective development environments can be achieved with the following commands:
+Building a local Docker image for the respective development environments can be achieved with the following commands from the parent level only:
 
 `make [dev, ote, prod]`
 
+*Important Note: `pip install grpcio-tools==1.14.0` must be performed separately from above `make` instructions
+
 ## Deploying
 Deploying the Docker image to Kubernetes can be achieved with the
-following commands:
+following commands from the parent level only:
 
 `make [dev-deploy, ote-deploy, prod-deploy]`
 
 You must also ensure you have the proper push permissions to
 Artifactory or you may experience a Forbidden message.
+
+
+## Testing (can be performed from parent and sub-project levels)
+```
+make test     # runs all unit tests
+make testcov  # runs tests with coverage
+```
+
+## Style and Standards
+All deploys must pass Flake8 linting and all unit tests which are baked into the [Makefile](Makfile).
+
+There are a few commands that might be useful to ensure consistent Python style:
+
+```
+make flake8  # Runs the Flake8 linter
+make isort   # Sorts all imports
+make tools   # Runs both Flake8 and isort
+```
+
+These can be performed from parent and sub-project levels.
 
 ## Documentation
 Swaggar documentation can be found at
@@ -73,19 +84,6 @@ One time validation (close if invalid)
 ```
 curl -XPOST -H 'Content-Type: application/json' -v http://localhost:5000/validator/validate/12345 -d '{"close":true}'
 ```
-
-## Testing
-In order to run the tests you must first install the required dependencies for each component via
-```
-pip install -r test_requirements.txt
-```
-
-After this you may run the tests via
-```
-nosetests -w rest/tests/ --cover-package=rest_service
-nosetests -w scheduler/tests/ --cover-package=scheduler_service
-```
-Optionally, you may provide the flag `--with-coverage` to `nosetests` to determine the test coverage of this project.
 
 ## Running Locally
 TODO

@@ -6,7 +6,7 @@ PRIVDEPS="git@github.secureserver.net:ITSecurity/dcdatabase.git"
 
 .PHONY: prep build
 
-all: build
+all: env
 
 env:
 	pip install -r test_requirements.txt
@@ -26,6 +26,15 @@ isort:
 .PHONY: tools
 tools: flake8 isort
 
+.PHONY: test
+test:
+	@echo "----- Running tests -----"
+	nosetests tests
+
+.PHONY: testcov
+testcov:
+	@echo "----- Running tests with coverage -----"
+	nosetests tests --with-coverage --cover-erase --cover-package=scheduler_service
 
 prep:
 	@echo "----- preparing $(IMAGE) build -----"

@@ -12,8 +12,31 @@ SCHEDULER_IMAGE=$(DOCKERREPO)/dcu-validator-scheduler
 
 all: prep dev
 
+.PHONY: flake8
+flake8:
+	cd rest && $(MAKE) flake8
+	cd scheduler && $(MAKE) flake8
 
-prep:
+.PHONY: isort
+isort:
+	cd rest && $(MAKE) isort
+	cd scheduler && $(MAKE) isort
+
+.PHONY: tools
+tools: flake8 isort
+
+.PHONY: test
+test:
+	cd rest && $(MAKE) test
+	cd scheduler && $(MAKE) test
+
+.PHONY: testcov
+testcov:
+	cd rest && $(MAKE) testcov
+	cd scheduler && $(MAKE) testcov
+
+.PHONY: prep
+prep: tools test
 	@echo "----- preparing $(BUILDNAME) build -----"
 	mkdir -p $(BUILDROOT)/k8s && rm -rf $(BUILDROOT)/k8s/*
 	# copy k8s configs to BUILDROOT
@@ -29,21 +52,21 @@ prod: prep
 	$(eval GIT_COMMIT:=$(shell git rev-parse --short HEAD))
 	sed -ie 's/THIS_STRING_IS_REPLACED_DURING_BUILD/$(DATE)/' $(BUILDROOT)/k8s/prod/dcuvalidator.deployment.yml
 	sed -ie 's/REPLACE_WITH_GIT_COMMIT/$(GIT_COMMIT)/' $(BUILDROOT)/k8s/prod/dcuvalidator.deployment.yml
-	cd rest && $(MAKE) TAG=$(GIT_COMMIT) IMAGE=$(API_IMAGE)
-	cd scheduler && $(MAKE) TAG=$(GIT_COMMIT) IMAGE=$(SCHEDULER_IMAGE)
+	cd rest && $(MAKE) build TAG=$(GIT_COMMIT) IMAGE=$(API_IMAGE)
+	cd scheduler && $(MAKE) build TAG=$(GIT_COMMIT) IMAGE=$(SCHEDULER_IMAGE)
 	git checkout -
 
 ote: prep
 	@echo "----- building $(BUILDNAME) ote -----"
 	sed -ie 's/THIS_STRING_IS_REPLACED_DURING_BUILD/$(DATE)/g' $(BUILDROOT)/k8s/ote/dcuvalidator.deployment.yml
-	cd rest && $(MAKE) IMAGE=$(API_IMAGE) TAG=ote
-	cd scheduler && $(MAKE) IMAGE=$(SCHEDULER_IMAGE) TAG=ote
+	cd rest && $(MAKE) build IMAGE=$(API_IMAGE) TAG=ote
+	cd scheduler && $(MAKE) build IMAGE=$(SCHEDULER_IMAGE) TAG=ote
 
 dev: prep
 	@echo "----- building $(BUILDNAME) dev -----"
 	sed -ie 's/THIS_STRING_IS_REPLACED_DURING_BUILD/$(DATE)/g' $(BUILDROOT)/k8s/dev/dcuvalidator.deployment.yml
-	cd rest && $(MAKE) IMAGE=$(API_IMAGE) TAG=dev
-	cd scheduler && $(MAKE) IMAGE=$(SCHEDULER_IMAGE) TAG=dev
+	cd rest && $(MAKE) build IMAGE=$(API_IMAGE) TAG=dev
+	cd scheduler && $(MAKE) build IMAGE=$(SCHEDULER_IMAGE) TAG=dev
 
 prod-deploy: prod
 	@echo "----- deploying $(BUILDNAME) prod -----"
