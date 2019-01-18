@@ -23,9 +23,9 @@ class DedicatedIpValidator(ValidatorInterface):
         try:
             ipam = Ipam()
             ip = ticket.get('sourceDomainOrIp')
-            data = ipam.get_properties_for_ip(ticket.get(ip))
+            data = ipam.get_properties_for_ip(ip)
             if data.HostName and nutrition_label(data.HostName)[2] != 'Open':
-                return False, 'shared ip'
+                return False, 'shared_ip'
         except Exception as e:
             self._logger.error("Unable to determine if {} is dedicated ip:{}".format(ip, e))
         return True,
