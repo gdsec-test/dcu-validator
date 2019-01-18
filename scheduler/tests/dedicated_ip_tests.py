@@ -23,4 +23,4 @@ class TestDedicated:
         ipamo.get_properties_for_ip.return_value = MagicMock(HostName='p3plcpnl0940')
         ticket = {'sourceDomainOrIp': '160.153.77.227'}
         result = self._dedicated.validate_ticket(ticket)
-        return assert_equal(result, (False, 'shared ip'))
+        return assert_equal(result, (False, 'shared_ip'))
