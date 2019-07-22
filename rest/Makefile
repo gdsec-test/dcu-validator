@@ -1,4 +1,4 @@
-BUILDNAME=ITSecurity/dcu-validator-rest
+BUILDNAME=digital-crimes/dcu-validator-rest
 BUILDROOT=$(HOME)/dockerbuild/$(BUILDNAME)
 SHELL=/bin/bash
 

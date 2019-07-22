@@ -7,7 +7,7 @@ The project is broken into two major components. A REST server and a gRPC schedu
 ## Cloning
 To clone the repository via SSH perform the following
 ```
-git clone https://github.secureserver.net/ITSecurity/dcu-validator.git
+git clone https://github.secureserver.net/digital-crimes/dcu-validator.git
 ```
 It is recommended that you clone this project into a pyvirtualenv or equivalent virtual environment.
 

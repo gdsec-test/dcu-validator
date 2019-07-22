@@ -1,4 +1,4 @@
-BUILDNAME=ITSecurity/dcu-validator-scheduler
+BUILDNAME=digital-crimes/dcu-validator-scheduler
 BUILDROOT=$(HOME)/dockerbuild/$(BUILDNAME)
 SHELL=/bin/bash
 

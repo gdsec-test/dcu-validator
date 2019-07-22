@@ -12,7 +12,7 @@ setup(
     author='DCU',
     author_email='dcueng@godaddy.com',
     description='REST API for periodically validating DCU tickets',
-    url='https://github.secureserver.net/ITSecurity/dcu-validator',
+    url='https://github.secureserver.net/digital-crimes/dcu-validator',
     packages=find_packages(exclude=['tests']),
     install_requires=install_reqs,
     tests_require=testing_reqs,

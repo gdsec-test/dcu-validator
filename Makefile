@@ -1,4 +1,4 @@
-BUILDNAME=ITSecurity/dcu-validator
+BUILDNAME=digital-crimes/dcu-validator
 DOCKERREPO=docker-dcu-local.artifactory.secureserver.net
 BUILDROOT=$(HOME)/dockerbuild/$(BUILDNAME)
 DATE=$(shell date)
