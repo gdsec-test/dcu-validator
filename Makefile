@@ -84,7 +84,7 @@ dev-deploy: dev
 	@echo "----- deploying $(BUILDNAME) dev -----"
 	docker push $(API_IMAGE):dev
 	docker push $(SCHEDULER_IMAGE):dev
-	kubectl --context dev apply -f $(BUILDROOT)/k8s/dev/dcuvalidator.deployment.yml --record
+	kubectl --context dev-dcu apply -f $(BUILDROOT)/k8s/dev/dcuvalidator.deployment.yml --record
 
 clean:
 	@echo "----- cleaning $(BUILDNAME) app -----"
