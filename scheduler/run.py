@@ -16,7 +16,7 @@ _ONE_DAY_IN_SECONDS = 86400
 
 
 def serve():
-    path = os.path.dirname(os.path.abspath(__file__)) + '/' + 'logging.yml'
+    path = os.path.dirname(os.path.abspath(__file__)) + '/' + 'logging.yaml'
     value = os.getenv('LOG_CFG', None)
     if value:
         path = value
