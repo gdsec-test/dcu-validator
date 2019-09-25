@@ -16,7 +16,7 @@ class TestValidate:
         redlock.return_value = MagicMock(spec=RedLockFactory, acquire=lambda: True, create_lock=lambda x: True, release=lambda: True)
         phishstory.return_value = MagicMock(get_incident=lambda x: ticket_data)
         res = validate('12345')
-        assert(res[0] is 0)
+        assert(res[0] == 0)
 
     @patch('scheduler_service.server.service.get_redlock')
     @patch('scheduler_service.server.service.phishstory_db')
@@ -27,7 +27,7 @@ class TestValidate:
         redlock.return_value = MagicMock(spec=RedLockFactory, create_lock=lambda x: True)
         phishstory.return_value = MagicMock(get_incident=lambda x: ticket_data)
         res = validate('12345')
-        assert(res[0] is 1)
+        assert(res[0] == 1)
 
     @patch.object(APIHelper, 'close_incident')
     @patch('scheduler_service.server.service.get_redlock')
@@ -42,4 +42,4 @@ class TestValidate:
         apihelper.return_value = True
         redlock.return_value = MagicMock(spec=RedLockFactory, acquire=lambda: True, create_lock=lambda x: True, release=lambda: True)
         res = validate('12345')
-        assert(res[0] is 1)
+        assert(res[0] == 1)

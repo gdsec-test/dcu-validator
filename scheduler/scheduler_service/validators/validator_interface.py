@@ -19,7 +19,7 @@ class ValidatorInterfaceMeta(type):
                             cls.registry[handler].append(cls)
                 else:
                     if isinstance(cls.handlers, basestring):
-                            cls.registry[cls.handlers].append(cls)
+                        cls.registry[cls.handlers].append(cls)
 
         super(ValidatorInterfaceMeta, cls).__init__(name, bases, dct)
 

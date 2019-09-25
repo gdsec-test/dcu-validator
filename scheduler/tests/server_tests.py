@@ -27,4 +27,4 @@ class TestScheduler:
         service = Service(MagicMock())
         request = Request(ticket='12345')
         resp = service.ValidateTicket(request, None)
-        assert(resp.result is 0)
+        assert(resp.result == 0)
