@@ -95,14 +95,14 @@ pip install docker-compose
 Use the below file to test (docker-compose.yml)
 ```
 api:
-  image: artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-api:dev
+  image: docker-dcu-local.artifactory.secureserver.net/dcu-validator-api:dev
   links:
     - validationscheduler:scheduler
   ports:
     - 5000:5000
 
 validationscheduler:
-  image: artifactory.secureserver.net:10014/docker-dcu-local/dcu-validator-scheduler:dev
+  image: docker-dcu-local.artifactory.secureserver.net/dcu-validator-scheduler:dev
   environment:
     - DB_HOST=mongo
     - COLLECTION=incidents

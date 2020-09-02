@@ -1,5 +1,7 @@
-flask-restplus
-pyaml
-grpcio
-uwsgi
-protobuf
+Flask==1.1.1
+flask-restplus==0.13.0
+pyaml==19.12.0
+grpcio==1.11.0
+uWSGI==2.0.18
+protobuf==3.5.2.post1
+Werkzeug==0.16.0
