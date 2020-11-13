@@ -51,7 +51,7 @@ spec:
           - name: DB_USER
             value: devuser
           - name: DB_HOST
-            value: 10.22.188.208
+            value: 10.36.156.188
           - name: DB
             value: devphishstory
           - name: COLLECTION
