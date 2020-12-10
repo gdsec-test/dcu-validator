@@ -5,8 +5,7 @@ import yaml
 
 from rest_service.api import create_app
 
-env = os.getenv('sysenv') or 'dev'
-app = create_app(env)
+app = create_app()
 
 if __name__ == '__main__':
     path = os.path.dirname(os.path.abspath(__file__)) + '/' + 'logging.yaml'

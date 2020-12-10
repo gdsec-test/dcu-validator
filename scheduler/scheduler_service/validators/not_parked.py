@@ -47,9 +47,9 @@ class ParkedValidator(ValidatorInterface):
 
         domain_name = ticket.get('sourceDomainOrIp')
         url = ticket.get('source')
-        content = self._get_content(url)
+        content = ParkedValidator._get_content(url)
 
-        if not self._is_ip(domain_name):
+        if not ParkedValidator._is_ip(domain_name):
             dnsresolver = resolver.Resolver()
             dnsresolver.timeout = 1
             dnsresolver.lifetime = 1
@@ -68,7 +68,8 @@ class ParkedValidator(ValidatorInterface):
                 return False, 'parked'
             return True,
 
-    def _is_ip(self, source_domain_or_ip):
+    @staticmethod
+    def _is_ip(source_domain_or_ip):
         """
         Returns whether the given sourceDomainOrIp is an ip address
         :param source_domain_or_ip:
@@ -77,6 +78,7 @@ class ParkedValidator(ValidatorInterface):
         pattern = re.compile(r"((([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])[ (\[]?(\.|dot)[ )\]]?){3}[0-9]{1,3})")
         return pattern.match(source_domain_or_ip) is not None
 
-    def _get_content(self, url):
+    @staticmethod
+    def _get_content(url):
         with sessions.Session() as session:
             return session.get(url=url, timeout=60).text

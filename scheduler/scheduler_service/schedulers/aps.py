@@ -1,3 +1,5 @@
+import os
+
 import pymongo
 from apscheduler.executors.pool import ProcessPoolExecutor
 from apscheduler.jobstores.mongodb import MongoDBJobStore
@@ -26,4 +28,6 @@ class APS:
     def _get_jobstore(self):
         settings = create_db_settings()
         client = pymongo.MongoClient(settings.DBURL, connect=False)
-        return MongoDBJobStore(database=settings.DB, collection='jobs', client=client)
+        return MongoDBJobStore(database=settings.DB,
+                               collection=os.getenv('JOBS_COLLECTION', 'jobs'),
+                               client=client)

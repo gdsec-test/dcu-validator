@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 def service_connect():
-    scheduler_loc = os.getenv('scheduler') or 'scheduler'
+    scheduler_loc = os.getenv('scheduler', 'scheduler')
     channel = grpc.insecure_channel(scheduler_loc + ':50051')
     return rest_service.grpc_stub.schedule_service_pb2_grpc.SchedulerStub(channel)
 
@@ -43,8 +43,8 @@ validator = api.model(
     'Validator', {
         'period':
             fields.Integer(
-                min=300,
-                max=90000,
+                min=int(os.getenv('MIN_PERIOD', 300)),
+                max=int(os.getenv('MAX_PERIOD', 90000)),
                 default=86400,
                 description='The period to validate a ticket'),
         'close':
@@ -79,7 +79,7 @@ class Validate(Resource):
 
     @api.response(400, 'Validation Error')
     @api.response(200, 'Success', model=ticket_model)
-    @api.marshal_with(ticket_model, 200)
+    @api.marshal_with(fields=ticket_model, code=200)
     @api.expect(options)
     def post(self, ticketid):
         """

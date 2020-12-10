@@ -27,9 +27,7 @@ spec:
           image: "docker-dcu-local.artifactory.secureserver.net/dcu-validator-api:REPLACE_WITH_GIT_COMMIT"
           env:
           - name: BUILD_DATE
-            value: 'THIS_STRING_IS_REPLACED_DURING_BUILD'
-          - name: sysenv
-            value: prod
+            value: "THIS_STRING_IS_REPLACED_DURING_BUILD"
           - name: scheduler
             value: localhost
         -
@@ -38,11 +36,13 @@ spec:
           image: "docker-dcu-local.artifactory.secureserver.net/dcu-validator-scheduler:REPLACE_WITH_GIT_COMMIT"
           env:
           - name: BUILD_DATE
-            value: 'THIS_STRING_IS_REPLACED_DURING_BUILD'
-          - name: sysenv
-            value: prod
+            value: "THIS_STRING_IS_REPLACED_DURING_BUILD"
           - name: REDIS
             value: phishnet-redis.abuse-api-prod.svc.cluster.local
+          - name: MIN_PERIOD
+            value: "300"
+          - name: MAX_PERIOD
+            value: "90000"
           - name: DB_PASS
             valueFrom:
               secretKeyRef:
@@ -56,6 +56,8 @@ spec:
             value: phishstory
           - name: COLLECTION
             value: incidents
+          - name: JOBS_COLLECTION
+            value: jobs
           - name: API_UPDATE_URL
             value: http://api.abuse-api-prod.svc.cluster.local:5000/v1/abuse/tickets
           - name: API_TOKEN

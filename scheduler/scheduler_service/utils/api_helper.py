@@ -18,8 +18,9 @@ class APIHelper:
     def close_incident(self, ticket_id, reason):
         """
         Closes out the given ticket
-        :param ticket_id:
-        :return True on success, false otherwise:
+        :param ticket_id: string
+        :param reason: string representing close reason
+        :return boolean True on success, False otherwise:
         """
 
         payload = {"closed": "true", "close_reason": reason}

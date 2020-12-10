@@ -4,7 +4,7 @@ from flask_restplus import Api
 from .api import api as ns1
 
 
-def create_app(env):
+def create_app():
     app = Flask(__name__)
     api = Api(
         app,

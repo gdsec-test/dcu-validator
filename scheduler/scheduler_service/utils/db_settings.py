@@ -3,11 +3,11 @@ from collections import namedtuple
 
 
 def create_db_settings():
-    db_user = os.getenv('DB_USER') or ''
-    db_pass = os.getenv('DB_PASS') or ''
-    db_host = os.getenv('DB_HOST') or 'localhost'
-    db = os.getenv('DB') or 'test'
-    collection = os.getenv('COLLECTION') or 'test'
+    db_user = os.getenv('DB_USER', '')
+    db_pass = os.getenv('DB_PASS', '')
+    db_host = os.getenv('DB_HOST', 'localhost')
+    db = os.getenv('DB', 'devphishstory')
+    collection = os.getenv('COLLECTION', 'incidents')
     if db_user and db_pass:
         db_url = 'mongodb://{}:{}@{}/{}'.format(db_user, db_pass, db_host, db)
     else:

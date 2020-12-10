@@ -19,12 +19,12 @@ TTL *= 1000
 
 
 def validate(ticket, data=None):
-    '''
+    """
     Runs validation on the provided ticket
-    :param ticket:
+    :param ticket: string
     :param data: Dictionary containing properties used for scheduling
     :return: Enumeration indicating the result of the validation
-    '''
+    """
     LOGGER.info('Validating {} with payload {}'.format(ticket, data))
     lock = get_redlock(ticket)
     db_handle = phishstory_db()
@@ -32,7 +32,7 @@ def validate(ticket, data=None):
 
     if ticket_data is None or ticket_data.get('phishstory_status', 'OPEN') == 'CLOSED':
         remove_job(ticket)
-        return (INVALID, 'unworkable')
+        return INVALID, 'unworkable'
     else:
         if lock.acquire():
             try:
@@ -45,57 +45,70 @@ def validate(ticket, data=None):
                         if not APIHelper().close_incident(ticket, resp[1]):
                             LOGGER.error('Unable to close ticket {}'.format(ticket))
                     remove_job(ticket)
-                    return (INVALID, resp[1])
+                    return INVALID, resp[1]
             except Exception as e:
                 LOGGER.error('Unable to validate {}:{}'.format(ticket, e))
             finally:
                 lock.release()
         else:
-            return (LOCKED, 'being worked')
-    return (VALID, '')
+            return LOCKED, 'being worked'
+    return VALID, ''
 
 
 def remove_job(ticket):
+    """
+    Removes the ticket from the db jobs collection
+    :param ticket: string
+    :return: None
+    """
     try:
-        get_scheduler().remove_job(ticket)
+        if get_scheduler().get_job(ticket):
+            get_scheduler().remove_job(ticket)
     except Exception as e:
         LOGGER.warning('Unable to remove job {}:{}'.format(ticket, e))
 
 
 def get_redlock(ticket):
-    '''
+    """
     Retrieves RedLock lock
     :param ticket:
-    :return:
-    '''
+    :return: lock object
+    """
     return Lock().lock.create_lock(ticket, ttl=TTL)
 
 
 def phishstory_db():
-    '''
+    """
     Retrieves a PhishstoryMongo instance
-    '''
+    :return: db instance
+    """
     return PhishstoryMongo(create_db_settings())
 
 
 def get_scheduler():
-    '''
+    """
     Retrieves a APS instance
-    :return:
-    '''
+    :return: scheduler instance
+    """
     return APS().scheduler
 
 
 class Service(SchedulerServicer):
-    '''
+    """
     Handles scheduling and validating DCU tickets via gRPC
-    '''
+    """
 
     def __init__(self, scheduler):
         self._logger = logging.getLogger(__name__)
         self.aps = scheduler
 
     def AddSchedule(self, request, context):
+        """
+        Adds a schedule (or reschedules) validation for a ticket
+        :param request: GRPC scheduler.Request
+        :param context: not used
+        :return: GRPC scheduler.Response
+        """
         self._logger.info("Adding schedule for {}".format(request))
         ticketid = request.ticket
         period = request.period
@@ -113,12 +126,19 @@ class Service(SchedulerServicer):
                 seconds=int(period),
                 args=[
                     ticketid,
-                    dict(period=period, close=request.close, ticket=ticketid)
+                    dict(close=request.close)
                 ],
-                id=ticketid)
+                id=ticketid,
+                replace_existing=True)
         return Response()
 
     def RemoveSchedule(self, request, context):
+        """
+        Removes a scheduled validation job for a ticket
+        :param request: GRPC scheduler.Request
+        :param context: not used
+        :return: GRPC scheduler.Response
+        """
         self._logger.info("Removing schedule for {}".format(request))
         ticketid = request.ticket
         job = self.aps.scheduler.get_job(ticketid)
@@ -127,8 +147,12 @@ class Service(SchedulerServicer):
         return Response()
 
     def ValidateTicket(self, request, context):
+        """
+        Validates the source URI for a ticket
+        :param request: GRPC scheduler.Request
+        :param context: not used
+        :return: GRPC scheduler.ValidationResponse
+        """
         self._logger.info("Validating {}".format(request))
         res = validate(request.ticket, dict(close=request.close))
-        return ValidationResponse(
-            result=res[0],
-            reason=res[1])
+        return ValidationResponse(result=res[0], reason=res[1])
