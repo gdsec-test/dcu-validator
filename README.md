@@ -75,47 +75,74 @@ These can be performed from parent and sub-project levels.
 5. [gRPC](https://grpc.io)
 
 ## Documentation
-Swaggar documentation can be found at
-
+OpenAPI documentation can be found at
 ```
 /doc
 ```
-After starting each component.
+after starting the rest service.
 
 ## Running Locally
 
-Temporarily Install docker-compose
+### Cleaning Up
+
+Since you'll need to run either `the scheduler` or `the rest service` in a docker comtianer, you'll first need to perform some docker housekeeping.
+
+1. Stop any active docker processes
+   1. Type in `docker ps` to see if there are any running processes for validator, mongo and redis.
+   2. If so, you'll need to stop each. Type in `docker stop CONTAINER_ID`. You can stop multiple processes by separating with a space.
+2. Delete docker containers
+   1. Type is `docker container ls -a` to see all containers
+   2. Delete each un-needed container. Type in `docker container rm CONTAINER_ID`. You can delete multiple containers by separating with a space.
+3. Delete docker image
+   1. If you updated the code for the image running in the docker container, you'll need to delete your current image, so docker wont be running an old version.
+4. Build new docker image
+   1. If you updated the code for the image running in the docker container, perform a `make dev` for that service, so docker will have the latest updates.
+
+### Prerequisites
+
+You will need to have a `devphishstory` database on your local computing device. The `scheduler` services utilize the `jobs` and `incidents` collections.
+
+### Ensure Mongo and Redis ARE NOT Running Locally
+
+Since the docker-compose command starts both mongo and redis instances, ensure these applications are not running locally on your computing device.
+
+### Decide Which Service To Debug
+
+Temporarily Install docker-compose, if it is not already installed
 ```
 pip install docker-compose
 ```
-Use the text below to create a `docker-compose.yml` file.
-Place at project root level, do NOT overwrite the docker-compose file in the `scheduler` directory.
 
-Then run `docker-compose up`
+#### Debug REST Service with Scheduler running in a Docker container
 
-This will start both a `mongodb` and `redis` instance locally, and will access your local mongo instance's `devphishstory` database in both the `incidents` and `jobs` collections.
+##### Environment Variables
+
+* `scheduler` localhost
+* `MIN_PERIOD` Minimum number of seconds to schedule/re-schedule a validation job
+
+##### Steps
+
+Use the text below to create a `docker-compose.yml` file at project's root level.
+
+Mongo v3.6 is what our dev instance is running.
+
 ```
-api:
-  image: docker-dcu-local.artifactory.secureserver.net/dcu-validator-api:dev
-  links:
-    - validationscheduler:scheduler
-  ports:
-    - 5000:5000
-
 validationscheduler:
   image: docker-dcu-local.artifactory.secureserver.net/dcu-validator-scheduler:dev
   environment:
+    - REDIS=redis
     - DB_HOST=mongo
     - DB=devphishstory
     - COLLECTION=incidents
+    - JOBS_COLLECTION=jobs
   ports:
-    - 50051:50051
+    - 127.0.0.1:50051:50051/tcp
   links:
     - mongo:mongo
     - redis:redis
 
 mongo:
-  image: mongo:latest
+  image: mongo:3.6
   ports:
      - 27017:27017
 
@@ -124,7 +151,61 @@ redis:
   ports:
      - 6379:6379
 ```
-This will enable you to run _basic scheduling ONLY_... the _validate endpoints_ will not work, as locally running code is unable to access the `domainservice` REST endpoints, since they are k8s accessible only.
+
+In PyCharm, debug the run.py file in the `rest` directory.  This will listen on port `5000`.
+
+Then run `docker-compose up`, which will spin up a `scheduler` in a docker container listening on port `50051`.
+
+This will also start both a `mongodb` and `redis` instance locally, and will access your local mongo instance's `devphishstory` database in both the `incidents` and `jobs` collections.
+
+This will enable you to debug the `validate` and `schedule` rest endpoints. The _validate endpoint_ will not be completely functional, as locally running code is unable to access the `domainservice` REST endpoints, since they are k8s accessible only.
+
+#### Debug Scheduler with REST Service running in a Docker container
+
+** ***THIS ONLY WORKS IN MAC. DOES NOT WORK IN LINUX*** **
+
+##### Environment Variables
+
+* `REDIS` localhost
+* `DB_HOST` localhost
+* `DB` devphishstory
+* `COLLECTION` incidents
+* `JOBS_COLLECTION` jobs
+
+##### Steps
+
+Use the text below to create a `docker-compose.yml` file at project's root level.
+
+Mongo v3.6 is what our dev instance is running.
+
+```
+api:
+  image: docker-dcu-local.artifactory.secureserver.net/dcu-validator-api:dev
+  environment:
+    - scheduler=host.docker.internal
+    - MIN_PERIOD=10
+  ports:
+    - 5000:5000
+
+mongo:
+  image: mongo:3.6
+  ports:
+     - 27017:27017
+
+redis:
+  image: redis:latest
+  ports:
+     - 6379:6379
+```
+
+In PyCharm, debug the run.py file in the `scheduler` directory.  This will listen on port `50051`.
+
+Then run `docker-compose up`, which will spin up a `rest` service in a docker container listening on port `5000`.
+
+This will also start both a `mongodb` and `redis` instance locally, and will access your local mongo instance's `devphishstory` database in both the `incidents` and `jobs` collections.
+
+This will enable you to debug the `AddSchedule`, `RemoveSchedule` and `ValidateTicket` scheduler services. The _validate endpoint_ will not be completely functional, as locally running code is unable to access the `domainservice` REST endpoints, since they are k8s accessible only.
+
 
 ## Examples
 
@@ -132,7 +213,7 @@ It is easier to run the examples using [POSTMAN](https://www.postman.com/) after
 
 #### Schedule validation
 ```
-curl -POST -H 'Content-Type: application/json' http://localhost:5000/validator/schedule/12345 -d '{"period":86400}'
+curl -POST -H 'Content-Type: application/json' http://localhost:5000/validator/schedule/DCU12345 -d '{"period":86400}'
 ```
 ```
 Responses: ""
@@ -140,7 +221,7 @@ If successful: 201 status. Scheduling a job for a non-existent ticket returns su
 ```
 #### Re-Schedule validation: replaces an existing job
 ```
-curl -POST -H 'Content-Type: application/json' http://localhost:5000/validator/schedule/12345 -d '{"period":300}'
+curl -POST -H 'Content-Type: application/json' http://localhost:5000/validator/schedule/DCU12345 -d '{"period":300}'
 ```
 ```
 Responses: ""
@@ -148,17 +229,17 @@ If successful: 201 status. Re-Scheduling a job for a non-existent ticket returns
 ```
 #### Delete schedule
 ```
-curl -XDELETE -H 'Content-Type: application/json' http://localhost:5000/validator/schedule/12345
+curl -XDELETE -H 'Content-Type: application/json' http://localhost:5000/validator/schedule/DCU12345
 ```
 ```
 Responses: no content returned
 If successful: 204 status. Deleting a non-existent job returns successfully.
 ```
-#### One time validation (keep open) (example curl only, will not run successfully locally)
+#### One time validation (keep open) (example curl only, not completely functional locally)
 However... you can modify the following curl command to use domain `validator.abuse-api-dev.svc.cluster.local` which
  you can then run inside any of the godaddy-service pods in the development environment.
 ```
-curl -POST -H 'Content-Type: application/json' http://localhost:5000/validator/validate/12345 -d '{"close":false}'
+curl -POST -H 'Content-Type: application/json' http://localhost:5000/validator/validate/DCU12345 -d '{"close":false}'
 ```
 ```
 Responses: {"reason": "", "result": "VALID"}
@@ -168,9 +249,9 @@ If bad ticket number or unable to lookup ticket:
     "result": "INVALID"
 }
 ```
-#### One time validation (close if invalid) (example curl only, will not run successfully locally)
+#### One time validation (close if invalid) (example curl only, not completely functional locally)
 ```
-curl -POST -H 'Content-Type: application/json' http://localhost:5000/validator/validate/12345 -d '{"close":true}'
+curl -POST -H 'Content-Type: application/json' http://localhost:5000/validator/validate/DCU12345 -d '{"close":true}'
 ```
 ```
 Responses: {"reason": "", "result": "VALID"}
