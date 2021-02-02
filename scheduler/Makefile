@@ -2,7 +2,7 @@ BUILDNAME=digital-crimes/dcu-validator-scheduler
 BUILDROOT=$(HOME)/dockerbuild/$(BUILDNAME)
 SHELL=/bin/bash
 
-PRIVDEPS="git@github.secureserver.net:digital-crimes/dcdatabase.git"
+PRIVDEPS="git@github.secureserver.net:digital-crimes/dcdatabase.git;d15d3da5e2ad5c352fbe4f6a5ce6d40778020b7c"
 
 .PHONY: prep build
 
@@ -41,7 +41,17 @@ prep:
 	# stage pips we will need to install in Docker build
 	mkdir -p $(BUILDROOT)/private_deps && rm -rf $(BUILDROOT)/private_deps/*
 	for entry in $(PRIVDEPS) ; do \
-		cd $(BUILDROOT)/private_deps && git clone $$entry ; \
+		IFS=";" read repo revision <<< "$$entry" ; \
+		cd $(BUILDROOT)/private_deps && git clone $$repo ; \
+		if [ "$$revision" != "" ] ; then \
+			name=$$(echo $$repo | awk -F/ '{print $$NF}' | sed -e 's/.git$$//') ; \
+			cd $(BUILDROOT)/private_deps/$$name ; \
+			current_revision=$$(git rev-parse HEAD) ; \
+			echo $$repo HEAD is currently at revision: $$current_revision ; \
+			echo Dependency specified in the Makefile for $$name is set to revision: $$revision ; \
+			echo Reverting to revision: $$revision in $$repo ; \
+			git reset --hard $$revision; \
+		fi ; \
 	done
 	@echo "Generating gRPC stubs"
 	python -m grpc_tools.protoc -I../pb --python_out=./scheduler_service/grpc_stub --grpc_python_out=./scheduler_service/grpc_stub ../pb/schedule_service.proto
