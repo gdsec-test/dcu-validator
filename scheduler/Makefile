@@ -2,7 +2,7 @@ BUILDNAME=digital-crimes/dcu-validator-scheduler
 BUILDROOT=$(HOME)/dockerbuild/$(BUILDNAME)
 SHELL=/bin/bash
 
-PRIVDEPS="git@github.secureserver.net:digital-crimes/dcdatabase.git;d15d3da5e2ad5c352fbe4f6a5ce6d40778020b7c"
+PRIVDEPS="git@github.secureserver.net:digital-crimes/dcdatabase.git;ff1ddc9bd07a380769bf54c0f5aa59793a5975c0"
 
 .PHONY: prep build
 
