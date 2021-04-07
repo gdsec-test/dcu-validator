@@ -5,7 +5,7 @@ from dns import resolver
 from netaddr.ip import all_matching_cidrs
 from requests import sessions
 
-from validator_interface import ValidatorInterface
+from .validator_interface import ValidatorInterface
 
 
 class ParkedValidator(ValidatorInterface):
@@ -53,7 +53,7 @@ class ParkedValidator(ValidatorInterface):
             dnsresolver = resolver.Resolver()
             dnsresolver.timeout = 1
             dnsresolver.lifetime = 1
-            ip = dnsresolver.query(domain_name, 'A')[0].address
+            ip = dnsresolver.resolve(domain_name, 'A', search=True)[0].address
             self._logger.info('Domain {} has IP: {}'.format(domain_name, ip))
         else:
             ip = domain_name
@@ -61,7 +61,7 @@ class ParkedValidator(ValidatorInterface):
             self._logger.info('Matched {} for parked IP'.format(domain_name))
             return False, 'parked'
         else:
-            parked = filter(None, [x.search(content) for x in self.parked_regex])
+            parked = [_f for _f in [x.search(content) for x in self.parked_regex] if _f]
             suspended = [x.search(url) for x in self.suspended_regex]
 
             if any(suspended) or len(parked) >= 2:

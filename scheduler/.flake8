@@ -6,4 +6,5 @@ exclude =
     scheduler_service/grpc_stub/schedule_service_pb2.py,
     scheduler_service/grpc_stub/schedule_service_pb2_grpc.py
     # imports that appear to be unused in route.py are necessary in order to provide classes that define handlers
-    scheduler_service/validators/route.py
+    scheduler_service/validators/route.py,
+    .venv

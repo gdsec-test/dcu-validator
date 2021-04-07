@@ -1,9 +1,12 @@
 import logging.config
 import os
 
+import werkzeug
 import yaml
 
-from rest_service.api import create_app
+werkzeug.cached_property = werkzeug.utils.cached_property
+
+from rest_service.api import create_app  # noqa: E402
 
 app = create_app()
 

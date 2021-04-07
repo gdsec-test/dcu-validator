@@ -1,5 +1,5 @@
 import os
-from urllib2 import URLError
+from urllib.error import URLError
 
 from suds import WebFault
 from suds.client import Client
@@ -82,7 +82,7 @@ class Ipam:
 
     # Make sure all method parameters were supplied. The only exception is 'vlan', which is optional.
     def __validate_params(self, params):
-        for key, val in params.iteritems():
+        for key, val in params.items():
             if val is None and key != 'vlan':
                 raise Exception('Missing parameter %s' % key)
 

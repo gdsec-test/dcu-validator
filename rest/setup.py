@@ -18,6 +18,6 @@ setup(
     tests_require=testing_reqs,
     test_suite='nose.collector',
     classifiers=[
-        'Programming Language :: Python :: 2.7'
+        'Programming Language :: Python :: 3.7'
     ]
 )

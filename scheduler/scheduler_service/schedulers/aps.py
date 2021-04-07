@@ -10,9 +10,7 @@ from scheduler_service.utils.db_settings import create_db_settings
 from scheduler_service.utils.singleton import Singleton
 
 
-class APS:
-    __metaclass__ = Singleton
-
+class APS(metaclass=Singleton):
     def __init__(self):
         job_defaults = {'coalesce': True, 'max_instances': 3}
         executers = {'default': ProcessPoolExecutor(5)}

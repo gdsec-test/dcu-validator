@@ -20,13 +20,18 @@ flake8:
 .PHONY: isort
 isort:
 	@echo "----- Optimizing imports -----"
-	isort -rc --atomic --skip rest_service/grpc_stub .
+	isort --atomic --skip rest_service/grpc_stub --skip .venv/ .
+
+.PHONY: grpc
+grpc:
+	@echo "Generating gRPC stubs"
+	python -m grpc_tools.protoc -I../pb --python_out=./rest_service/grpc_stub --grpc_python_out=./rest_service/grpc_stub ../pb/schedule_service.proto
 
 .PHONY: tools
-tools: flake8 isort
+tools: flake8 isort grpc
 
 .PHONY: test
-test:
+test: tools
 	@echo "----- Running tests -----"
 	nosetests tests
 
@@ -35,15 +40,13 @@ testcov:
 	@echo "----- Running tests with coverage -----"
 	nosetests tests --with-coverage --cover-erase --cover-package=rest_service
 
-prep:
+prep: tools
 	@echo "----- preparing $(IMAGE) build -----"
 	# stage pips we will need to install in Docker build
 	mkdir -p $(BUILDROOT)/private_deps && rm -rf $(BUILDROOT)/private_deps/*
 	for entry in $(PRIVDEPS) ; do \
 		cd $(BUILDROOT)/private_deps && git clone $$entry ; \
 	done
-	@echo "Generating gRPC stubs"
-	python -m grpc_tools.protoc -I../pb --python_out=./rest_service/grpc_stub --grpc_python_out=./rest_service/grpc_stub ../pb/schedule_service.proto
 	# copy the app code to the build root
 	cp -rp ./* $(BUILDROOT)
 

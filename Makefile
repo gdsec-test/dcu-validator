@@ -10,20 +10,20 @@ SCHEDULER_IMAGE=$(DOCKERREPO)/dcu-validator-scheduler
 
 .PHONY: prep dev stage ote prod clean dev-deploy ote-deploy prod-deploy
 
-all: prep dev
+all: prep
 
-.PHONY: flake8
-flake8:
-	cd rest && $(MAKE) flake8
-	cd scheduler && $(MAKE) flake8
-
-.PHONY: isort
-isort:
-	cd rest && $(MAKE) isort
-	cd scheduler && $(MAKE) isort
+.PHONY: env
+env:
+	pip install -r rest/test_requirements.txt
+	pip install -r scheduler/test_requirements.txt
+	pip install -r scheduler/private_pips.txt
+	pip install -r scheduler/requirements.txt
+	pip install -r rest/requirements.txt
 
 .PHONY: tools
-tools: flake8 isort
+tools:
+	cd rest && $(MAKE) tools
+	cd scheduler && $(MAKE) tools
 
 .PHONY: test
 test:

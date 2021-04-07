@@ -12,9 +12,6 @@ __pycache__/
 #vscode
 .vscode
 
-#docker-compose
-docker-compose.yml
-
 # Distribution / packaging
 .Python
 env/
@@ -111,3 +108,6 @@ ENV/
 
 # mypy
 .mypy_cache/
+.tool-versions
+
+.envrc

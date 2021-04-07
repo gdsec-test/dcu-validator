@@ -39,7 +39,7 @@ def serve():
     scheduler_service.grpc_stub.schedule_service_pb2_grpc.add_SchedulerServicer_to_server(
         scheduler, server)
     logger.info("Listening on port 50051...")
-    server.add_insecure_port('[::]:50051')
+    server.add_insecure_port(f'{os.getenv("LISTEN_IP", "[::]")}:50051')
     server.start()
     try:
         while True:

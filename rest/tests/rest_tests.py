@@ -1,10 +1,14 @@
 import json
 
+# Workaround a upstream bug.
+import werkzeug
 from flask import url_for
 from flask_testing.utils import TestCase
 from mock import patch
 
-import rest_service.api
+werkzeug.cached_property = werkzeug.utils.cached_property
+
+import rest_service.api  # noqa: E402
 
 
 class TestValidator(TestCase):

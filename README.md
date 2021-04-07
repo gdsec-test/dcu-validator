@@ -33,7 +33,7 @@ Building a local Docker image for the respective development environments can be
 
 `make [dev, ote, prod]`
 
-*Important Note: `pip install grpcio-tools==1.14.0` must be performed separately from above `make` instructions
+*Important Note: `pip install grpcio-tools==1.36.1` must be performed separately from above `make` instructions
 
 ## Deploying
 Deploying the Docker image to Kubernetes can be achieved with the
@@ -83,128 +83,54 @@ after starting the rest service.
 
 ## Running Locally
 
-### Cleaning Up
-
-Since you'll need to run either `the scheduler` or `the rest service` in a docker comtianer, you'll first need to perform some docker housekeeping.
-
-1. Stop any active docker processes
-   1. Type in `docker ps` to see if there are any running processes for validator, mongo and redis.
-   2. If so, you'll need to stop each. Type in `docker stop CONTAINER_ID`. You can stop multiple processes by separating with a space.
-2. Delete docker containers
-   1. Type is `docker container ls -a` to see all containers
-   2. Delete each un-needed container. Type in `docker container rm CONTAINER_ID`. You can delete multiple containers by separating with a space.
-3. Delete docker image
-   1. If you updated the code for the image running in the docker container, you'll need to delete your current image, so docker wont be running an old version.
-4. Build new docker image
-   1. If you updated the code for the image running in the docker container, perform a `make dev` for that service, so docker will have the latest updates.
-
-### Prerequisites
-
-You will need to have a `devphishstory` database on your local computing device. The `scheduler` services utilize the `jobs` and `incidents` collections.
-
-### Ensure Mongo and Redis ARE NOT Running Locally
-
-Since the docker-compose command starts both mongo and redis instances, ensure these applications are not running locally on your computing device.
-
-### Decide Which Service To Debug
-
-Temporarily Install docker-compose, if it is not already installed
+### Running everything in Docker
+1. Define these environment variables.
 ```
-pip install docker-compose
+scheduler=scheduler
+API_TOKEN="<a valid JWT for the abuse API>"
+SMDB_USERNAME="<username>"
+SMDB_PASSWORD="<password>"
 ```
+2. Run `make dev` to generate the docker images.
+1. Run `docker-compose up` to start
 
-#### Debug REST Service with Scheduler running in a Docker container
-
-##### Environment Variables
-
-* `scheduler` localhost
-* `MIN_PERIOD` Minimum number of seconds to schedule/re-schedule a validation job
-
-##### Steps
-
-Use the text below to create a `docker-compose.yml` file at project's root level.
-
-Mongo v3.6 is what our dev instance is running.
-
+### Debugging REST in PyCharm
+1. Define these environment variables in your terminal.
 ```
-validationscheduler:
-  image: docker-dcu-local.artifactory.secureserver.net/dcu-validator-scheduler:dev
-  environment:
-    - REDIS=redis
-    - DB_HOST=mongo
-    - DB=devphishstory
-    - COLLECTION=incidents
-    - JOBS_COLLECTION=jobs
-  ports:
-    - 127.0.0.1:50051:50051/tcp
-  links:
-    - mongo:mongo
-    - redis:redis
-
-mongo:
-  image: mongo:3.6
-  ports:
-     - 27017:27017
-
-redis:
-  image: redis:latest
-  ports:
-     - 6379:6379
+API_TOKEN="<a valid JWT for the abuse API>"
+SMDB_USERNAME="<username>"
+SMDB_PASSWORD="<password>"
 ```
-
-In PyCharm, debug the run.py file in the `rest` directory.  This will listen on port `5000`.
-
-Then run `docker-compose up`, which will spin up a `scheduler` in a docker container listening on port `50051`.
-
-This will also start both a `mongodb` and `redis` instance locally, and will access your local mongo instance's `devphishstory` database in both the `incidents` and `jobs` collections.
-
-This will enable you to debug the `validate` and `schedule` rest endpoints. The _validate endpoint_ will not be completely functional, as locally running code is unable to access the `domainservice` REST endpoints, since they are k8s accessible only.
-
-#### Debug Scheduler with REST Service running in a Docker container
-
-** ***THIS ONLY WORKS IN MAC. DOES NOT WORK IN LINUX*** **
-
-##### Environment Variables
-
-* `REDIS` localhost
-* `DB_HOST` localhost
-* `DB` devphishstory
-* `COLLECTION` incidents
-* `JOBS_COLLECTION` jobs
-
-##### Steps
-
-Use the text below to create a `docker-compose.yml` file at project's root level.
-
-Mongo v3.6 is what our dev instance is running.
-
+2. Define these environment variables in PyCharm.
 ```
-api:
-  image: docker-dcu-local.artifactory.secureserver.net/dcu-validator-api:dev
-  environment:
-    - scheduler=host.docker.internal
-    - MIN_PERIOD=10
-  ports:
-    - 5000:5000
-
-mongo:
-  image: mongo:3.6
-  ports:
-     - 27017:27017
-
-redis:
-  image: redis:latest
-  ports:
-     - 6379:6379
+scheduler='localhost'
+MIN_PERIOD=10
 ```
+3. Then run `docker-compose up -d mongo redis kubernetes_proxy scheduler`.
+1. In PyCharm, debug the run.py file in the `rest` directory.  This will listen on port `5000`.
 
-In PyCharm, debug the run.py file in the `scheduler` directory.  This will listen on port `50051`.
+This will enable you to debug the REST API endpoints `/validate/<string:ticketid>` and `/schedule/<string:ticketid>`.
 
-Then run `docker-compose up`, which will spin up a `rest` service in a docker container listening on port `5000`.
+### Debugging Scheduler in PyCharm
+1. Define these environment variables in your terminal.
+```
+scheduler='host.docker.internal'
+MIN_PERIOD=10
+```
+2. Define these environment variables in PyCharm.
+```
+DB_HOST=localhost
+REDIS=localhost
+DOMAIN_SERVICE=localhost:8080
+API_UPDATE_URL=https://abuse.api.int.dev-godaddy.com/v1/abuse/tickets
+API_TOKEN="<a valid JWT for the abuse API>"
+SMDB_USERNAME="<username>"
+SMDB_PASSWORD="<password>"
+```
+2. Then run `docker-compose up -d mongo redis kubernetes_proxy api`.
+1. In PyCharm, debug the run.py file in the `scheduler` directory.  This will listen on port `50051`.
 
-This will also start both a `mongodb` and `redis` instance locally, and will access your local mongo instance's `devphishstory` database in both the `incidents` and `jobs` collections.
-
-This will enable you to debug the `AddSchedule`, `RemoveSchedule` and `ValidateTicket` scheduler services. The _validate endpoint_ will not be completely functional, as locally running code is unable to access the `domainservice` REST endpoints, since they are k8s accessible only.
+This will enable you to debug the `AddSchedule`, `RemoveSchedule` and `ValidateTicket` scheduler services. The _validate endpoint_ will not be completely functional, as `domainservices` is broken in the dev/test/ote environments.
 
 
 ## Examples

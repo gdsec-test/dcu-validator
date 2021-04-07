@@ -2,7 +2,7 @@ BUILDNAME=digital-crimes/dcu-validator-scheduler
 BUILDROOT=$(HOME)/dockerbuild/$(BUILDNAME)
 SHELL=/bin/bash
 
-PRIVDEPS="git@github.secureserver.net:digital-crimes/dcdatabase.git;ff1ddc9bd07a380769bf54c0f5aa59793a5975c0"
+PRIVDEPS="git@github.secureserver.net:digital-crimes/dcdatabase.git"
 
 .PHONY: prep build
 
@@ -21,13 +21,18 @@ flake8:
 .PHONY: isort
 isort:
 	@echo "----- Optimizing imports -----"
-	isort -rc --atomic --skip scheduler_service/grpc_stub .
+	isort --atomic --skip scheduler_service/grpc_stub --skip .venv/ .
+
+.PHONY: grpc
+grpc:
+	@echo "Generating gRPC stubs"
+	python -m grpc_tools.protoc -I../pb --python_out=./scheduler_service/grpc_stub --grpc_python_out=./scheduler_service/grpc_stub ../pb/schedule_service.proto
 
 .PHONY: tools
-tools: flake8 isort
+tools: flake8 isort grpc
 
 .PHONY: test
-test:
+test: tools
 	@echo "----- Running tests -----"
 	nosetests tests
 
@@ -53,8 +58,6 @@ prep:
 			git reset --hard $$revision; \
 		fi ; \
 	done
-	@echo "Generating gRPC stubs"
-	python -m grpc_tools.protoc -I../pb --python_out=./scheduler_service/grpc_stub --grpc_python_out=./scheduler_service/grpc_stub ../pb/schedule_service.proto
 	# copy the app code to the build root
 	cp -rp ./* $(BUILDROOT)
 

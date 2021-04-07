@@ -1,0 +1,55 @@
+services:
+  api:
+    image: docker-dcu-local.artifactory.secureserver.net/dcu-validator-api:dev
+    environment:
+      - MIN_PERIOD=10
+      - scheduler=${scheduler}
+    ports:
+      - 5000:5000
+    links:
+      - scheduler:scheduler
+    depends_on:
+      - scheduler
+
+  scheduler:
+    image: docker-dcu-local.artifactory.secureserver.net/dcu-validator-scheduler:dev
+    environment:
+      - DB_HOST=mongo
+      - REDIS=redis
+      - API_UPDATE_URL=https://abuse.api.int.dev-godaddy.com/v1/abuse/tickets
+      - API_TOKEN="${API_TOKEN}"
+      - DOMAIN_SERVICE=kubernetes_proxy:8080
+      - SMDB_USERNAME=${SMDB_USERNAME}
+      - SMDB_PASSWORD=${SMDB_PASSWORD}
+    ports:
+      - 50051:50051
+    links:
+      - mongo:mongo
+      - redis:redis
+      - kubernetes_proxy:kubernetes_proxy
+    depends_on:
+      - mongo
+      - redis
+      - kubernetes_proxy
+
+  mongo:
+    image: mongo:3.6
+    ports:
+      - 27017:27017
+
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
+
+  kubernetes_proxy:
+    image: bitnami/kubectl:1.16
+    entrypoint: /bin/sh
+    command: /app/kube-services.sh
+    environment:
+      KUBECONFIG: /configs/config
+    ports:
+      - 8080:8080
+    volumes:
+      - ./:/app:ro
+      - ~/.kube:/configs:ro

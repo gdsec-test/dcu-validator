@@ -37,5 +37,5 @@ class APIHelper:
                     ticket_id, r.content))
         except Exception as e:
             self._logger.error("Exception while updating ticket {} {}".format(
-                ticket_id, e.message))
+                ticket_id, e))
         return data

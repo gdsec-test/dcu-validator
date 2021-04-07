@@ -15,19 +15,18 @@ class ValidatorInterfaceMeta(type):
             if hasattr(cls, 'handlers'):
                 if isinstance(cls.handlers, (list, tuple)):
                     for handler in cls.handlers:
-                        if isinstance(handler, basestring):
+                        if isinstance(handler, str):
                             cls.registry[handler].append(cls)
                 else:
-                    if isinstance(cls.handlers, basestring):
+                    if isinstance(cls.handlers, str):
                         cls.registry[cls.handlers].append(cls)
 
         super(ValidatorInterfaceMeta, cls).__init__(name, bases, dct)
 
 
 # main Validator  interface
-class ValidatorInterface(object):
-    __metaclass__ = ValidatorInterfaceMeta
+class ValidatorInterface(object, metaclass=ValidatorInterfaceMeta):
     handlers = None
 
     def validate_ticket(self, ticket):
-        raise(NotImplementedError)
+        raise NotImplementedError

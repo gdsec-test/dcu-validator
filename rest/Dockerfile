@@ -1,33 +1,17 @@
-# dcu-validator-api
-#
-#
-
-FROM docker-dcu-local.artifactory.secureserver.net/grpcio
-MAINTAINER DCUENG <dcueng@godaddy.com>
+FROM python:3.7.10-slim
+LABEL MAINTAINER=dcueng@godaddy.com
 
 # Best Practice - Creating a user instead of running as root
-RUN addgroup -S dcu && adduser -H -S -G dcu dcu
-
-# apt-get installs
-RUN apk update && \
-    apk add --no-cache build-base \
-    ca-certificates \
-    libffi-dev \
-    linux-headers \
-    openssl-dev \
-    pcre \
-    pcre-dev \
-    python-dev \
-    py-pip
-
-# Expose Flask port 5000
+RUN addgroup dcu && adduser --disabled-password --disabled-login --no-create-home --ingroup dcu --system dcu
+RUN apt-get update && apt-get install -y gcc
 EXPOSE 5000
 
 # Move files to new directory in docker container
-COPY ./*.ini ./*.sh ./run.py ./*.yaml /app/
+COPY ./*.ini ./*.sh ./*.yaml ./*.py /app/
 COPY . /tmp
 RUN chown dcu:dcu -R /app
 
 RUN pip install --compile /tmp && rm -rf /tmp/*
+RUN apt-get remove -y gcc
 
 ENTRYPOINT ["/app/runserver.sh"]

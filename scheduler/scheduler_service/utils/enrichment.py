@@ -1,3 +1,8 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
+
 def nutrition_label(hostname):
     hostname = hostname.lower()
     dc = hostname[:2]
@@ -76,7 +81,7 @@ def os_finder(os):
     elif os == 'w':
         return 'Windows'
     else:
-        print 'Error locating OS'
+        logger.error('Could not auto-detect the operating system')
 
 
 def product_finder(product):

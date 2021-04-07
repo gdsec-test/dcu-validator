@@ -4,7 +4,7 @@ import os
 
 import requests
 
-from validator_interface import ValidatorInterface
+from .validator_interface import ValidatorInterface
 
 
 class DomainStatusValidator(ValidatorInterface):
