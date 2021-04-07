@@ -1,6 +1,7 @@
 import logging
 import os
 
+from apscheduler import jobstores
 from dcdatabase.phishstorymongo import PhishstoryMongo
 
 from scheduler_service.grpc_stub.schedule_service_pb2 import (
@@ -141,9 +142,15 @@ class Service(SchedulerServicer):
         """
         self._logger.info("Removing schedule for {}".format(request))
         ticketid = request.ticket
-        job = self.aps.scheduler.get_job(ticketid)
-        if job:
-            job.remove()
+        try:
+            # Need to use remove job to handle breaking changes between pickle
+            # versions. This just removes by the job ID string, instead of
+            # needing to parse the serialized object.
+            self.aps.scheduler.remove_job(ticketid)
+        except jobstores.base.JobLookupError:
+            # Ensure we don't throw errors if someone deletes a job that
+            # doesn't exist.
+            pass
         return Response()
 
     def ValidateTicket(self, request, context):
