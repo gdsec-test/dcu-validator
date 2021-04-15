@@ -20,7 +20,7 @@ class DedicatedIpValidator(ValidatorInterface):
         :param ticket:
         :return:
         """
-
+        ip = None
         try:
             ipam = Ipam()
             ip = ticket.get('sourceDomainOrIp')

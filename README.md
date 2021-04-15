@@ -82,6 +82,7 @@ OpenAPI documentation can be found at
 after starting the rest service.
 
 ## Running Locally
+You will need to install the certificates in `scheduler/certs` into your CA chain to perform DC1 validation.
 
 ### Running everything in Docker
 1. Define these environment variables.

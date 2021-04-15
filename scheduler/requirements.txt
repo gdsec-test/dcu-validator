@@ -9,13 +9,13 @@ netaddr==0.8.0
 protobuf==3.15.6
 pyaml==20.4.0
 pymongo==3.11.3
-python-ntlm==1.1.0
 pytz==2021.1
 PyYAML==5.4.1
 redis==3.5.3
 redlock==1.2.0
 requests==2.25.1
+requests-ntlm==1.1.0
 six==1.15.0
-suds-py3==1.4.4.1
 tzlocal==2.1
 urllib3==1.26.4
+zeep==4.0.0
