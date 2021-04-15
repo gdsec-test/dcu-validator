@@ -120,18 +120,27 @@ MIN_PERIOD=10
 ```
 2. Define these environment variables in PyCharm.
 ```
-DB_HOST=localhost
-REDIS=localhost
-DOMAIN_SERVICE=localhost:8080
-API_UPDATE_URL=https://abuse.api.int.dev-godaddy.com/v1/abuse/tickets
 API_TOKEN="<a valid JWT for the abuse API>"
+API_UPDATE_URL=https://abuse.api.int.dev-godaddy.com/v1/abuse/tickets
+COLLECTION=incidents
+DB=devphishstory
+DB_HOST=localhost
+DOMAIN_SERVICE=localhost:8080
+GRPC_VERBOSITY=debug
+JOBS_COLLECTION=jobs
+LISTEN_IP=127.0.0.1
+MIN_PERIOD=10
+MAX_PERIOD=300
+REDIS=localhost
 SMDB_USERNAME="<username>"
 SMDB_PASSWORD="<password>"
 ```
-2. Then run `docker-compose up -d mongo redis kubernetes_proxy api`.
+2. Then run `docker compose up -d mongo redis kubernetes_proxy api`.
 1. In PyCharm, debug the run.py file in the `scheduler` directory.  This will listen on port `50051`.
 
-This will enable you to debug the `AddSchedule`, `RemoveSchedule` and `ValidateTicket` scheduler services. The _validate endpoint_ will not be completely functional, as `domainservices` is broken in the dev/test/ote environments.
+This will enable you to debug the `AddSchedule`, `RemoveSchedule` and `ValidateTicket` scheduler services.
+
+> The _validate endpoint_ may not be completely functional, as `domainservices` is broken in the dev/test/ote environments, so you can comment/un-comment the appropriate lines in `kube-services.sh` to connect to either the `dev` or `prod` instance of `domainservices`.
 
 
 ## Examples

@@ -6,10 +6,12 @@ services:
       - scheduler=${scheduler}
     ports:
       - 5000:5000
-    links:
-      - scheduler:scheduler
-    depends_on:
-      - scheduler
+# The following lines are commented so scheduler can be debugged locally while api runs locally in docker.
+# Uncomment to run api and scheduler locally in docker.
+#    links:
+#      - scheduler:scheduler
+#    depends_on:
+#      - scheduler
 
   scheduler:
     image: docker-dcu-local.artifactory.secureserver.net/dcu-validator-scheduler:dev
