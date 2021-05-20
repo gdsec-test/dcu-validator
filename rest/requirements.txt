@@ -1,6 +1,7 @@
 aniso8601==9.0.1
 attrs==20.3.0
 click==7.1.2
+dcu-structured-logging-flask==1.0.1
 Flask==1.1.2
 flask-restplus==0.13.0
 grpcio==1.36.1

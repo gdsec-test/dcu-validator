@@ -1,15 +1,14 @@
-import logging
 import os
 
 import grpc
+from dcustructuredloggingflask.flasklogger import get_logging
 from flask import request
 from flask_restplus import Namespace, Resource, fields
 
 import rest_service.grpc_stub.schedule_service_pb2_grpc
 from rest_service.grpc_stub.schedule_service_pb2 import Request
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = get_logging()
 
 
 def service_connect():

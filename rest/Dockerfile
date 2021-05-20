@@ -11,6 +11,8 @@ COPY ./*.ini ./*.sh ./*.yaml ./*.py /app/
 COPY . /tmp
 RUN chown dcu:dcu -R /app
 
+RUN pip install --compile /tmp/private_deps/PyAuth
+RUN pip install --compile /tmp/private_deps/dcu-structured-logging-flask
 RUN pip install --compile /tmp && rm -rf /tmp/*
 RUN apt-get remove -y gcc
 

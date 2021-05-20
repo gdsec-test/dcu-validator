@@ -2,7 +2,8 @@ BUILDNAME=digital-crimes/dcu-validator-rest
 BUILDROOT=$(HOME)/dockerbuild/$(BUILDNAME)
 SHELL=/bin/bash
 
-PRIVDEPS=
+PRIVDEPS="git+ssh://git@github.secureserver.net/auth-contrib/PyAuth.git" \
+"git@github.com:gdcorp-infosec/dcu-structured-logging-flask.git"
 
 .PHONY: prep build
 
@@ -10,6 +11,7 @@ all: env
 
 env:
 	pip install -r test_requirements.txt
+	pip install -r private_pips.txt
 	pip install -r requirements.txt
 
 .PHONY: flake8

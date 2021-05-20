@@ -1,8 +1,5 @@
-import logging.config
-import os
-
 import werkzeug
-import yaml
+from dcustructuredloggingflask.flasklogger import add_request_logging
 
 werkzeug.cached_property = werkzeug.utils.cached_property
 
@@ -10,16 +7,7 @@ from rest_service.api import create_app  # noqa: E402
 
 app = create_app()
 
+add_request_logging(app, 'dcu-validator-rest')
+
 if __name__ == '__main__':
-    path = os.path.dirname(os.path.abspath(__file__)) + '/' + 'logging.yaml'
-    value = os.getenv('LOG_CFG', None)
-    if value:
-        path = value
-    if os.path.exists(path):
-        with open(path, 'rt') as f:
-            lconfig = yaml.safe_load(f.read())
-        logging.config.dictConfig(lconfig)
-    else:
-        logging.basicConfig(level=logging.INFO)
-    logging.raiseExceptions = True
     app.run()
