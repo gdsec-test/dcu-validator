@@ -1,11 +1,9 @@
-import logging
-import logging.config
 import os
 import time
 from concurrent import futures
 
 import grpc
-import yaml
+from dcustructuredlogginggrpc import LoggerInterceptor, get_logging
 
 import scheduler_service.grpc_stub.schedule_service_pb2
 import scheduler_service.grpc_stub.schedule_service_pb2_grpc
@@ -16,18 +14,7 @@ _ONE_DAY_IN_SECONDS = 86400
 
 
 def serve():
-    path = os.path.dirname(os.path.abspath(__file__)) + '/' + 'logging.yaml'
-    value = os.getenv('LOG_CFG', None)
-    if value:
-        path = value
-    if os.path.exists(path):
-        with open(path, 'rt') as f:
-            lconfig = yaml.safe_load(f.read())
-        logging.config.dictConfig(lconfig)
-    else:
-        logging.basicConfig(level=logging.INFO)
-    logging.raiseExceptions = True
-    logger = logging.getLogger(__name__)
+    logger = get_logging()
 
     # Create and start our APScheduler
     aps = APS()
@@ -35,7 +22,7 @@ def serve():
     scheduler = Service(aps)
 
     # Configure and start service
-    server = grpc.server(thread_pool=futures.ThreadPoolExecutor(max_workers=10))
+    server = grpc.server(thread_pool=futures.ThreadPoolExecutor(max_workers=10), interceptors=[LoggerInterceptor()])
     scheduler_service.grpc_stub.schedule_service_pb2_grpc.add_SchedulerServicer_to_server(
         scheduler, server)
     logger.info("Listening on port 50051...")

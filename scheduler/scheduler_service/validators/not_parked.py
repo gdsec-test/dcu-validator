@@ -1,6 +1,6 @@
-import logging
 import re
 
+from dcustructuredlogginggrpc import get_logging
 from dns import resolver
 from netaddr.ip import all_matching_cidrs
 from requests import sessions
@@ -34,7 +34,7 @@ class ParkedValidator(ValidatorInterface):
     ]
 
     def __init__(self):
-        self._logger = logging.getLogger(__name__)
+        self._logger = get_logging()
 
     def validate_ticket(self, ticket):
         """

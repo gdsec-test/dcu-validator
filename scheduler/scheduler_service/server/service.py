@@ -1,8 +1,8 @@
-import logging
 import os
 
 from apscheduler import jobstores
 from dcdatabase.phishstorymongo import PhishstoryMongo
+from dcustructuredlogginggrpc import get_logging
 
 from scheduler_service.grpc_stub.schedule_service_pb2 import (
     INVALID, LOCKED, VALID, Response, ValidationResponse)
@@ -14,7 +14,7 @@ from scheduler_service.utils.db_settings import create_db_settings
 from scheduler_service.utils.lock import Lock
 from scheduler_service.validators.route import route
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = get_logging()
 TTL = os.getenv('TTL') or 300
 TTL *= 1000
 
@@ -100,7 +100,7 @@ class Service(SchedulerServicer):
     """
 
     def __init__(self, scheduler):
-        self._logger = logging.getLogger(__name__)
+        self._logger = LOGGER
         self.aps = scheduler
 
     def AddSchedule(self, request, context):

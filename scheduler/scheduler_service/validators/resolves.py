@@ -1,5 +1,4 @@
-import logging
-
+from dcustructuredlogginggrpc import get_logging
 from requests import sessions
 from requests.exceptions import ConnectionError
 
@@ -11,7 +10,7 @@ class ResolvesValidator(ValidatorInterface):
     handlers = ['PHISHING', 'MALWARE']
 
     def __init__(self):
-        self._logger = logging.getLogger(__name__)
+        self._logger = get_logging()
 
     def validate_ticket(self, ticket):
         """

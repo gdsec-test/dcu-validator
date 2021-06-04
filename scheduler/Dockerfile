@@ -7,7 +7,7 @@ RUN addgroup dcu && adduser --disabled-password --disabled-login --no-create-hom
 EXPOSE 50051
 
 # Move files to new directory in docker container
-COPY ./*.ini ./*.sh ./*.yaml ./*.py /app/
+COPY ./*.ini ./*.sh ./*.py /app/
 COPY . /tmp
 RUN chown dcu:dcu -R /app
 
@@ -17,6 +17,7 @@ RUN cp /tmp/certs/* /usr/local/share/ca-certificates/
 RUN update-ca-certificates
 
 RUN pip install --compile /tmp/private_deps/dcdatabase
+RUN pip install --compile /tmp/private_deps/dcu-structured-logging-grpc/
 RUN pip install --compile /tmp && rm -rf /tmp/*
 
 # Over-write the certifi shipped certificate with the system cert.

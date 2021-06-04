@@ -1,8 +1,8 @@
 import json
-import logging
 import os
 
 import requests
+from dcustructuredlogginggrpc import get_logging
 
 from .validator_interface import ValidatorInterface
 
@@ -16,7 +16,7 @@ class DomainStatusValidator(ValidatorInterface):
     handlers = ['PHISHING', 'MALWARE']
 
     def __init__(self):
-        self._logger = logging.getLogger(__name__)
+        self._logger = get_logging()
         endpoint = os.getenv('DOMAIN_SERVICE') or 'domainservice:8080'
         domain_uri = 'http://{}/v1/domains'.format(endpoint)
         self._query_domain_endpoint = '{}/domaininfo'.format(domain_uri)

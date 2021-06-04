@@ -1,7 +1,7 @@
-import logging
 import os
 
 import requests
+from dcustructuredlogginggrpc import get_logging
 
 
 class APIHelper:
@@ -10,7 +10,7 @@ class APIHelper:
     """
 
     def __init__(self):
-        self._logger = logging.getLogger(__name__)
+        self._logger = get_logging()
         self._url = os.getenv('API_UPDATE_URL') or '"http://localhost/v1/abuse/tickets'
         self._token = os.getenv('API_TOKEN') or 'token'
         self._header = {'Authorization': self._token}
