@@ -1,9 +1,7 @@
-import re
+from ipaddress import ip_address
 
 from dcustructuredlogginggrpc import get_logging
 from dns import resolver
-from netaddr.ip import all_matching_cidrs
-from requests import sessions
 
 from .validator_interface import ValidatorInterface
 
@@ -11,74 +9,43 @@ from .validator_interface import ValidatorInterface
 class ParkedValidator(ValidatorInterface):
 
     handlers = ['PHISHING', 'MALWARE']
-
-    # URL redirects to error/suspension page
-    suspended_regex = [
-        re.compile(r'cgi-sys/suspendedpage.cgi$'),
-        re.compile(r'^https?://error\.hostinger*')
-    ]
-
-    # IPAddress associated with parkweb servers
-    parkweb = ['50.63.202.32/27', '184.168.221.32/27', '50.63.202.64/27', '184.168.221.64/27']
-
-    # Page content is a landing page/park page
-    parked_regex = [
-        re.compile(r'GD_Sharehead.jpg'),
-        re.compile(r'\.wsimg\.com'),
-        re.compile(r'This Web page is parked for FREE'),
-        re.compile(r'http://www.godaddy.com/domains/search'),
-        re.compile(r'Site Unavailable'),
-        re.compile(r'This site is currently unavailable.'),
-        re.compile(r'Coming Soon'),
-        re.compile(r'Future home of something quite cool.')
-    ]
+    # IPAddress associated with GoDaddy parking systems
+    parked_ips = ['34.102.136.180', '34.98.99.30']
 
     def __init__(self):
         self._logger = get_logging()
 
-    def validate_ticket(self, ticket):
+    def validate_ticket(self, ticket: dict) -> tuple:
         """
-        Checks domain's IP Address against parkweb servers and falls back to check the page
-        content and url against known park/landing page regexes
-        returns either (True, ) or (False, 'not parked')
-        :param ticket:
-        :return:
+        Check if the IP address for a domain is one of the parked addresses.
+        returns either:
+            (True, )
+            (False, 'parked')
         """
 
-        domain_name = ticket.get('sourceDomainOrIp')
-        url = ticket.get('source')
-        content = ParkedValidator._get_content(url)
+        domain = ticket.get('sourceDomainOrIp')
+        ip = domain
 
-        if not ParkedValidator._is_ip(domain_name):
-            dnsresolver = resolver.Resolver()
-            dnsresolver.timeout = 1
-            dnsresolver.lifetime = 1
-            ip = dnsresolver.resolve(domain_name, 'A', search=True)[0].address
-            self._logger.info('Domain {} has IP: {}'.format(domain_name, ip))
-        else:
-            ip = domain_name
-        if all_matching_cidrs(ip, self.parkweb):
-            self._logger.info('Matched {} for parked IP'.format(domain_name))
+        if not ParkedValidator._is_ip(domain):
+            try:
+                dnsresolver = resolver.Resolver()
+                dnsresolver.timeout = 1
+                dnsresolver.lifetime = 1
+                ip = dnsresolver.resolve(domain, 'A', search=True)[0].address
+            except Exception:
+                # Don't do anything. Fail out if we can't perform DNS lookups.
+                pass
+
+        if ip in self.parked_ips:
+            self._logger.info(f'Matched {domain} for parked IP')
             return False, 'parked'
-        else:
-            parked = [_f for _f in [x.search(content) for x in self.parked_regex] if _f]
-            suspended = [x.search(url) for x in self.suspended_regex]
 
-            if any(suspended) or len(parked) >= 2:
-                return False, 'parked'
-            return True,
+        return True, None
 
     @staticmethod
-    def _is_ip(source_domain_or_ip):
-        """
-        Returns whether the given sourceDomainOrIp is an ip address
-        :param source_domain_or_ip:
-        :return:
-        """
-        pattern = re.compile(r"((([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])[ (\[]?(\.|dot)[ )\]]?){3}[0-9]{1,3})")
-        return pattern.match(source_domain_or_ip) is not None
-
-    @staticmethod
-    def _get_content(url):
-        with sessions.Session() as session:
-            return session.get(url=url, timeout=60).text
+    def _is_ip(potential_ip: str) -> bool:
+        try:
+            ip_address(potential_ip)
+            return True
+        except Exception:
+            return False
