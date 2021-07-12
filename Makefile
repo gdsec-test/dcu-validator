@@ -35,6 +35,9 @@ test:
 testcov:
 	cd rest && $(MAKE) testcov
 	cd scheduler && $(MAKE) testcov
+	coverage combine rest/.coverage scheduler/.coverage
+	coverage report
+	coverage xml
 
 .PHONY: prep
 prep: tools test

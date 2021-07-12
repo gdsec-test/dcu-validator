@@ -19,7 +19,8 @@ services:
       - DB_HOST=mongo
       - REDIS=redis
       - API_UPDATE_URL=https://abuse.api.int.dev-godaddy.com/v1/abuse/tickets
-      - API_TOKEN="${API_TOKEN}"
+      - SSO_USER=${SSO_USER}
+      - SSO_PASSWORD=${SSO_PASSWORD}
       - DOMAIN_SERVICE=kubernetes_proxy:8080
       - SMDB_USERNAME=${SMDB_USERNAME}
       - SMDB_PASSWORD=${SMDB_PASSWORD}

@@ -88,7 +88,8 @@ You will need to install the certificates in `scheduler/certs` into your CA chai
 1. Define these environment variables.
 ```
 scheduler=scheduler
-API_TOKEN="<a valid JWT for the abuse API>"
+SSO_USER="user to retrieve JWT with"
+SSO_PASSWORD="password to retrieve JWT with"
 SMDB_USERNAME="<username>"
 SMDB_PASSWORD="<password>"
 ```
@@ -98,7 +99,8 @@ SMDB_PASSWORD="<password>"
 ### Debugging REST in PyCharm
 1. Define these environment variables in your terminal.
 ```
-API_TOKEN="<a valid JWT for the abuse API>"
+SSO_USER="user to retrieve JWT with"
+SSO_PASSWORD="password to retrieve JWT with"
 SMDB_USERNAME="<username>"
 SMDB_PASSWORD="<password>"
 ```
@@ -120,7 +122,8 @@ MIN_PERIOD=10
 ```
 2. Define these environment variables in PyCharm.
 ```
-API_TOKEN="<a valid JWT for the abuse API>"
+SSO_USER="user to retrieve JWT with"
+SSO_PASSWORD="password to retrieve JWT with"
 API_UPDATE_URL=https://abuse.api.int.dev-godaddy.com/v1/abuse/tickets
 COLLECTION=incidents
 DB=devphishstory

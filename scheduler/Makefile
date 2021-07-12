@@ -40,7 +40,7 @@ test: tools
 .PHONY: testcov
 testcov:
 	@echo "----- Running tests with coverage -----"
-	nosetests tests --with-coverage --cover-erase --cover-package=scheduler_service
+	nosetests tests --with-coverage --cover-erase --cover-package=scheduler_service --cover-xml
 
 prep:
 	@echo "----- preparing $(IMAGE) build -----"
