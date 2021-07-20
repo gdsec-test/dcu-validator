@@ -16,9 +16,7 @@ RUN mkdir -p /usr/local/share/ca-certificates/
 RUN cp /tmp/certs/* /usr/local/share/ca-certificates/
 RUN update-ca-certificates
 
-RUN pip install --compile /tmp/private_deps/dcdatabase
-RUN pip install --compile /tmp/private_deps/dcu-structured-logging-grpc/
-RUN pip install --compile /tmp && rm -rf /tmp/*
+RUN PIP_CONFIG_FILE=/tmp/pip_config/pip.conf pip install --compile /tmp && rm -rf /tmp/*
 
 # Over-write the certifi shipped certificate with the system cert.
 RUN cp /etc/ssl/certs/ca-certificates.crt /usr/local/lib/python3.7/site-packages/certifi/cacert.pem

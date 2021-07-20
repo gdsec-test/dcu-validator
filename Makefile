@@ -16,8 +16,6 @@ all: prep
 env:
 	pip install -r rest/test_requirements.txt
 	pip install -r scheduler/test_requirements.txt
-	pip install -r scheduler/private_pips.txt
-	pip install -r rest/private_pips.txt
 	pip install -r scheduler/requirements.txt
 	pip install -r rest/requirements.txt
 
