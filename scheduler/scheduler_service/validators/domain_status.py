@@ -13,8 +13,6 @@ class DomainStatusValidator(ValidatorInterface):
     """
     KEY_STATUS = 'status'
     NO_DOMAIN_STATUS = 'NO_DOMAIN_STATUS'
-    STATUS_200 = 200
-    STATUS_404 = 404
 
     handlers = ['PHISHING', 'MALWARE']
 
@@ -67,12 +65,12 @@ class DomainStatusValidator(ValidatorInterface):
                 #  400: u'{"error":"invalid character \'d\' looking for beginning of value","code":3}'
                 #  404: u'Not Found\n'
                 #  500: u'{"error":"No Active shoppers for this Domain Name","code":13}'
-                if status_code not in [self.STATUS_200, self.STATUS_404]:
+                if status_code not in [200, 404]:
                     self._logger.error(
                         f'Domain lookup failed for {domain_name} with status code {status_code} : {resp.text}')
-                elif status_code == self.STATUS_404:
+                elif status_code == 404:
                     self._logger.critical(f'URL not found : {resp.text}')
-                elif status_code == self.STATUS_200:
+                elif status_code == 200:
                     # Valid response looks like:
                     #  {"domain":"XXX",
                     #   "shopperId":"XXX",
