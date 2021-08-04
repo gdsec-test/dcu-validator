@@ -18,15 +18,14 @@ class DomainStatusValidator(ValidatorInterface):
 
     handlers = ['PHISHING', 'MALWARE']
 
-    workable_states = ['ACTIVE', 'AWAITING_VERIFICATION_ICANN', 'AWAITING_VERIFICATION_ICANN_MANUAL', 'HELD_DISPUTED',
+    workable_status = ['ACTIVE', 'AWAITING_VERIFICATION_ICANN', 'AWAITING_VERIFICATION_ICANN_MANUAL', 'HELD_DISPUTED',
                        'HELD_EXPIRED_REDEMPTION_MOCK', 'HELD_SHOPPER', NO_DOMAIN_STATUS, 'PENDING_HOLD_REDEMPTION',
                        'PENDING_UPDATE_OWNERSHIP', 'PENDING_TRANSFER_OUT']
 
     def __init__(self):
         self._logger = get_logging()
         endpoint = os.getenv('DOMAIN_SERVICE') or 'domainservice:8080'
-        domain_uri = f'http://{endpoint}/v1/domains'
-        self._query_domain_endpoint = f'{domain_uri}/domaininfo'
+        self._query_domain_endpoint = f'http://{endpoint}/v1/domains/domaininfo'
 
     def validate_ticket(self, ticket):
         """
@@ -39,7 +38,7 @@ class DomainStatusValidator(ValidatorInterface):
         workable = True
         reason = None
 
-        if self._get_domain_status(domain_name) not in self.workable_states:
+        if self._get_domain_status(domain_name) not in self.workable_status:
             workable = False
             reason = 'unworkable'
             self._logger.info(f'{domain_name} - domain status is NOT ACTIVE')
