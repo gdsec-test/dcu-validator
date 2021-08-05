@@ -8,7 +8,7 @@ from scheduler_service.validators.resolves import ResolvesValidator
 class TestResolvable:
 
     url = 'http://comicsn.beer/'
-    doc = {'number': '123', 'source': url}
+    doc = {'number': '123', 'source': url, 'proxy': 'USA'}
 
     def __init__(self):
         self._resolvable = ResolvesValidator()
@@ -57,6 +57,30 @@ class TestResolvable:
     def test_not_resolves_404(self, request):
         request.return_value = MagicMock(status_code=404)
 
+        result = self._resolvable.validate_ticket(self.doc)
+
+        return assert_true(result == (False, 'unresolvable'))
+
+    @patch.object(Session, 'request')
+    def test_not_resolves_empty_proxy(self, request):
+        request.return_value = MagicMock(status_code=404)
+        self.doc['proxy'] = ''
+        result = self._resolvable.validate_ticket(self.doc)
+
+        return assert_true(result == (False, 'unresolvable'))
+
+    @patch.object(Session, 'request')
+    def test_not_resolves_disallowed_proxy(self, request):
+        request.return_value = MagicMock(status_code=404)
+        self.doc['proxy'] = 'DEU'
+        result = self._resolvable.validate_ticket(self.doc)
+
+        return assert_true(result == (True,))
+
+    @patch.object(Session, 'request')
+    def test_not_resolves_missingProxy(self, request):
+        request.return_value = MagicMock(status_code=404)
+        del self.doc['proxy']
         result = self._resolvable.validate_ticket(self.doc)
 
         return assert_true(result == (False, 'unresolvable'))
