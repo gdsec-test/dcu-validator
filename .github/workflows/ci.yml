@@ -49,3 +49,4 @@ jobs:
           aws-secret-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_CICD }}
           aws-deploy-role: ${{ secrets.AWS_DEPLOY_ROLE_CICD }}
           repo-pat: ${{ secrets.REPO_PAT }}
+          artifactory-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
