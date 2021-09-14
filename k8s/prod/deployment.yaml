@@ -46,10 +46,10 @@ spec:
           - name: DB_PASS
             valueFrom:
               secretKeyRef:
-                name: db-validator
+                name: db-phishstory-v2
                 key: password
           - name: DB_USER
-            value: sau_p_phish
+            value: sau_p_phishv2
           - name: DB_HOST
             value: 10.22.9.209
           - name: DB

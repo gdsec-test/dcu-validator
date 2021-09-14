@@ -46,7 +46,7 @@ spec:
           - name: DB_PASS
             valueFrom:
               secretKeyRef:
-                name: db-validator
+                name: db-phishstory-v2
                 key: password
           - name: DB_USER
             value: devuser
