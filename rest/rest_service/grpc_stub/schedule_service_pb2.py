@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x16schedule_service.proto\x12\tscheduler\"8\n\x07Request\x12\x0e\n\x06ticket\x18\x01 \x01(\t\x12\r\n\x05\x63lose\x18\x02 \x01(\x08\x12\x0e\n\x06period\x18\x03 \x01(\x05\"\n\n\x08Response\"G\n\x12ValidationResponse\x12!\n\x06result\x18\x01 \x01(\x0e\x32\x11.scheduler.Result\x12\x0e\n\x06reason\x18\x02 \x01(\t*,\n\x06Result\x12\t\n\x05VALID\x10\x00\x12\x0b\n\x07INVALID\x10\x01\x12\n\n\x06LOCKED\x10\x02\x32\xc9\x01\n\tScheduler\x12\x38\n\x0b\x41\x64\x64Schedule\x12\x12.scheduler.Request\x1a\x13.scheduler.Response\"\x00\x12;\n\x0eRemoveSchedule\x12\x12.scheduler.Request\x1a\x13.scheduler.Response\"\x00\x12\x45\n\x0eValidateTicket\x12\x12.scheduler.Request\x1a\x1d.scheduler.ValidationResponse\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x16schedule_service.proto\x12\tscheduler\"8\n\x07Request\x12\x0e\n\x06ticket\x18\x01 \x01(\t\x12\r\n\x05\x63lose\x18\x02 \x01(\x08\x12\x0e\n\x06period\x18\x03 \x01(\x05\"\n\n\x08Response\"G\n\x12ValidationResponse\x12!\n\x06result\x18\x01 \x01(\x0e\x32\x11.scheduler.Result\x12\x0e\n\x06reason\x18\x02 \x01(\t*,\n\x06Result\x12\t\n\x05VALID\x10\x00\x12\x0b\n\x07INVALID\x10\x01\x12\n\n\x06LOCKED\x10\x02\x32\x83\x02\n\tScheduler\x12\x38\n\x0b\x41\x64\x64Schedule\x12\x12.scheduler.Request\x1a\x13.scheduler.Response\"\x00\x12;\n\x0eRemoveSchedule\x12\x12.scheduler.Request\x1a\x13.scheduler.Response\"\x00\x12\x45\n\x0eValidateTicket\x12\x12.scheduler.Request\x1a\x1d.scheduler.ValidationResponse\"\x00\x12\x38\n\x0b\x43loseTicket\x12\x12.scheduler.Request\x1a\x13.scheduler.Response\"\x00\x62\x06proto3'
 )
 
 _RESULT = _descriptor.EnumDescriptor(
@@ -207,7 +207,7 @@ _SCHEDULER = _descriptor.ServiceDescriptor(
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
   serialized_start=227,
-  serialized_end=428,
+  serialized_end=486,
   methods=[
   _descriptor.MethodDescriptor(
     name='AddSchedule',
@@ -236,6 +236,16 @@ _SCHEDULER = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_REQUEST,
     output_type=_VALIDATIONRESPONSE,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='CloseTicket',
+    full_name='scheduler.Scheduler.CloseTicket',
+    index=3,
+    containing_service=None,
+    input_type=_REQUEST,
+    output_type=_RESPONSE,
     serialized_options=None,
     create_key=_descriptor._internal_create_key,
   ),

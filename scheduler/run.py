@@ -18,7 +18,10 @@ def serve():
 
     # Create and start our APScheduler
     aps = APS()
+
     aps.scheduler.start()
+    logger.info("made it here")
+
     scheduler = Service(aps)
 
     # Configure and start service

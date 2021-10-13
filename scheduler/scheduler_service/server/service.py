@@ -160,6 +160,18 @@ class Service(SchedulerServicer):
         :param context: not used
         :return: GRPC scheduler.ValidationResponse
         """
+
         self._logger.info("Validating {}".format(request))
+        res = validate(request.ticket, dict(close=request.close))
+        return ValidationResponse(result=res[0], reason=res[1])
+
+    def CloseTicket(self, request, context):
+        """
+        Validates the source URI for a ticket
+        :param request: GRPC scheduler.Request
+        :param context: not used
+        :return: GRPC scheduler.ValidationResponse
+        """
+        self._logger.info("closssinggggggg!!!!!")
         res = validate(request.ticket, dict(close=request.close))
         return ValidationResponse(result=res[0], reason=res[1])
