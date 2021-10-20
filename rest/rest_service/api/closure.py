@@ -17,9 +17,9 @@ def service_connect():
     return rest_service.grpc_stub.schedule_service_pb2_grpc.SchedulerStub(channel)
 
 
-def AddSchedule(ticketid, period, close):
+def AddClosureSchedule(ticketid, period):
     stub = service_connect()
-    return stub.AddSchedule(Request(period=period, close=close, ticket=ticketid))
+    return stub.AddClosureSchedule(Request(period=period, ticket=ticketid))
 
 
 def RemoveSchedule(ticketid):
@@ -49,18 +49,6 @@ closure = api.model(
     })
 
 
-# ticket_model = api.model(
-#     'Ticket', {
-#         'result':
-#             fields.String(
-#                 description='Result of the validation checks', enum=['VALID', 'INVALID', 'LOCKED']),
-#         'reason':
-#             fields.String(
-#                 description='Reason for the given result'
-#             )
-#     })
-
-
 @api.route('/close/<string:ticketid>', endpoint='close')
 @api.doc(params={'ticketid': 'DCU Ticket ID'})
 class Close(Resource):
@@ -69,9 +57,11 @@ class Close(Resource):
     @api.response(200, 'Success')
     def post(self, ticketid):
         """
-        Validate a DCU ticket
+        Close a DCU ticket
         """
+
         response = CloseTicket(ticketid)
+        print(response)
         return response, 200
 
 
@@ -84,9 +74,9 @@ class ClosureScheduler(Resource):
     @api.expect(closure)
     def post(self, ticketid):
         """
-        Schedule/Re-schedule a ticket for validation
+        Schedule a ticket for closure
         """
         payload = request.json
         period = payload.get('period')
-        AddSchedule(ticketid, period)
+        AddClosureSchedule(ticketid, period)
         return '', 201

@@ -37,7 +37,6 @@ class APIHelper:
             if r.status_code in [401, 403]:
                 self._header['Authorization'] = self._get_jwt()
                 r = api_call()
-
             if r.status_code == 204:
                 data = True
             else:

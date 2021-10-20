@@ -19,6 +19,11 @@ class SchedulerStub(object):
                 request_serializer=schedule__service__pb2.Request.SerializeToString,
                 response_deserializer=schedule__service__pb2.Response.FromString,
                 )
+        self.AddClosureSchedule = channel.unary_unary(
+                '/scheduler.Scheduler/AddClosureSchedule',
+                request_serializer=schedule__service__pb2.Request.SerializeToString,
+                response_deserializer=schedule__service__pb2.Response.FromString,
+                )
         self.RemoveSchedule = channel.unary_unary(
                 '/scheduler.Scheduler/RemoveSchedule',
                 request_serializer=schedule__service__pb2.Request.SerializeToString,
@@ -32,7 +37,7 @@ class SchedulerStub(object):
         self.CloseTicket = channel.unary_unary(
                 '/scheduler.Scheduler/CloseTicket',
                 request_serializer=schedule__service__pb2.Request.SerializeToString,
-                response_deserializer=schedule__service__pb2.Response.FromString,
+                response_deserializer=schedule__service__pb2.ValidationResponse.FromString,
                 )
 
 
@@ -40,6 +45,12 @@ class SchedulerServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def AddSchedule(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def AddClosureSchedule(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -71,6 +82,11 @@ def add_SchedulerServicer_to_server(servicer, server):
                     request_deserializer=schedule__service__pb2.Request.FromString,
                     response_serializer=schedule__service__pb2.Response.SerializeToString,
             ),
+            'AddClosureSchedule': grpc.unary_unary_rpc_method_handler(
+                    servicer.AddClosureSchedule,
+                    request_deserializer=schedule__service__pb2.Request.FromString,
+                    response_serializer=schedule__service__pb2.Response.SerializeToString,
+            ),
             'RemoveSchedule': grpc.unary_unary_rpc_method_handler(
                     servicer.RemoveSchedule,
                     request_deserializer=schedule__service__pb2.Request.FromString,
@@ -84,7 +100,7 @@ def add_SchedulerServicer_to_server(servicer, server):
             'CloseTicket': grpc.unary_unary_rpc_method_handler(
                     servicer.CloseTicket,
                     request_deserializer=schedule__service__pb2.Request.FromString,
-                    response_serializer=schedule__service__pb2.Response.SerializeToString,
+                    response_serializer=schedule__service__pb2.ValidationResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -108,6 +124,23 @@ class Scheduler(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/scheduler.Scheduler/AddSchedule',
+            schedule__service__pb2.Request.SerializeToString,
+            schedule__service__pb2.Response.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def AddClosureSchedule(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/scheduler.Scheduler/AddClosureSchedule',
             schedule__service__pb2.Request.SerializeToString,
             schedule__service__pb2.Response.FromString,
             options, channel_credentials,
@@ -160,6 +193,6 @@ class Scheduler(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/scheduler.Scheduler/CloseTicket',
             schedule__service__pb2.Request.SerializeToString,
-            schedule__service__pb2.Response.FromString,
+            schedule__service__pb2.ValidationResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

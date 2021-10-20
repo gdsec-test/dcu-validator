@@ -20,7 +20,6 @@ def serve():
     aps = APS()
 
     aps.scheduler.start()
-    logger.info("made it here")
 
     scheduler = Service(aps)
 

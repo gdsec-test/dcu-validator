@@ -14,6 +14,8 @@ from scheduler_service.utils.db_settings import create_db_settings
 from scheduler_service.utils.lock import Lock
 from scheduler_service.validators.route import route
 
+import scheduler.scheduler_service.grpc_stub.schedule_service_pb2
+
 LOGGER = get_logging()
 TTL = os.getenv('TTL') or 300
 TTL *= 1000
@@ -53,6 +55,28 @@ def validate(ticket, data=None):
                 lock.release()
         else:
             return LOCKED, 'being worked'
+    return VALID, ''
+
+
+def close_ticket(ticket):
+    LOGGER.info('closing ticket {}'.format(ticket))
+    lock = get_redlock(ticket)
+    db_handle = phishstory_db()
+    ticket_data = db_handle.get_incident(ticket)
+    LOGGER.info(ticket_data)
+    if lock.acquire():
+        try:
+            LOGGER.info('Closing ticket {}'.format(ticket))
+            if not APIHelper().close_incident(ticket, 'resolved'):
+                LOGGER.error('Unable to close ticket {}'.format(ticket))
+                return INVALID, 'unworkable'
+            remove_job(ticket)
+        except Exception as e:
+            LOGGER.error('Unable to close exception {}:{}'.format(ticket, e))
+        finally:
+            lock.release()
+    else:
+        return LOCKED, 'being worked'
     return VALID, ''
 
 
@@ -165,13 +189,36 @@ class Service(SchedulerServicer):
         res = validate(request.ticket, dict(close=request.close))
         return ValidationResponse(result=res[0], reason=res[1])
 
-    def CloseTicket(self, request, context):
+    def CloseTicket(self, request: scheduler.scheduler_service.grpc_stub.schedule_service_pb2.Request):
         """
-        Validates the source URI for a ticket
-        :param request: GRPC scheduler.Request
-        :param context: not used
-        :return: GRPC scheduler.ValidationResponse
+        Closes ticket
         """
         self._logger.info("closssinggggggg!!!!!")
-        res = validate(request.ticket, dict(close=request.close))
+        res = close_ticket(request.ticket)
         return ValidationResponse(result=res[0], reason=res[1])
+
+    def AddClosureSchedule(self, request: scheduler.scheduler_service.grpc_stub.schedule_service_pb2.Request):
+        """
+        Adds a schedule for closing a ticket
+        """
+        self._logger.info("Adding schedule for {}".format(request))
+        ticketid = request.ticket
+        period = request.period
+        job = self.aps.scheduler.get_job(ticketid)
+        if job:
+            self._logger.info("Rescheduling ticket {} for {} seconds".format(
+                ticketid, int(period)))
+            job.reschedule('interval', seconds=int(period))
+        else:
+            self._logger.info("Scheduling ticket {} for {} seconds".format(
+                ticketid, int(period)))
+            self.aps.scheduler.add_job(
+                close_ticket,
+                'interval',
+                seconds=int(period),
+                args=[
+                    ticketid,
+                ],
+                id=ticketid,
+                replace_existing=True)
+        return Response()
