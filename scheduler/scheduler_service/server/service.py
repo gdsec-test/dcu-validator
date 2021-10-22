@@ -4,6 +4,7 @@ from apscheduler import jobstores
 from dcdatabase.phishstorymongo import PhishstoryMongo
 from dcustructuredlogginggrpc import get_logging
 
+import scheduler_service.grpc_stub.schedule_service_pb2
 from scheduler_service.grpc_stub.schedule_service_pb2 import (
     INVALID, LOCKED, VALID, Response, ValidationResponse)
 from scheduler_service.grpc_stub.schedule_service_pb2_grpc import \
@@ -13,8 +14,6 @@ from scheduler_service.utils.api_helper import APIHelper
 from scheduler_service.utils.db_settings import create_db_settings
 from scheduler_service.utils.lock import Lock
 from scheduler_service.validators.route import route
-
-import scheduler.scheduler_service.grpc_stub.schedule_service_pb2
 
 LOGGER = get_logging()
 TTL = os.getenv('TTL') or 300
@@ -189,36 +188,30 @@ class Service(SchedulerServicer):
         res = validate(request.ticket, dict(close=request.close))
         return ValidationResponse(result=res[0], reason=res[1])
 
-    def CloseTicket(self, request: scheduler.scheduler_service.grpc_stub.schedule_service_pb2.Request):
+    def CloseTicket(self, request: scheduler_service.grpc_stub.schedule_service_pb2.Request, context):
         """
         Closes ticket
         """
-        self._logger.info("closssinggggggg!!!!!")
+        self._logger.info("closing ticket {}".format(request.ticket))
         res = close_ticket(request.ticket)
         return ValidationResponse(result=res[0], reason=res[1])
 
-    def AddClosureSchedule(self, request: scheduler.scheduler_service.grpc_stub.schedule_service_pb2.Request):
+    def AddClosureSchedule(self, request: scheduler_service.grpc_stub.schedule_service_pb2.Request, context):
         """
         Adds a schedule for closing a ticket
         """
         self._logger.info("Adding schedule for {}".format(request))
         ticketid = request.ticket
         period = request.period
-        job = self.aps.scheduler.get_job(ticketid)
-        if job:
-            self._logger.info("Rescheduling ticket {} for {} seconds".format(
-                ticketid, int(period)))
-            job.reschedule('interval', seconds=int(period))
-        else:
-            self._logger.info("Scheduling ticket {} for {} seconds".format(
-                ticketid, int(period)))
-            self.aps.scheduler.add_job(
-                close_ticket,
-                'interval',
-                seconds=int(period),
-                args=[
-                    ticketid,
-                ],
-                id=ticketid,
-                replace_existing=True)
+        self._logger.info("Scheduling ticket {} for {} seconds".format(
+            ticketid, int(period)))
+        self.aps.scheduler.add_job(
+            close_ticket,
+            'interval',
+            seconds=int(period),
+            args=[
+                ticketid,
+            ],
+            id=ticketid,
+            replace_existing=True)
         return Response()
