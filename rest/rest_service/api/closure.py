@@ -19,6 +19,7 @@ def service_connect():
 
 def AddClosureSchedule(ticketid, period):
     stub = service_connect()
+    logger.info("period {}".format(period))
     return stub.AddClosureSchedule(Request(period=period, ticket=ticketid))
 
 
@@ -43,8 +44,8 @@ closure = api.model(
         'period':
             fields.Integer(
                 min=int(os.getenv('MIN_PERIOD', 300)),
-                max=int(os.getenv('MAX_PERIOD', 90000)),
-                default=86400,
+                max=15724800,
+                default=15724800,
                 description='The period to close a ticket'),
     })
 
@@ -61,7 +62,6 @@ class Close(Resource):
         """
 
         response = CloseTicket(ticketid)
-        print(response)
         return response, 200
 
 
