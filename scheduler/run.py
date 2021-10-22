@@ -9,6 +9,7 @@ import scheduler_service.grpc_stub.schedule_service_pb2
 import scheduler_service.grpc_stub.schedule_service_pb2_grpc
 from scheduler_service.schedulers.aps import APS
 from scheduler_service.server.service import Service
+from scheduler_service.server.service import close_ticket
 
 _ONE_DAY_IN_SECONDS = 86400
 
@@ -22,7 +23,7 @@ def serve():
     aps.scheduler.start()
 
     scheduler = Service(aps)
-
+    close_ticket("DCU003509122")
     # Configure and start service
     server = grpc.server(thread_pool=futures.ThreadPoolExecutor(max_workers=10), interceptors=[LoggerInterceptor()])
     scheduler_service.grpc_stub.schedule_service_pb2_grpc.add_SchedulerServicer_to_server(
@@ -30,6 +31,7 @@ def serve():
     logger.info("Listening on port 50051...")
     server.add_insecure_port(f'{os.getenv("LISTEN_IP", "[::]")}:50051')
     server.start()
+
     try:
         while True:
             time.sleep(_ONE_DAY_IN_SECONDS)

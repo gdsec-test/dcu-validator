@@ -34,11 +34,6 @@ class SchedulerStub(object):
                 request_serializer=schedule__service__pb2.Request.SerializeToString,
                 response_deserializer=schedule__service__pb2.ValidationResponse.FromString,
                 )
-        self.CloseTicket = channel.unary_unary(
-                '/scheduler.Scheduler/CloseTicket',
-                request_serializer=schedule__service__pb2.Request.SerializeToString,
-                response_deserializer=schedule__service__pb2.ValidationResponse.FromString,
-                )
 
 
 class SchedulerServicer(object):
@@ -68,12 +63,6 @@ class SchedulerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def CloseTicket(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
 
 def add_SchedulerServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -94,11 +83,6 @@ def add_SchedulerServicer_to_server(servicer, server):
             ),
             'ValidateTicket': grpc.unary_unary_rpc_method_handler(
                     servicer.ValidateTicket,
-                    request_deserializer=schedule__service__pb2.Request.FromString,
-                    response_serializer=schedule__service__pb2.ValidationResponse.SerializeToString,
-            ),
-            'CloseTicket': grpc.unary_unary_rpc_method_handler(
-                    servicer.CloseTicket,
                     request_deserializer=schedule__service__pb2.Request.FromString,
                     response_serializer=schedule__service__pb2.ValidationResponse.SerializeToString,
             ),
@@ -175,23 +159,6 @@ class Scheduler(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/scheduler.Scheduler/ValidateTicket',
-            schedule__service__pb2.Request.SerializeToString,
-            schedule__service__pb2.ValidationResponse.FromString,
-            options, channel_credentials,
-            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def CloseTicket(request,
-            target,
-            options=(),
-            channel_credentials=None,
-            call_credentials=None,
-            insecure=False,
-            compression=None,
-            wait_for_ready=None,
-            timeout=None,
-            metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/scheduler.Scheduler/CloseTicket',
             schedule__service__pb2.Request.SerializeToString,
             schedule__service__pb2.ValidationResponse.FromString,
             options, channel_credentials,

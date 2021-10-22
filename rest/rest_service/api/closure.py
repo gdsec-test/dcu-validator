@@ -50,21 +50,6 @@ closure = api.model(
     })
 
 
-@api.route('/close/<string:ticketid>', endpoint='close')
-@api.doc(params={'ticketid': 'DCU Ticket ID'})
-class Close(Resource):
-
-    @api.response(400, 'Closure Error')
-    @api.response(200, 'Success')
-    def post(self, ticketid):
-        """
-        Close a DCU ticket
-        """
-
-        response = CloseTicket(ticketid)
-        return response, 200
-
-
 @api.route('/schedule/<string:ticketid>', endpoint='scheduler_closure')
 @api.doc(params={'ticketid': 'DCU Ticket ID'})
 class ClosureScheduler(Resource):

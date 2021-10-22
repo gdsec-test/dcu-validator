@@ -29,5 +29,4 @@ service Scheduler {
     rpc AddClosureSchedule(Request) returns(Response) {}
     rpc RemoveSchedule(Request) returns(Response) {}
     rpc ValidateTicket(Request) returns (ValidationResponse) {}
-    rpc CloseTicket(Request) returns (ValidationResponse) {}
 }
