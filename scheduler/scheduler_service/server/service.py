@@ -18,6 +18,8 @@ from scheduler_service.validators.route import route
 LOGGER = get_logging()
 TTL = os.getenv('TTL') or 300
 TTL *= 1000
+# Need to support empty strings so we don't break behavior for older tickets.
+ALLOWED_PROXY_VALUES = ['', 'USA']
 
 
 def validate(ticket, data=None):
@@ -35,7 +37,7 @@ def validate(ticket, data=None):
     if ticket_data is None or ticket_data.get('phishstory_status', 'OPEN') == 'CLOSED':
         remove_job(ticket)
         return INVALID, 'unworkable'
-    else:
+    elif ticket_data.get('proxy', '') in ALLOWED_PROXY_VALUES:
         if lock.acquire():
             try:
                 resp = route(ticket_data)
