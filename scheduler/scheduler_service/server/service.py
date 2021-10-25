@@ -1,6 +1,7 @@
 import os
 from datetime import datetime, timedelta
 
+
 import grpc
 from apscheduler import jobstores
 from dcdatabase.phishstorymongo import PhishstoryMongo
@@ -9,7 +10,7 @@ from dcustructuredlogginggrpc import get_logging
 import scheduler_service.grpc_stub.schedule_service_pb2
 import scheduler_service.grpc_stub.schedule_service_pb2_grpc
 from scheduler_service.grpc_stub.schedule_service_pb2 import (
-    INVALID, LOCKED, VALID, Response, ValidationResponse)
+    INVALID, LOCKED, VALID, Response, ValidationResponse, Request)
 # Request
 from scheduler_service.grpc_stub.schedule_service_pb2_grpc import \
     SchedulerServicer
@@ -79,19 +80,19 @@ def close_ticket(ticket):
     if lock.acquire():
         try:
             last_modified = ticket_data[os.getenv('KEY_LAST_MODIFIED') or 'last_modified']
-            now = datetime.now()
+            now = datetime.utcnow()
             diff = now - timedelta(hours=24)
             if diff <= last_modified <= now:
-                LOGGER.info(f'{ticket} was recently modified, rescheduling closure for tomorrow')
-                # remove_job(ticket)
-                # stub = service_connect()
-                # stub.AddClosureSchedule(Request(period=ONEWEEK, ticket=ticket), None)
+                LOGGER.info(f'{ticket} was recently modified, rescheduling closure for next week')
+                remove_job(f'{ticket}-close-job')
+                stub = service_connect()
+                stub.AddClosureSchedule(Request(period=ONEWEEK, ticket=ticket), None)
                 return LOCKED, 'being worked'
             LOGGER.info(f'Closing ticket {ticket}')
             if not APIHelper().close_incident(ticket, 'resolved'):
                 LOGGER.error(f'Unable to close ticket {ticket}')
                 return INVALID, 'unworkable'
-            remove_job(ticket)
+            remove_job(f'{ticket}-close-job')
         except Exception as e:
             LOGGER.error(f'Unable to close exception {ticket}:{e}')
         finally:
@@ -225,6 +226,6 @@ class Service(SchedulerServicer):
             args=[
                 ticketid,
             ],
-            id=ticketid,
+            id=f'{ticketid}-close-job',
             replace_existing=True)
         return Response()
