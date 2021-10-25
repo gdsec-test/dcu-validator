@@ -1,7 +1,6 @@
 import os
 from datetime import datetime, timedelta
 
-
 import grpc
 from apscheduler import jobstores
 from dcdatabase.phishstorymongo import PhishstoryMongo
@@ -10,7 +9,7 @@ from dcustructuredlogginggrpc import get_logging
 import scheduler_service.grpc_stub.schedule_service_pb2
 import scheduler_service.grpc_stub.schedule_service_pb2_grpc
 from scheduler_service.grpc_stub.schedule_service_pb2 import (
-    INVALID, LOCKED, VALID, Response, ValidationResponse, Request)
+    INVALID, LOCKED, VALID, Request, Response, ValidationResponse)
 # Request
 from scheduler_service.grpc_stub.schedule_service_pb2_grpc import \
     SchedulerServicer
@@ -85,8 +84,15 @@ def close_ticket(ticket):
             if diff <= last_modified <= now:
                 LOGGER.info(f'{ticket} was recently modified, rescheduling closure for next week')
                 remove_job(f'{ticket}-close-job')
-                stub = service_connect()
-                stub.AddClosureSchedule(Request(period=ONEWEEK, ticket=ticket), None)
+                get_scheduler().add_job(
+                    close_ticket,
+                    'interval',
+                    seconds=30,
+                    args=[
+                        ticket
+                    ],
+                    id=f'{ticket}-close-job',
+                    replace_existing=True)
                 return LOCKED, 'being worked'
             LOGGER.info(f'Closing ticket {ticket}')
             if not APIHelper().close_incident(ticket, 'resolved'):
@@ -218,14 +224,16 @@ class Service(SchedulerServicer):
         self._logger.info(f"Adding schedule for {request}")
         ticketid = request.ticket
         period = request.period
+        scheduler = self.aps.scheduler
         self._logger.info(f"Scheduling ticket {ticketid} for {period} seconds")
         self.aps.scheduler.add_job(
             close_ticket,
             'interval',
             seconds=period,
             args=[
-                ticketid,
+                ticketid
             ],
             id=f'{ticketid}-close-job',
             replace_existing=True)
+        self._logger.info("made it here")
         return Response()
