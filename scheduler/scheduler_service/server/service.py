@@ -7,6 +7,7 @@ from dcdatabase.phishstorymongo import PhishstoryMongo
 from dcustructuredlogginggrpc import get_logging
 
 import scheduler_service.grpc_stub.schedule_service_pb2
+import scheduler_service.grpc_stub.schedule_service_pb2_grpc
 from scheduler_service.grpc_stub.schedule_service_pb2 import (
     INVALID, LOCKED, VALID, Request, Response, ValidationResponse)
 from scheduler_service.grpc_stub.schedule_service_pb2_grpc import \
@@ -16,8 +17,6 @@ from scheduler_service.utils.api_helper import APIHelper
 from scheduler_service.utils.db_settings import create_db_settings
 from scheduler_service.utils.lock import Lock
 from scheduler_service.validators.route import route
-import rest.rest_service.grpc_stub.schedule_service_pb2_grpc
-
 
 LOGGER = get_logging()
 TTL = os.getenv('TTL') or 300
@@ -63,10 +62,12 @@ def validate(ticket, data=None):
             return LOCKED, 'being worked'
     return VALID, ''
 
+
 def service_connect():
     scheduler_loc = os.getenv('scheduler', 'scheduler')
     channel = grpc.insecure_channel(scheduler_loc + ':50051')
-    return rest.rest_service.grpc_stub.schedule_service_pb2_grpc.SchedulerStub(channel)
+    return scheduler_service.grpc_stub.schedule_service_pb2_grpc.SchedulerStub(channel)
+
 
 def close_ticket(ticket):
     LOGGER.info(f'Running scheduled close_ticket check for {ticket}')
