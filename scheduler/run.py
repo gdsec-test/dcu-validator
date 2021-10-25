@@ -8,7 +8,7 @@ from dcustructuredlogginggrpc import LoggerInterceptor, get_logging
 import scheduler_service.grpc_stub.schedule_service_pb2
 import scheduler_service.grpc_stub.schedule_service_pb2_grpc
 from scheduler_service.schedulers.aps import APS
-from scheduler_service.server.service import Service
+from scheduler_service.server.service import Service, close_ticket
 
 _ONE_DAY_IN_SECONDS = 86400
 

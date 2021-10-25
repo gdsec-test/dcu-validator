@@ -9,7 +9,8 @@ from dcustructuredlogginggrpc import get_logging
 import scheduler_service.grpc_stub.schedule_service_pb2
 import scheduler_service.grpc_stub.schedule_service_pb2_grpc
 from scheduler_service.grpc_stub.schedule_service_pb2 import (
-    INVALID, LOCKED, VALID, Request, Response, ValidationResponse)
+    INVALID, LOCKED, VALID, Response, ValidationResponse)
+# Request
 from scheduler_service.grpc_stub.schedule_service_pb2_grpc import \
     SchedulerServicer
 from scheduler_service.schedulers.aps import APS
@@ -74,7 +75,7 @@ def close_ticket(ticket):
     lock = get_redlock(ticket)
     db_handle = phishstory_db()
     ticket_data = db_handle.get_incident(ticket)
-    LOGGER.info(ticket_data)
+    LOGGER.info(ticket)
     if lock.acquire():
         try:
             last_modified = ticket_data[os.getenv('KEY_LAST_MODIFIED') or 'last_modified']
@@ -82,9 +83,9 @@ def close_ticket(ticket):
             diff = now - timedelta(hours=24)
             if diff <= last_modified <= now:
                 LOGGER.info(f'{ticket} was recently modified, rescheduling closure for tomorrow')
-                remove_job(ticket)
-                stub = service_connect()
-                stub.AddClosureSchedule(Request(period=ONEWEEK, ticket=ticket), None)
+                # remove_job(ticket)
+                # stub = service_connect()
+                # stub.AddClosureSchedule(Request(period=ONEWEEK, ticket=ticket), None)
                 return LOCKED, 'being worked'
             LOGGER.info(f'Closing ticket {ticket}')
             if not APIHelper().close_incident(ticket, 'resolved'):
@@ -224,6 +225,6 @@ class Service(SchedulerServicer):
             args=[
                 ticketid,
             ],
-            id=f'{ticketid}-close-job',
+            id=ticketid,
             replace_existing=True)
         return Response()
