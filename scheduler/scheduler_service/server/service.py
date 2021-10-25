@@ -9,7 +9,7 @@ from dcustructuredlogginggrpc import get_logging
 import scheduler_service.grpc_stub.schedule_service_pb2
 import scheduler_service.grpc_stub.schedule_service_pb2_grpc
 from scheduler_service.grpc_stub.schedule_service_pb2 import (
-    INVALID, LOCKED, VALID, Request, Response, ValidationResponse)
+    INVALID, LOCKED, VALID, Response, ValidationResponse)
 # Request
 from scheduler_service.grpc_stub.schedule_service_pb2_grpc import \
     SchedulerServicer
@@ -87,7 +87,7 @@ def close_ticket(ticket):
                 get_scheduler().add_job(
                     close_ticket,
                     'interval',
-                    seconds=30,
+                    seconds=ONEWEEK,
                     args=[
                         ticket
                     ],
@@ -224,7 +224,6 @@ class Service(SchedulerServicer):
         self._logger.info(f"Adding schedule for {request}")
         ticketid = request.ticket
         period = request.period
-        scheduler = self.aps.scheduler
         self._logger.info(f"Scheduling ticket {ticketid} for {period} seconds")
         self.aps.scheduler.add_job(
             close_ticket,
@@ -235,5 +234,4 @@ class Service(SchedulerServicer):
             ],
             id=f'{ticketid}-close-job',
             replace_existing=True)
-        self._logger.info("made it here")
         return Response()
