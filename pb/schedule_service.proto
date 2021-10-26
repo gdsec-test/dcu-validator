@@ -14,6 +14,7 @@ message Request {
     int32 period=3;
 }
 
+
 message Response {
 
 }
@@ -25,6 +26,7 @@ message ValidationResponse {
 
 service Scheduler {
     rpc AddSchedule(Request) returns(Response) {}
+    rpc AddClosureSchedule(Request) returns(Response) {}
     rpc RemoveSchedule(Request) returns(Response) {}
     rpc ValidateTicket(Request) returns (ValidationResponse) {}
 }

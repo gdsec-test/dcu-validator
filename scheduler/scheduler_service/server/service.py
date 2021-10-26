@@ -1,11 +1,14 @@
 import os
+from datetime import datetime, timedelta
 
 from apscheduler import jobstores
 from dcdatabase.phishstorymongo import PhishstoryMongo
 from dcustructuredlogginggrpc import get_logging
 
+import scheduler_service.grpc_stub.schedule_service_pb2_grpc
 from scheduler_service.grpc_stub.schedule_service_pb2 import (
     INVALID, LOCKED, VALID, Response, ValidationResponse)
+# Request
 from scheduler_service.grpc_stub.schedule_service_pb2_grpc import \
     SchedulerServicer
 from scheduler_service.schedulers.aps import APS
@@ -17,6 +20,8 @@ from scheduler_service.validators.route import route
 LOGGER = get_logging()
 TTL = os.getenv('TTL') or 300
 TTL *= 1000
+ONEWEEK = 604800
+KEY_LAST_MODIFIED = "last_modified"
 # Need to support empty strings so we don't break behavior for older tickets.
 ALLOWED_PROXY_VALUES = ['', 'USA']
 
@@ -55,6 +60,44 @@ def validate(ticket, data=None):
                 lock.release()
         else:
             return LOCKED, 'being worked'
+    return VALID, ''
+
+
+def close_ticket(ticket):
+    LOGGER.info(f'Running scheduled close_ticket check for {ticket}')
+    lock = get_redlock(ticket)
+    db_handle = phishstory_db()
+    ticket_data = db_handle.get_incident(ticket)
+    LOGGER.info(ticket)
+    if lock.acquire():
+        try:
+            last_modified = ticket_data[KEY_LAST_MODIFIED]
+            now = datetime.utcnow()
+            diff = now - timedelta(hours=72)
+            if diff <= last_modified <= now:
+                LOGGER.info(f'{ticket} was recently modified, rescheduling closure for next week')
+                remove_job(f'{ticket}-close-job')
+                get_scheduler().add_job(
+                    close_ticket,
+                    'interval',
+                    seconds=ONEWEEK,
+                    args=[
+                        ticket
+                    ],
+                    id=f'{ticket}-close-job',
+                    replace_existing=True)
+                return LOCKED, 'being worked'
+            LOGGER.info(f'Closing ticket {ticket}')
+            if not APIHelper().close_incident(ticket, 'resolved'):
+                LOGGER.error(f'Unable to close ticket {ticket}')
+                return INVALID, 'unworkable'
+            remove_job(f'{ticket}-close-job')
+        except Exception as e:
+            LOGGER.error(f'Unable to close exception {ticket}:{e}')
+        finally:
+            lock.release()
+    else:
+        return LOCKED, 'being worked'
     return VALID, ''
 
 
@@ -162,6 +205,26 @@ class Service(SchedulerServicer):
         :param context: not used
         :return: GRPC scheduler.ValidationResponse
         """
+
         self._logger.info("Validating {}".format(request))
         res = validate(request.ticket, dict(close=request.close))
         return ValidationResponse(result=res[0], reason=res[1])
+
+    def AddClosureSchedule(self, request: scheduler_service.grpc_stub.schedule_service_pb2.Request, context):
+        """
+        Adds a schedule for closing a ticket
+        """
+        self._logger.info(f"Adding schedule for {request}")
+        ticketid = request.ticket
+        period = request.period
+        self._logger.info(f"Scheduling ticket {ticketid} for {period} seconds")
+        self.aps.scheduler.add_job(
+            close_ticket,
+            'interval',
+            seconds=period,
+            args=[
+                ticketid
+            ],
+            id=f'{ticketid}-close-job',
+            replace_existing=True)
+        return Response()
