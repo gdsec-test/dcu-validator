@@ -71,7 +71,7 @@ def close_ticket(ticket):
     LOGGER.info(ticket)
     if lock.acquire():
         try:
-            last_modified = ticket_data[os.getenv('KEY_LAST_MODIFIED') or 'last_modified']
+            last_modified = ticket_data[KEY_LAST_MODIFIED]
             now = datetime.utcnow()
             diff = now - timedelta(hours=72)
             if diff <= last_modified <= now:
