@@ -23,11 +23,6 @@ def AddClosureSchedule(ticketid, period):
     return stub.AddClosureSchedule(Request(period=period, ticket=ticketid))
 
 
-def RemoveSchedule(ticketid):
-    stub = service_connect()
-    return stub.RemoveSchedule(Request(ticket=ticketid))
-
-
 api = Namespace('closure', description='auto-close ticket')
 
 closure = api.model(

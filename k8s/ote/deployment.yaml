@@ -43,8 +43,6 @@ spec:
             value: "300"
           - name: MAX_PERIOD
             value: "90000"
-          - name: KEY_LAST_MODIFIED
-            value: "last_modified"
           - name: DB_PASS
             valueFrom:
               secretKeyRef:

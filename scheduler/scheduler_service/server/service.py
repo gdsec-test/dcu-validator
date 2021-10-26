@@ -1,12 +1,10 @@
 import os
 from datetime import datetime, timedelta
 
-import grpc
 from apscheduler import jobstores
 from dcdatabase.phishstorymongo import PhishstoryMongo
 from dcustructuredlogginggrpc import get_logging
 
-import scheduler_service.grpc_stub.schedule_service_pb2
 import scheduler_service.grpc_stub.schedule_service_pb2_grpc
 from scheduler_service.grpc_stub.schedule_service_pb2 import (
     INVALID, LOCKED, VALID, Response, ValidationResponse)
@@ -23,6 +21,7 @@ LOGGER = get_logging()
 TTL = os.getenv('TTL') or 300
 TTL *= 1000
 ONEWEEK = 604800
+KEY_LAST_MODIFIED = "last_modified"
 # Need to support empty strings so we don't break behavior for older tickets.
 ALLOWED_PROXY_VALUES = ['', 'USA']
 
@@ -64,12 +63,6 @@ def validate(ticket, data=None):
     return VALID, ''
 
 
-def service_connect():
-    scheduler_loc = os.getenv('scheduler', 'scheduler')
-    channel = grpc.insecure_channel(scheduler_loc + ':50051')
-    return scheduler_service.grpc_stub.schedule_service_pb2_grpc.SchedulerStub(channel)
-
-
 def close_ticket(ticket):
     LOGGER.info(f'Running scheduled close_ticket check for {ticket}')
     lock = get_redlock(ticket)
@@ -80,7 +73,7 @@ def close_ticket(ticket):
         try:
             last_modified = ticket_data[os.getenv('KEY_LAST_MODIFIED') or 'last_modified']
             now = datetime.utcnow()
-            diff = now - timedelta(hours=24)
+            diff = now - timedelta(hours=72)
             if diff <= last_modified <= now:
                 LOGGER.info(f'{ticket} was recently modified, rescheduling closure for next week')
                 remove_job(f'{ticket}-close-job')
