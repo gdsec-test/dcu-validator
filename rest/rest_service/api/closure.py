@@ -28,15 +28,6 @@ def RemoveSchedule(ticketid):
     return stub.RemoveSchedule(Request(ticket=ticketid))
 
 
-def CloseTicket(ticketid):
-    stub = service_connect()
-    ret = stub.CloseTicket(Request(ticket=ticketid))
-    return dict(result=rest_service.grpc_stub.schedule_service_pb2.Result.Name(
-        ret.result),
-        reason=ret.reason
-    )
-
-
 api = Namespace('closure', description='auto-close ticket')
 
 closure = api.model(
