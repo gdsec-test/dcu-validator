@@ -5,12 +5,8 @@ from apscheduler import jobstores
 from dcdatabase.phishstorymongo import PhishstoryMongo
 from dcustructuredlogginggrpc import get_logging
 
-import scheduler_service.grpc_stub.schedule_service_pb2_grpc
-from scheduler_service.grpc_stub.schedule_service_pb2 import (
-    INVALID, LOCKED, VALID, Response, ValidationResponse)
-# Request
-from scheduler_service.grpc_stub.schedule_service_pb2_grpc import \
-    SchedulerServicer
+
+
 from scheduler_service.schedulers.aps import APS
 from scheduler_service.utils.api_helper import APIHelper
 from scheduler_service.utils.db_settings import create_db_settings
@@ -139,7 +135,7 @@ def get_scheduler():
     return APS().scheduler
 
 
-class Service(SchedulerServicer):
+class Service():
     """
     Handles scheduling and validating DCU tickets via gRPC
     """
@@ -210,13 +206,10 @@ class Service(SchedulerServicer):
         res = validate(request.ticket, dict(close=request.close))
         return ValidationResponse(result=res[0], reason=res[1])
 
-    def AddClosureSchedule(self, request: scheduler_service.grpc_stub.schedule_service_pb2.Request, context):
+    def AddClosureSchedule(self, ticketid, period):
         """
         Adds a schedule for closing a ticket
         """
-        self._logger.info(f"Adding schedule for {request}")
-        ticketid = request.ticket
-        period = request.period
         self._logger.info(f"Scheduling ticket {ticketid} for {period} seconds")
         self.aps.scheduler.add_job(
             close_ticket,

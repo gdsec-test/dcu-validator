@@ -1,40 +1,28 @@
-import os
+import logging
 import time
-from concurrent import futures
-
-import grpc
 from dcustructuredlogginggrpc import LoggerInterceptor, get_logging
 
-import scheduler_service.grpc_stub.schedule_service_pb2
-import scheduler_service.grpc_stub.schedule_service_pb2_grpc
 from scheduler_service.schedulers.aps import APS
 from scheduler_service.server.service import Service
 
-_ONE_DAY_IN_SECONDS = 86400
+from celery import Celery
+from settings import get_config
+from celeryconfig import CeleryConfig
 
+app_settings = get_config()
+celery_app = Celery()
+celery_app.config_from_object(CeleryConfig(app_settings))
 
-def serve():
+aps = APS()
+aps.scheduler.start()
+scheduler = Service(aps)
+
+@celery_app.task
+def addclosureschedule(ticket, period):
     logger = get_logging()
+    logger.info("made it here")
 
-    # Create and start our APScheduler
-    aps = APS()
-    aps.scheduler.start()
-    scheduler = Service(aps)
-
-    # Configure and start service
-    server = grpc.server(thread_pool=futures.ThreadPoolExecutor(max_workers=10), interceptors=[LoggerInterceptor()])
-    scheduler_service.grpc_stub.schedule_service_pb2_grpc.add_SchedulerServicer_to_server(
-        scheduler, server)
-    logger.info("Listening on port 50051...")
-    server.add_insecure_port(f'{os.getenv("LISTEN_IP", "[::]")}:50051')
-    server.start()
-    try:
-        while True:
-            time.sleep(_ONE_DAY_IN_SECONDS)
-    except KeyboardInterrupt:
-        logger.info("Stopping server")
-        server.stop(0)
+    # scheduler.AddClosureSchedule(ticket, period)
 
 
-if __name__ == '__main__':
-    serve()
+
