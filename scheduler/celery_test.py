@@ -17,10 +17,11 @@ class CeleryConfig:
     QUEUE = 'queue'
     VALIDATORQUEUE = 'devvalidator'
 
-
     def __init__(self):
         self.task_routes = {
-            'run.addclosureschedule': {self.QUEUE: self.VALIDATORQUEUE}
+            'run.add_closure_schedule': {self.QUEUE: self.VALIDATORQUEUE},
+            'run.validate_ticket': {self.QUEUE: self.VALIDATORQUEUE},
+            'run.add_schedule': {self.QUEUE: self.VALIDATORQUEUE}
         }
         self.BROKER_PASS = os.getenv('BROKER_PASS', None)
         self.broker_url = 'amqp://02d1081iywc7Av2:' + self.BROKER_PASS + '@rmq-dcu.int.dev-godaddy.com:5672/grandma'
@@ -28,6 +29,6 @@ class CeleryConfig:
 
 app = Celery()
 app.config_from_object(CeleryConfig())
-print(CeleryConfig().broker_url)
-response = app.send_task('run.addclosureschedule', args=("hi", "hi"))
-print(response)
+response = app.send_task('run.add_closure_schedule', args=("DCU003508988", 10, False))
+response1 = app.send_task('run.validate_ticket', args=("DCU003509216", True))
+response2 = app.send_task('run.add_schedule', args=("DCU003509215", 10, True))

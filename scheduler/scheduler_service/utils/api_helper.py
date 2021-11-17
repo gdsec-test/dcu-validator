@@ -41,6 +41,7 @@ class APIHelper:
             if r.status_code == 204:
                 data = True
             else:
+                self._logger.warning(r.status_code)
                 self._logger.warning(f'Unable to update ticket {ticket_id} {r.content}')
         except Exception as e:
             self._logger.error(f'Exception while updating ticket {ticket_id} {e}')

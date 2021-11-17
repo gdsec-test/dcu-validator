@@ -1,5 +1,4 @@
 import os
-from urllib.parse import quote
 
 from kombu import Exchange, Queue
 

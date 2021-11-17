@@ -20,13 +20,8 @@ isort:
 	@echo "----- Optimizing imports -----"
 	isort --atomic --skip scheduler_service/grpc_stub --skip .venv/ .
 
-.PHONY: grpc
-grpc:
-	@echo "Generating gRPC stubs"
-	python -m grpc_tools.protoc -I../pb --python_out=./scheduler_service/grpc_stub --grpc_python_out=./scheduler_service/grpc_stub ../pb/schedule_service.proto
-
 .PHONY: tools
-tools: flake8 isort grpc
+tools: flake8 isort
 
 .PHONY: test
 test: tools

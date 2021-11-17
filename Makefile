@@ -14,26 +14,21 @@ all: prep
 
 .PHONY: env
 env:
-	pip install -r rest/test_requirements.txt
 	pip install -r scheduler/test_requirements.txt
 	pip install -r scheduler/requirements.txt
-	pip install -r rest/requirements.txt
 
 .PHONY: tools
 tools:
-	cd rest && $(MAKE) tools
 	cd scheduler && $(MAKE) tools
 
 .PHONY: test
 test:
-	cd rest && $(MAKE) test
 	cd scheduler && $(MAKE) test
 
 .PHONY: testcov
 testcov:
-	cd rest && $(MAKE) testcov
 	cd scheduler && $(MAKE) testcov
-	coverage combine rest/.coverage scheduler/.coverage
+	coverage combine scheduler/.coverage
 	coverage report
 	coverage xml
 
@@ -54,20 +49,17 @@ prod: prep
 	$(eval GIT_COMMIT:=$(shell git rev-parse --short HEAD))
 	sed -ie 's/THIS_STRING_IS_REPLACED_DURING_BUILD/$(DATE)/' $(BUILDROOT)/k8s/prod/deployment.yaml
 	sed -ie 's/REPLACE_WITH_GIT_COMMIT/$(GIT_COMMIT)/' $(BUILDROOT)/k8s/prod/deployment.yaml
-	cd rest && $(MAKE) build TAG=$(GIT_COMMIT) IMAGE=$(API_IMAGE)
 	cd scheduler && $(MAKE) build TAG=$(GIT_COMMIT) IMAGE=$(SCHEDULER_IMAGE)
 	git checkout -
 
 ote: prep
 	@echo "----- building $(BUILDNAME) ote -----"
 	sed -ie 's/THIS_STRING_IS_REPLACED_DURING_BUILD/$(DATE)/g' $(BUILDROOT)/k8s/ote/deployment.yaml
-	cd rest && $(MAKE) build IMAGE=$(API_IMAGE) TAG=ote
 	cd scheduler && $(MAKE) build IMAGE=$(SCHEDULER_IMAGE) TAG=ote
 
 dev: prep
 	@echo "----- building $(BUILDNAME) dev -----"
 	sed -ie 's/THIS_STRING_IS_REPLACED_DURING_BUILD/$(DATE)/g' $(BUILDROOT)/k8s/dev/deployment.yaml
-	cd rest && $(MAKE) build IMAGE=$(API_IMAGE) TAG=dev
 	cd scheduler && $(MAKE) build IMAGE=$(SCHEDULER_IMAGE) TAG=dev
 
 prod-deploy: prod
