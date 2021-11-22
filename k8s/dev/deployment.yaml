@@ -84,3 +84,8 @@ spec:
                 key: password
           - name: DOMAIN_SERVICE
             value: domainservice-rest.abuse-api-dev.svc.cluster.local:8080
+          - name: BROKER_PASS
+            valueFrom:
+              secretKeyRef:
+                name: amqp-shared-creds
+                key: password
