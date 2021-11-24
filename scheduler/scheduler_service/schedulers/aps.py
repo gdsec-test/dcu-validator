@@ -6,7 +6,7 @@ from apscheduler.jobstores.mongodb import MongoDBJobStore
 from apscheduler.schedulers.background import BackgroundScheduler
 from pytz import utc
 
-from scheduler_service.utils.db_settings import create_db_settings
+from scheduler_service.utils.db_settings import create_jobstore_db_settings
 from scheduler_service.utils.singleton import Singleton
 
 
@@ -24,7 +24,7 @@ class APS(metaclass=Singleton):
             timezone=utc)
 
     def _get_jobstore(self):
-        settings = create_db_settings()
+        settings = create_jobstore_db_settings()
         client = pymongo.MongoClient(settings.DBURL, connect=False)
         return MongoDBJobStore(database=settings.DB,
                                collection=os.getenv('JOBS_COLLECTION', 'jobs'),
