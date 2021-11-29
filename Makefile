@@ -5,7 +5,6 @@ DATE=$(shell date)
 GIT_COMMIT=
 BUILD_BRANCH=origin/main
 SHELL=/bin/bash
-API_IMAGE=$(DOCKERREPO)/dcu-validator-api
 SCHEDULER_IMAGE=$(DOCKERREPO)/dcu-validator-scheduler
 
 .PHONY: prep dev stage ote prod clean dev-deploy ote-deploy prod-deploy
@@ -64,19 +63,16 @@ dev: prep
 
 prod-deploy: prod
 	@echo "----- deploying $(BUILDNAME) prod -----"
-	docker push $(API_IMAGE):$(GIT_COMMIT)
 	docker push $(SCHEDULER_IMAGE):$(GIT_COMMIT)
 	kubectl --context prod-dcu apply -f $(BUILDROOT)/k8s/prod/deployment.yaml --record
 
 ote-deploy: ote
 	@echo "----- deploying $(BUILDNAME) ote -----"
-	docker push $(API_IMAGE):ote
 	docker push $(SCHEDULER_IMAGE):ote
 	kubectl --context ote-dcu apply -f $(BUILDROOT)/k8s/ote/deployment.yaml --record
 
 dev-deploy: dev
 	@echo "----- deploying $(BUILDNAME) dev -----"
-	docker push $(API_IMAGE):dev
 	docker push $(SCHEDULER_IMAGE):dev
 	kubectl --context dev-dcu apply -f $(BUILDROOT)/k8s/dev/deployment.yaml --record
 

@@ -22,15 +22,6 @@ spec:
           name: "dcu-artifactory-creds"
       containers:
         -
-          name: "validator-rest"
-          imagePullPolicy: "Always"
-          image: "docker-dcu-local.artifactory.secureserver.net/dcu-validator-api:dev"
-          env:
-          - name: BUILD_DATE
-            value: "THIS_STRING_IS_REPLACED_DURING_BUILD"
-          - name: scheduler
-            value: localhost
-        -
           name: "validator-scheduler"
           imagePullPolicy: "Always"
           image: "docker-dcu-local.artifactory.secureserver.net/dcu-validator-scheduler:dev"
