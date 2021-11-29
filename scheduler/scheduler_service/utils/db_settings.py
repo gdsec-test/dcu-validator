@@ -14,12 +14,3 @@ def create_db_settings():
         db_url = 'mongodb://{}/{}'.format(db_host, db)
     settings = namedtuple('settings', 'DB COLLECTION DBURL')
     return settings(DB=db, COLLECTION=collection, DBURL=db_url)
-
-
-def create_jobstore_db_settings():
-    db_host = 'localhost'
-    db = os.getenv('DB', 'devphishstory')
-    db_url = 'mongodb://{}/{}'.format(db_host, db)
-    collection = os.getenv('COLLECTION', 'incidents')
-    settings = namedtuple('settings', 'DB COLLECTION DBURL')
-    return settings(DB=db, COLLECTION=collection, DBURL=db_url)

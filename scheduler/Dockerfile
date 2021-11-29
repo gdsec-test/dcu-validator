@@ -20,5 +20,5 @@ RUN PIP_CONFIG_FILE=/tmp/pip_config/pip.conf pip install --compile /tmp && rm -r
 
 # Over-write the certifi shipped certificate with the system cert.
 RUN cp /etc/ssl/certs/ca-certificates.crt /usr/local/lib/python3.7/site-packages/certifi/cacert.pem
-
+WORKDIR "/app"
 ENTRYPOINT ["/app/runserver.sh"]
