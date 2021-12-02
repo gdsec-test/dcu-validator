@@ -33,7 +33,3 @@ app.config_from_object(CeleryConfig())
 task = app.send_task('run.add_closure_schedule', args=("DCU003508988", 10))
 response1 = app.send_task('run.validate_ticket', args=("DCU003509216", True))
 response2 = app.send_task('run.add_schedule', args=("DCU003509215", 10, True))
-print("made it here")
-logging.info(f'Getting result of task {task}')
-data = task.get() if task else "Send task failed"
-print(True, data[0]) if data[0] in ['VALID', 'LOCKED'] else print(False, data[1])
