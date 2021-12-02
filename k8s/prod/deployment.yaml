@@ -89,3 +89,5 @@ spec:
               secretKeyRef:
                 name: amqp-shared-creds
                 key: password
+          - name: RESULT_BACKEND_HOSTNAME
+            value: godaddy-service-redis.abuse-api-prod.svc.cluster.local
