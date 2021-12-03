@@ -84,3 +84,10 @@ spec:
                 key: password
           - name: DOMAIN_SERVICE
             value: domainservice-rest.abuse-api-prod.svc.cluster.local:8080
+          - name: BROKER_PASS
+            valueFrom:
+              secretKeyRef:
+                name: amqp-shared-creds
+                key: password
+          - name: RESULT_BACKEND_HOSTNAME
+            value: godaddy-service-redis.abuse-api-prod.svc.cluster.local

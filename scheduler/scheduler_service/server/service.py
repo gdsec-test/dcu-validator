@@ -5,12 +5,6 @@ from apscheduler import jobstores
 from dcdatabase.phishstorymongo import PhishstoryMongo
 from dcustructuredlogginggrpc import get_logging
 
-import scheduler_service.grpc_stub.schedule_service_pb2_grpc
-from scheduler_service.grpc_stub.schedule_service_pb2 import (
-    INVALID, LOCKED, VALID, Response, ValidationResponse)
-# Request
-from scheduler_service.grpc_stub.schedule_service_pb2_grpc import \
-    SchedulerServicer
 from scheduler_service.schedulers.aps import APS
 from scheduler_service.utils.api_helper import APIHelper
 from scheduler_service.utils.db_settings import create_db_settings
@@ -26,11 +20,9 @@ KEY_LAST_MODIFIED = "last_modified"
 ALLOWED_PROXY_VALUES = ['', 'USA']
 
 
-def validate(ticket, data=None):
+def validate(ticket: str, data=None):
     """
     Runs validation on the provided ticket
-    :param ticket: string
-    :param data: Dictionary containing properties used for scheduling
     :return: Enumeration indicating the result of the validation
     """
     LOGGER.info('Validating {} with payload {}'.format(ticket, data))
@@ -40,7 +32,7 @@ def validate(ticket, data=None):
 
     if ticket_data is None or ticket_data.get('phishstory_status', 'OPEN') == 'CLOSED':
         remove_job(ticket)
-        return INVALID, 'unworkable'
+        return 'INVALID', 'unworkable'
     elif ticket_data.get('proxy', '') in ALLOWED_PROXY_VALUES:
         if lock.acquire():
             try:
@@ -53,22 +45,22 @@ def validate(ticket, data=None):
                         if not APIHelper().close_incident(ticket, resp[1]):
                             LOGGER.error('Unable to close ticket {}'.format(ticket))
                     remove_job(ticket)
-                    return INVALID, resp[1]
+                    return 'INVALID', resp[1]
             except Exception as e:
                 LOGGER.error('Unable to validate {}:{}'.format(ticket, e))
             finally:
                 lock.release()
         else:
-            return LOCKED, 'being worked'
-    return VALID, ''
+            return 'LOCKED', 'being worked'
+    return 'VALID', ''
 
 
-def close_ticket(ticket):
+def close_ticket(ticket: str):
     LOGGER.info(f'Running scheduled close_ticket check for {ticket}')
     lock = get_redlock(ticket)
     db_handle = phishstory_db()
     ticket_data = db_handle.get_incident(ticket)
-    LOGGER.info(ticket)
+    LOGGER.info(ticket_data)
     if lock.acquire():
         try:
             last_modified = ticket_data[KEY_LAST_MODIFIED]
@@ -86,26 +78,24 @@ def close_ticket(ticket):
                     ],
                     id=f'{ticket}-close-job',
                     replace_existing=True)
-                return LOCKED, 'being worked'
+                return 'being worked'
             LOGGER.info(f'Closing ticket {ticket}')
             if not APIHelper().close_incident(ticket, 'resolved'):
                 LOGGER.error(f'Unable to close ticket {ticket}')
-                return INVALID, 'unworkable'
+                return 'unworkable'
             remove_job(f'{ticket}-close-job')
         except Exception as e:
             LOGGER.error(f'Unable to close exception {ticket}:{e}')
         finally:
             lock.release()
     else:
-        return LOCKED, 'being worked'
-    return VALID, ''
+        return 'being worked'
+    return ''
 
 
-def remove_job(ticket):
+def remove_job(ticket: str):
     """
     Removes the ticket from the db jobs collection
-    :param ticket: string
-    :return: None
     """
     try:
         if get_scheduler().get_job(ticket):
@@ -114,7 +104,7 @@ def remove_job(ticket):
         LOGGER.warning('Unable to remove job {}:{}'.format(ticket, e))
 
 
-def get_redlock(ticket):
+def get_redlock(ticket: str):
     """
     Retrieves RedLock lock
     :param ticket:
@@ -139,7 +129,7 @@ def get_scheduler():
     return APS().scheduler
 
 
-class Service(SchedulerServicer):
+class Service():
     """
     Handles scheduling and validating DCU tickets via gRPC
     """
@@ -148,45 +138,36 @@ class Service(SchedulerServicer):
         self._logger = LOGGER
         self.aps = scheduler
 
-    def AddSchedule(self, request, context):
+    def AddSchedule(self, ticketid: str, period: int, close: bool):
         """
         Adds a schedule (or reschedules) validation for a ticket
-        :param request: GRPC scheduler.Request
-        :param context: not used
-        :return: GRPC scheduler.Response
         """
-        self._logger.info("Adding schedule for {}".format(request))
-        ticketid = request.ticket
-        period = request.period
+        self._logger.info("Adding schedule for {}".format(ticketid))
         job = self.aps.scheduler.get_job(ticketid)
         if job:
             self._logger.info("Rescheduling ticket {} for {} seconds".format(
-                ticketid, int(period)))
-            job.reschedule('interval', seconds=int(period))
+                ticketid, period))
+            job.reschedule('interval', seconds=period)
         else:
             self._logger.info("Scheduling ticket {} for {} seconds".format(
-                ticketid, int(period)))
+                ticketid, period))
             self.aps.scheduler.add_job(
                 validate,
                 'interval',
-                seconds=int(period),
+                seconds=period,
                 args=[
                     ticketid,
-                    dict(close=request.close)
+                    dict(close=close)
                 ],
                 id=ticketid,
                 replace_existing=True)
-        return Response()
+        return True
 
-    def RemoveSchedule(self, request, context):
+    def RemoveSchedule(self, ticketid: str):
         """
         Removes a scheduled validation job for a ticket
-        :param request: GRPC scheduler.Request
-        :param context: not used
-        :return: GRPC scheduler.Response
         """
-        self._logger.info("Removing schedule for {}".format(request))
-        ticketid = request.ticket
+        self._logger.info("Removing schedule for {}".format(ticketid))
         try:
             # Need to use remove job to handle breaking changes between pickle
             # versions. This just removes by the job ID string, instead of
@@ -196,27 +177,21 @@ class Service(SchedulerServicer):
             # Ensure we don't throw errors if someone deletes a job that
             # doesn't exist.
             pass
-        return Response()
 
-    def ValidateTicket(self, request, context):
+    def ValidateTicket(self, ticketid: str, close: bool = None):
         """
         Validates the source URI for a ticket
-        :param request: GRPC scheduler.Request
-        :param context: not used
-        :return: GRPC scheduler.ValidationResponse
         """
 
-        self._logger.info("Validating {}".format(request))
-        res = validate(request.ticket, dict(close=request.close))
-        return ValidationResponse(result=res[0], reason=res[1])
+        self._logger.info("Validating {}".format(ticketid))
+        res = validate(ticketid, dict(close=close))
 
-    def AddClosureSchedule(self, request: scheduler_service.grpc_stub.schedule_service_pb2.Request, context):
+        return res
+
+    def AddClosureSchedule(self, ticketid: str, period: int):
         """
         Adds a schedule for closing a ticket
         """
-        self._logger.info(f"Adding schedule for {request}")
-        ticketid = request.ticket
-        period = request.period
         self._logger.info(f"Scheduling ticket {ticketid} for {period} seconds")
         self.aps.scheduler.add_job(
             close_ticket,
@@ -227,4 +202,4 @@ class Service(SchedulerServicer):
             ],
             id=f'{ticketid}-close-job',
             replace_existing=True)
-        return Response()
+        return True
