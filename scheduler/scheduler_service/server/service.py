@@ -161,7 +161,7 @@ class Service():
                 ],
                 id=ticketid,
                 replace_existing=True)
-        return
+        return True
 
     def RemoveSchedule(self, ticketid: str):
         """
@@ -177,7 +177,6 @@ class Service():
             # Ensure we don't throw errors if someone deletes a job that
             # doesn't exist.
             pass
-        return
 
     def ValidateTicket(self, ticketid: str, close: bool = None):
         """
@@ -203,4 +202,4 @@ class Service():
             ],
             id=f'{ticketid}-close-job',
             replace_existing=True)
-        return
+        return True
