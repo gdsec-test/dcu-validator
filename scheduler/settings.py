@@ -26,6 +26,7 @@ class OTEAppConfig(AppConfig):
         self.BROKER_URL = os.getenv('BROKER_URL',
                                     f'amqp://02d1081iywc7Av2:{self.BROKER_PASS}@rmq-dcu.int.godaddy.com:5672/grandma')
 
+
 class DevelopmentAppConfig(AppConfig):
     VALIDATORQUEUE = 'devvalidator'
 
