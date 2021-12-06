@@ -82,3 +82,5 @@ spec:
                 key: password
           - name: RESULT_BACKEND_HOSTNAME
             value: godaddy-service-redis.abuse-api-ote.svc.cluster.local
+          - name: sysenv
+            value: ote
