@@ -21,10 +21,11 @@ class CeleryConfig:
     task_time_limit = 180
 
     def __init__(self, app_settings):
-        self.broker_url = os.getenv('BROKER_URL', None)  # For local docker-compose testing
-        self.BROKER_PASS = os.getenv('BROKER_PASS', None)
+        self.broker_url = app_settings.BROKER_URL  # For local docker-compose testing
+        self.BROKER_PASS = app_settings.BROKER_PASS
         if not self.broker_url:
             self.broker_url = 'amqp://02d1081iywc7Av2:' + self.BROKER_PASS + '@rmq-dcu.int.dev-godaddy.com:5672/grandma'
         self.task_queues = (
-            Queue(app_settings.VALIDATORQUEUE, Exchange(app_settings.VALIDATORQUEUE), routing_key=app_settings.VALIDATORQUEUE),
+            Queue(app_settings.VALIDATORQUEUE, Exchange(app_settings.VALIDATORQUEUE),
+                  routing_key=app_settings.VALIDATORQUEUE),
         )
