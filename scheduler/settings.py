@@ -14,6 +14,8 @@ class ProductionAppConfig(AppConfig):
 
     def __init__(self):
         super(ProductionAppConfig, self).__init__()
+        self.BROKER_URL = os.getenv('BROKER_URL',
+                                    f'amqp://02d1081iywc7Av2:{self.BROKER_PASS}@rmq-dcu.int.godaddy.com:5672/grandma')
 
 
 class OTEAppConfig(AppConfig):
@@ -21,7 +23,8 @@ class OTEAppConfig(AppConfig):
 
     def __init__(self):
         super(OTEAppConfig, self).__init__()
-
+        self.BROKER_URL = os.getenv('BROKER_URL',
+                                    f'amqp://02d1081iywc7Av2:{self.BROKER_PASS}@rmq-dcu.int.godaddy.com:5672/grandma')
 
 class DevelopmentAppConfig(AppConfig):
     VALIDATORQUEUE = 'devvalidator'
