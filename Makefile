@@ -4,7 +4,6 @@ BUILDROOT=$(HOME)/dockerbuild/$(BUILDNAME)
 DATE=$(shell date)
 GIT_COMMIT=
 BUILD_BRANCH=origin/main
-SHELL=/bin/bash
 SCHEDULER_IMAGE=$(DOCKERREPO)/dcu-validator-scheduler
 
 .PHONY: prep dev stage ote prod clean dev-deploy ote-deploy prod-deploy

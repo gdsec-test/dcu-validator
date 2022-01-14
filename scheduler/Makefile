@@ -1,6 +1,5 @@
 BUILDNAME=digital-crimes/dcu-validator-scheduler
 BUILDROOT=$(HOME)/dockerbuild/$(BUILDNAME)
-SHELL=/bin/bash
 
 .PHONY: prep build
 

@@ -111,3 +111,4 @@ ENV/
 .tool-versions
 
 .envrc
+shell.nix
