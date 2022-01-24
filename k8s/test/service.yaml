@@ -1,0 +1,18 @@
+---
+  kind: "Service"
+  apiVersion: "v1"
+  metadata:
+    labels:
+      app: "validator"
+    # this name is accessible via cluster DNS
+    # ("redis" or "validator.<namespace>.svc.cluster.local")
+    name: "validator"
+    namespace: abuse-api-test
+  spec:
+    ports:
+      -
+        name: "validator"
+        port: 5000
+        targetPort: 5000
+    selector:
+      app: "validator"

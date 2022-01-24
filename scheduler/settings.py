@@ -37,6 +37,9 @@ class DevelopmentAppConfig(AppConfig):
 class TestAppConfig(AppConfig):
     VALIDATORQUEUE = 'testvalidator'
 
+    def __init__(self):
+        super(TestAppConfig, self).__init__()
+
 
 def get_env() -> str:
     return os.getenv('sysenv', 'dev')
