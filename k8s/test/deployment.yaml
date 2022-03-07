@@ -84,3 +84,13 @@ spec:
             value: godaddy-service-redis.abuse-api-test.svc.cluster.local
           - name: sysenv
             value: test
+          - name: ELASTIC_APM_SERVER_URL
+            valueFrom:
+              secretKeyRef:
+                name: apm-access
+                key: url
+          - name: ELASTIC_APM_SECRET_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: apm-access
+                key: secret
