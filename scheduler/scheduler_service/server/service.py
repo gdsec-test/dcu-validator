@@ -63,27 +63,32 @@ def close_ticket(ticket: str):
     LOGGER.info(ticket_data)
     if lock.acquire():
         try:
-            last_modified = ticket_data[KEY_LAST_MODIFIED]
-            now = datetime.utcnow()
-            diff = now - timedelta(hours=72)
-            if diff <= last_modified <= now:
-                LOGGER.info(f'{ticket} was recently modified, rescheduling closure for next week')
+            if ticket_data is None or ticket_data.get('phishstory_status', 'OPEN') == 'CLOSED':
+                LOGGER.info(f'{ticket} was already closed, removing the scheduled close job')
                 remove_job(f'{ticket}-close-job')
-                get_scheduler().add_job(
-                    close_ticket,
-                    'interval',
-                    seconds=ONEWEEK,
-                    args=[
-                        ticket
-                    ],
-                    id=f'{ticket}-close-job',
-                    replace_existing=True)
-                return 'being worked'
-            LOGGER.info(f'Closing ticket {ticket}')
-            if not APIHelper().close_incident(ticket, 'resolved'):
-                LOGGER.error(f'Unable to close ticket {ticket}')
-                return 'unworkable'
-            remove_job(f'{ticket}-close-job')
+                return ''
+            else:
+                last_modified = ticket_data[KEY_LAST_MODIFIED]
+                now = datetime.utcnow()
+                diff = now - timedelta(hours=72)
+                if diff <= last_modified <= now:
+                    LOGGER.info(f'{ticket} was recently modified, rescheduling closure for next week')
+                    remove_job(f'{ticket}-close-job')
+                    get_scheduler().add_job(
+                        close_ticket,
+                        'interval',
+                        seconds=ONEWEEK,
+                        args=[
+                            ticket
+                        ],
+                        id=f'{ticket}-close-job',
+                        replace_existing=True)
+                    return 'being worked'
+                LOGGER.info(f'Closing ticket {ticket}')
+                if not APIHelper().close_incident(ticket, 'resolved'):
+                    LOGGER.error(f'Unable to close ticket {ticket}')
+                    return 'unworkable'
+                remove_job(f'{ticket}-close-job')
         except Exception as e:
             LOGGER.error(f'Unable to close exception {ticket}:{e}')
         finally:
