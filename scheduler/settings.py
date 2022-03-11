@@ -8,6 +8,8 @@ class AppConfig(object):
         self.BROKER_URL = os.getenv('BROKER_URL',
                                     f'amqp://02d1081iywc7Av2:{self.BROKER_PASS}@rmq-dcu.int.dev-godaddy.com:5672/grandma')
 
+        self.NETCRAFT_ID = os.getenv('NETCRAFT_ID', 'netcraft_id')
+
 
 class ProductionAppConfig(AppConfig):
     VALIDATORQUEUE = 'validator'
@@ -16,6 +18,7 @@ class ProductionAppConfig(AppConfig):
         super(ProductionAppConfig, self).__init__()
         self.BROKER_URL = os.getenv('BROKER_URL',
                                     f'amqp://02d1081iywc7Av2:{self.BROKER_PASS}@rmq-dcu.int.godaddy.com:5672/grandma')
+        self.NETCRAFT_ID = '132668659'
 
 
 class OTEAppConfig(AppConfig):
@@ -39,6 +42,7 @@ class TestAppConfig(AppConfig):
 
     def __init__(self):
         super(TestAppConfig, self).__init__()
+        self.NETCRAFT_ID = '0000'
 
 
 def get_env() -> str:
