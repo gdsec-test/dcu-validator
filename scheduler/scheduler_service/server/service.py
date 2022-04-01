@@ -41,7 +41,8 @@ def validate(ticket: str, data=None):
                     if data and data.get('close', False):
                         # close ticket
                         LOGGER.info('Closing ticket {}'.format(ticket))
-                        db_handle.update_actions_sub_document(ticket, 'closed as {}'.format(resp[1]))
+                        # add close action reason and specific validator as user to mongodb ticket
+                        db_handle.update_actions_sub_document(ticket, 'closed as {}'.format(resp[1]), resp[2])
                         if not APIHelper().close_incident(ticket, resp[1]):
                             LOGGER.error('Unable to close ticket {}'.format(ticket))
                     remove_job(ticket)

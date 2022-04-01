@@ -20,6 +20,6 @@ def route(ticket):
     for clazz in handlers:
         ret = clazz().validate_ticket(ticket)
         if not ret[0]:
-            return ret
+            return (*ret, str(clazz).lower()+'_automation')
 
     return (True,)
