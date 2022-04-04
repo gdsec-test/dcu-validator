@@ -25,7 +25,7 @@ def validate(ticket: str, data=None):
     Runs validation on the provided ticket
     :return: Enumeration indicating the result of the validation
     """
-    LOGGER.info('Validating {} with payload {}'.format(ticket, data))
+    LOGGER.info(f'Validating {ticket} with payload {data}')
     lock = get_redlock(ticket)
     db_handle = phishstory_db()
     ticket_data = db_handle.get_incident(ticket)
@@ -40,15 +40,15 @@ def validate(ticket: str, data=None):
                 if not resp[0]:
                     if data and data.get('close', False):
                         # close ticket
-                        LOGGER.info('Closing ticket {}'.format(ticket))
+                        LOGGER.info(f'Closing ticket {ticket}')
                         # add close action reason and specific validator as user to mongodb ticket
-                        db_handle.update_actions_sub_document(ticket, 'closed as {}'.format(resp[1]), resp[2])
+                        db_handle.update_actions_sub_document(ticket, f'closed as {resp[1]}', resp[2])
                         if not APIHelper().close_incident(ticket, resp[1]):
-                            LOGGER.error('Unable to close ticket {}'.format(ticket))
+                            LOGGER.error(f'Unable to close ticket {ticket}')
                     remove_job(ticket)
                     return 'INVALID', resp[1]
             except Exception as e:
-                LOGGER.error('Unable to validate {}:{}'.format(ticket, e))
+                LOGGER.error(f'Unable to validate {ticket}:{e}')
             finally:
                 lock.release()
         else:
@@ -107,7 +107,7 @@ def remove_job(ticket: str):
         if get_scheduler().get_job(ticket):
             get_scheduler().remove_job(ticket)
     except Exception as e:
-        LOGGER.warning('Unable to remove job {}:{}'.format(ticket, e))
+        LOGGER.warning(f'Unable to remove job {ticket}:{e}')
 
 
 def get_redlock(ticket: str):
@@ -148,15 +148,13 @@ class Service():
         """
         Adds a schedule (or reschedules) validation for a ticket
         """
-        self._logger.info("Adding schedule for {}".format(ticketid))
+        self._logger.info(f"Adding schedule for {ticketid}")
         job = self.aps.scheduler.get_job(ticketid)
         if job:
-            self._logger.info("Rescheduling ticket {} for {} seconds".format(
-                ticketid, period))
+            self._logger.info(f"Rescheduling ticket {ticketid} for {period} seconds")
             job.reschedule('interval', seconds=period)
         else:
-            self._logger.info("Scheduling ticket {} for {} seconds".format(
-                ticketid, period))
+            self._logger.info(f"Scheduling ticket {ticketid} for {period} seconds")
             self.aps.scheduler.add_job(
                 validate,
                 'interval',
@@ -173,7 +171,7 @@ class Service():
         """
         Removes a scheduled validation job for a ticket
         """
-        self._logger.info("Removing schedule for {}".format(ticketid))
+        self._logger.info(f"Removing schedule for {ticketid}")
         try:
             # Need to use remove job to handle breaking changes between pickle
             # versions. This just removes by the job ID string, instead of
@@ -189,7 +187,7 @@ class Service():
         Validates the source URI for a ticket
         """
 
-        self._logger.info("Validating {}".format(ticketid))
+        self._logger.info(f"Validating {ticketid}")
         res = validate(ticketid, dict(close=close))
 
         return res
