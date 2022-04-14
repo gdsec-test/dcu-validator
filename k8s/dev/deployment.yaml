@@ -90,7 +90,7 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: amqp-shared-creds
-                key: multiple_brokers
+                key: multiple_brokers_grandma
           - name: RESULT_BACKEND_HOSTNAME
             value: godaddy-service-redis.abuse-api-dev.svc.cluster.local
           - name: sysenv
