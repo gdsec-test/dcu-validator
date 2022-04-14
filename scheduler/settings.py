@@ -4,9 +4,8 @@ import os
 class AppConfig(object):
 
     def __init__(self):
-        self.BROKER_PASS = os.getenv('BROKER_PASS')
-        self.BROKER_URL = os.getenv('BROKER_URL',
-                                    f'amqp://02d1081iywc7Av2:{self.BROKER_PASS}@rmq-dcu.int.dev-godaddy.com:5672/grandma')
+        self.QUEUE_TYPE = os.getenv('QUEUE_TYPE')
+        self.BROKER_URL = os.getenv('MULTIPLE_BROKERS') if self.QUEUE_TYPE == 'quorum' else os.getenv('SINGLE_BROKER')
 
         self.NETCRAFT_ID = os.getenv('NETCRAFT_ID', 'netcraft_id')
 
@@ -16,8 +15,6 @@ class ProductionAppConfig(AppConfig):
 
     def __init__(self):
         super(ProductionAppConfig, self).__init__()
-        self.BROKER_URL = os.getenv('BROKER_URL',
-                                    f'amqp://02d1081iywc7Av2:{self.BROKER_PASS}@rmq-dcu.int.godaddy.com:5672/grandma')
         self.NETCRAFT_ID = '132668659'
 
 
@@ -26,8 +23,6 @@ class OTEAppConfig(AppConfig):
 
     def __init__(self):
         super(OTEAppConfig, self).__init__()
-        self.BROKER_URL = os.getenv('BROKER_URL',
-                                    f'amqp://02d1081iywc7Av2:{self.BROKER_PASS}@rmq-dcu.int.godaddy.com:5672/grandma')
 
 
 class DevelopmentAppConfig(AppConfig):

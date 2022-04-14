@@ -23,6 +23,7 @@ class CeleryConfig:
             'run.validate_ticket': {self.QUEUE: self.VALIDATORQUEUE},
             'run.add_schedule': {self.QUEUE: self.VALIDATORQUEUE}
         }
+        # TODO: lkm - fix this!
         self.BROKER_PASS = os.getenv('BROKER_PASS', None)
         self.broker_url = 'amqp://02d1081iywc7Av2:' + self.BROKER_PASS + '@rmq-dcu.int.dev-godaddy.com:5672/grandma'
 
