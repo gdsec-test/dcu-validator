@@ -68,7 +68,7 @@ dev: prep
 prod-deploy: prod
 	@echo "----- deploying $(BUILDNAME) prod -----"
 	docker push $(SCHEDULER_IMAGE):$(GIT_COMMIT)
-	kubectl --context prod-admin apply -f $(BUILDROOT)/k8s/prod/deployment.yaml
+	kubectl --context prod-dcu apply -f $(BUILDROOT)/k8s/prod/deployment.yaml
 
 ote-deploy: ote
 	@echo "----- deploying $(BUILDNAME) ote -----"
@@ -83,7 +83,7 @@ test-deploy: test-env
 dev-deploy: dev
 	@echo "----- deploying $(BUILDNAME) dev -----"
 	docker push $(SCHEDULER_IMAGE):dev
-	kubectl --context dev-admin apply -f $(BUILDROOT)/k8s/dev/deployment.yaml
+	kubectl --context dev-dcu apply -f $(BUILDROOT)/k8s/dev/deployment.yaml
 
 clean:
 	@echo "----- cleaning $(BUILDNAME) app -----"
