@@ -15,6 +15,8 @@ class CeleryConfig:
     task_acks_late = True
     worker_prefetch_multiplier = 1
     worker_send_task_events = False
+    WORKER_ENABLE_REMOTE_CONTROL = False
+    
     QUEUE = Queue('queue', Exchange('queue'), routing_key='queue', queue_arguments={'x-queue-type': 'quorum'}) \
         if os.getenv('QUEUE_TYPE') == 'quorum' else 'queue'
     VALIDATORQUEUE = Queue('devvalidator', Exchange('devvalidator'), routing_key='devvalidator',
