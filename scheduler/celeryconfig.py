@@ -25,5 +25,8 @@ class CeleryConfig:
         self.broker_url = app_settings.BROKER_URL
         self.task_queues = (
             Queue(app_settings.VALIDATORQUEUE, Exchange(app_settings.VALIDATORQUEUE),
-                  routing_key=app_settings.VALIDATORQUEUE, queue_arguments={'x-queue-type': app_settings.QUEUE_TYPE}),
+                  routing_key=app_settings.VALIDATORQUEUE, queue_arguments={'x-queue-type': 'quorum'})
+            if app_settings.QUEUE_TYPE == 'quorum' else
+            Queue(app_settings.VALIDATORQUEUE, Exchange(app_settings.VALIDATORQUEUE),
+                  routing_key=app_settings.VALIDATORQUEUE),
         )
