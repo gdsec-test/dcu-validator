@@ -1,6 +1,7 @@
 import os
 
 from celery import Celery
+from kombu import Exchange, Queue
 
 
 class CeleryConfig:
@@ -14,8 +15,13 @@ class CeleryConfig:
     task_acks_late = True
     worker_prefetch_multiplier = 1
     worker_send_task_events = False
-    QUEUE = 'queue'
-    VALIDATORQUEUE = 'devvalidator'
+    WORKER_ENABLE_REMOTE_CONTROL = False
+
+    QUEUE = Queue('queue', Exchange('queue'), routing_key='queue', queue_arguments={'x-queue-type': 'quorum'}) \
+        if os.getenv('QUEUE_TYPE') == 'quorum' else 'queue'
+    VALIDATORQUEUE = Queue('devvalidator', Exchange('devvalidator'), routing_key='devvalidator',
+                           queue_arguments={'x-queue-type': 'quorum'}) \
+        if os.getenv('QUEUE_TYPE') == 'quorum' else 'devvalidator'
 
     def __init__(self):
         self.task_routes = {
@@ -23,8 +29,8 @@ class CeleryConfig:
             'run.validate_ticket': {self.QUEUE: self.VALIDATORQUEUE},
             'run.add_schedule': {self.QUEUE: self.VALIDATORQUEUE}
         }
-        self.BROKER_PASS = os.getenv('BROKER_PASS', None)
-        self.broker_url = 'amqp://02d1081iywc7Av2:' + self.BROKER_PASS + '@rmq-dcu.int.dev-godaddy.com:5672/grandma'
+        self.broker_url = os.getenv('MULTIPLE_BROKERS') if os.getenv('QUEUE_TYPE') == 'quorum' \
+            else os.getenv('SINGLE_BROKER')
 
 
 app = Celery()
