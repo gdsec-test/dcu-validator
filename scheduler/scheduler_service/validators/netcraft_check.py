@@ -27,10 +27,11 @@ class NetcraftValidator(ValidatorInterface):
         """
         reporter = ticket.get('reporter')
         netcraft = self.app_settings.NETCRAFT_ID
-        modified = ticket.get('last_modified')
+        created = ticket.get('created')
+        status = ticket.get('phishstory_status')
         info_url = ticket.get('info_url', None)
 
-        if info_url and reporter == netcraft and modified < datetime.now() - timedelta(days=1):
+        if status == 'OPEN' and info_url and reporter == netcraft and created < datetime.now() - timedelta(days=1):
             status_page = requests.get(info_url)  # grabbing Netcraft's status page for ticket
 
             if status_page.status_code == 200:
