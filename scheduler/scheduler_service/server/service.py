@@ -33,7 +33,7 @@ def validate(ticket: str, data=None):
     if ticket_data is None or ticket_data.get('phishstory_status', 'OPEN') == 'CLOSED':
         remove_job(ticket)
         return 'INVALID', 'unworkable'
-    elif ticket_data.get('proxy', '') in ALLOWED_PROXY_VALUES:
+    else:
         if lock.acquire():
             try:
                 resp = route(ticket_data)
