@@ -4,8 +4,7 @@ import os
 class AppConfig(object):
 
     def __init__(self):
-        self.QUEUE_TYPE = os.getenv('QUEUE_TYPE')
-        self.BROKER_URL = os.getenv('MULTIPLE_BROKERS') if self.QUEUE_TYPE == 'quorum' else os.getenv('SINGLE_BROKER')
+        self.BROKER_URL = os.getenv('MULTIPLE_BROKERS')
 
         self.NETCRAFT_ID = os.getenv('NETCRAFT_ID', 'netcraft_id')
 

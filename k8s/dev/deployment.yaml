@@ -75,17 +75,6 @@ spec:
                 key: password
           - name: DOMAIN_SERVICE
             value: domainservice-rest.abuse-api-dev.svc.cluster.local:8080
-          # TODO CMAPT-5032: remove single_broker and queue_type
-          - name: QUEUE_TYPE
-            valueFrom:
-              configMapKeyRef:
-                name: quorum-migration
-                key: queuetype
-          - name: SINGLE_BROKER
-            valueFrom:
-              secretKeyRef:
-                name: amqp-connection-string-v2
-                key: url
           - name: MULTIPLE_BROKERS
             valueFrom:
               secretKeyRef:

@@ -17,11 +17,9 @@ class CeleryConfig:
     worker_send_task_events = False
     WORKER_ENABLE_REMOTE_CONTROL = True
 
-    QUEUE = Queue('queue', Exchange('queue'), routing_key='queue', queue_arguments={'x-queue-type': 'quorum'}) \
-        if os.getenv('QUEUE_TYPE') == 'quorum' else 'queue'
+    QUEUE = Queue('queue', Exchange('queue'), routing_key='queue', queue_arguments={'x-queue-type': 'quorum'})
     VALIDATORQUEUE = Queue('devvalidator', Exchange('devvalidator'), routing_key='devvalidator',
-                           queue_arguments={'x-queue-type': 'quorum'}) \
-        if os.getenv('QUEUE_TYPE') == 'quorum' else 'devvalidator'
+                           queue_arguments={'x-queue-type': 'quorum'})
 
     def __init__(self):
         self.task_routes = {
@@ -29,8 +27,7 @@ class CeleryConfig:
             'run.validate_ticket': {self.QUEUE: self.VALIDATORQUEUE},
             'run.add_schedule': {self.QUEUE: self.VALIDATORQUEUE}
         }
-        self.broker_url = os.getenv('MULTIPLE_BROKERS') if os.getenv('QUEUE_TYPE') == 'quorum' \
-            else os.getenv('SINGLE_BROKER')
+        self.broker_url = os.getenv('MULTIPLE_BROKERS')
 
 
 app = Celery()
