@@ -68,7 +68,7 @@ dev: prep
 
 prod-deploy: prod
 	@echo "----- deploying $(BUILDNAME) prod -----"
-	$(call deploy_k8s,prod,$(COMMIT))
+	$(call deploy_k8s,prod,$(GIT_COMMIT))
 
 ote-deploy: ote
 	@echo "----- deploying $(BUILDNAME) ote -----"
