@@ -3,7 +3,6 @@ apiVersion: "apps/v1"
 kind: "Deployment"
 metadata:
   name: "validator"
-  namespace: "abuse-api-ote"
   labels:
     app: "validator"
 spec:
@@ -23,13 +22,8 @@ spec:
       containers:
         -
           name: "validator-scheduler"
-          imagePullPolicy: "Always"
-          image: "docker-dcu-local.artifactory.secureserver.net/dcu-validator-scheduler:ote"
+          image: "docker-dcu-local.artifactory.secureserver.net/dcu-validator-scheduler"
           env:
-          - name: BUILD_DATE
-            value: "THIS_STRING_IS_REPLACED_DURING_BUILD"
-          - name: REDIS
-            value: phishnet-redis.abuse-api-ote.svc.cluster.local
           - name: MIN_PERIOD
             value: "300"
           - name: MAX_PERIOD
@@ -39,20 +33,10 @@ spec:
               secretKeyRef:
                 name: db-phishstory-v2
                 key: password
-          - name: DB_USER
-            value: sau_o_phish
-          - name: DB_HOST
-            value: 10.22.9.209
-          - name: DB
-            value: otephishstory
           - name: COLLECTION
             value: incidents
           - name: JOBS_COLLECTION
             value: jobs
-          - name: API_UPDATE_URL
-            value: http://api.abuse-api-ote.svc.cluster.local:5000/v1/abuse/tickets
-          - name: SSO_URL
-            value: https://sso.ote-godaddy.com
           - name: SSO_USER
             valueFrom:
               secretKeyRef:
@@ -73,17 +57,11 @@ spec:
               secretKeyRef:
                 name: smdb-validator
                 key: password
-          - name: DOMAIN_SERVICE
-            value: domainservice-rest.abuse-api-ote.svc.cluster.local:8080
           - name: MULTIPLE_BROKERS
             valueFrom:
               secretKeyRef:
                 name: amqp-shared-creds
                 key: multiple_brokers_grandma
-          - name: RESULT_BACKEND_HOSTNAME
-            value: godaddy-service-redis.abuse-api-ote.svc.cluster.local
-          - name: sysenv
-            value: ote
           - name: ELASTIC_APM_SERVER_URL
             valueFrom:
               secretKeyRef:
@@ -94,5 +72,3 @@ spec:
               secretKeyRef:
                 name: apm-access
                 key: secret
-          - name: ELASTIC_APM_ENVIRONMENT
-            value: ote

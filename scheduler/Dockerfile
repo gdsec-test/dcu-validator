@@ -1,8 +1,8 @@
-FROM python:3.7.10-slim
+FROM docker-dcu-local.artifactory.secureserver.net/dcu-python3.7:3.3
 LABEL MAINTAINER=dcueng@godaddy.com
 
-# Best Practice - Creating a user instead of running as root
-RUN addgroup dcu && adduser --disabled-password --disabled-login --no-create-home --ingroup dcu --system dcu
+USER root
+
 # Expose grpc port 50051
 EXPOSE 50051
 
@@ -11,14 +11,10 @@ COPY ./*.ini ./*.sh ./*.py /app/
 COPY . /tmp
 RUN chown dcu:dcu -R /app
 
-# install custom root certificates
-RUN mkdir -p /usr/local/share/ca-certificates/
-RUN cp /tmp/certs/* /usr/local/share/ca-certificates/
-RUN update-ca-certificates
-
 RUN PIP_CONFIG_FILE=/tmp/pip_config/pip.conf pip install --compile /tmp && rm -rf /tmp/*
 
 # Over-write the certifi shipped certificate with the system cert.
 RUN cp /etc/ssl/certs/ca-certificates.crt /usr/local/lib/python3.7/site-packages/certifi/cacert.pem
 WORKDIR "/app"
+USER dcu
 ENTRYPOINT ["/app/runserver.sh"]
