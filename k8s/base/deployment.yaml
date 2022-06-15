@@ -23,6 +23,9 @@ spec:
         -
           name: "validator-scheduler"
           image: "docker-dcu-local.artifactory.secureserver.net/dcu-validator-scheduler"
+          envFrom:
+            - configMapRef:
+                name: env-specific-values
           env:
           - name: MIN_PERIOD
             value: "300"

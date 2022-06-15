@@ -8,6 +8,8 @@ namespace: abuse-api-test
 images:
 - name: docker-dcu-local.artifactory.secureserver.net/dcu-validator-scheduler
   newTag: test
+- name: docker-dcu-local.artifactory.secureserver.net/dcu-validator/dcu-validator-scheduler/dcu-validator-scheduler
+  newTag: test
 
 configMapGenerator:
 - literals:
@@ -16,9 +18,9 @@ configMapGenerator:
   - DB_USER=testuser
   - DB_HOST=10.36.190.222
   - DB=testphishstory
-  - API_UPDATE_URL=http://api.abuse-api-prod.svc.cluster.local:5000/v1/abuse/tickets
+  - API_UPDATE_URL=http://api.abuse-api-test.svc.cluster.local:5000/v1/abuse/tickets
   - SSO_URL=https://sso.godaddy.com
-  - DOMAIN_SERVICE=domainservice-rest.abuse-api-prod.svc.cluster.local:8080
-  - RESULT_BACKEND_HOSTNAME=godaddy-service-redis.abuse-api-prod.svc.cluster.local
+  - DOMAIN_SERVICE=domainservice-rest.abuse-api-test.svc.cluster.local:8080
+  - RESULT_BACKEND_HOSTNAME=godaddy-service-redis.abuse-api-test.svc.cluster.local
   - ELASTIC_APM_ENVIRONMENT=prod
   name: env-specific-values

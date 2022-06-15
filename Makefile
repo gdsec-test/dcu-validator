@@ -8,10 +8,10 @@ SCHEDULER_IMAGE=$(DOCKERREPO)/dcu-validator-scheduler
 
 .PHONY: prep dev stage test-env ote prod clean dev-deploy ote-deploy prod-deploy prod-deploy
 define deploy_k8s
-	docker push $(DOCKERREPO):$(2)
-	cd k8s/$(1) && kustomize edit set image $$(docker inspect --format='{{index .RepoDigests 0}}' $(DOCKERREPO):$(2))
+	docker push $(SCHEDULER_IMAGE):$(2)
+	cd k8s/$(1) && kustomize edit set image $$(docker inspect --format='{{index .RepoDigests 0}}' $(SCHEDULER_IMAGE):$(2))
 	kubectl --context $(1)-dcu apply -k k8s/$(1)
-	cd k8s/$(1) && kustomize edit set image $(DOCKERREPO):$(1)
+	cd k8s/$(1) && kustomize edit set image $(SCHEDULER_IMAGE):$(1)
 endef
 
 all: prep
