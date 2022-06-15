@@ -17,4 +17,4 @@ RUN PIP_CONFIG_FILE=/tmp/pip_config/pip.conf pip install --compile /tmp && rm -r
 RUN cp /etc/ssl/certs/ca-certificates.crt /usr/local/lib/python3.7/site-packages/certifi/cacert.pem
 WORKDIR "/app"
 USER dcu
-ENTRYPOINT ["/app/runserver.sh"]
+ENTRYPOINT ["/usr/local/bin/celery", "-A", "run", "worker", "-l", "INFO", "--without-heartbeat", "--without-gossip", "--without-mingle"]

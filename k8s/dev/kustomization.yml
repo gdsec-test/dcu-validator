@@ -8,10 +8,6 @@ namespace: abuse-api-dev
 images:
 - name: docker-dcu-local.artifactory.secureserver.net/dcu-validator-scheduler
   newTag: dev
-- name: docker-dcu-local.artifactory.secureserver.net/dcu-validator/dcu-validator-scheduler
-  newTag: dev
-- name: docker-dcu-local.artifactory.secureserver.net/dcu-validator/dcu-validator-scheduler/dcu-validator-scheduler
-  newTag: dev
 
 configMapGenerator:
 - literals:
