@@ -1,6 +1,6 @@
-from dcustructuredlogginggrpc import get_logging
+import logging
 
-logger = get_logging()
+logger = logging.getLogger()
 
 
 def nutrition_label(hostname):

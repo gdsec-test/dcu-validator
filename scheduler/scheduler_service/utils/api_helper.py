@@ -1,9 +1,9 @@
+import logging
 import os
 from functools import partial
 from json import loads
 
 import requests
-from dcustructuredlogginggrpc import get_logging
 
 
 class APIHelper:
@@ -12,7 +12,7 @@ class APIHelper:
     """
 
     def __init__(self):
-        self._logger = get_logging()
+        self._logger = logging.getLogger()
         self._url = os.getenv('API_UPDATE_URL') or 'http://localhost/v1/abuse/tickets'
         self._sso_endpoint = os.getenv('SSO_URL') or 'https://sso.dev-godaddy.com'
         self._user = os.getenv('SSO_USER')

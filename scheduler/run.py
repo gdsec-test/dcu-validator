@@ -1,13 +1,9 @@
 import os
 
 from celery import Celery, bootsteps
-from dcustructuredlogginggrpc import get_logging
-from elasticapm import Client, instrument
-from elasticapm.contrib.celery import (register_exception_tracking,
-                                       register_instrumentation)
+from csetutils.celery import instrument
 from kombu.common import QoS
 
-from apm import register_dcu_transaction_handler
 from celeryconfig import CeleryConfig
 from scheduler_service.schedulers.aps import APS
 from scheduler_service.server.service import Service
@@ -17,16 +13,11 @@ app_settings = get_config()
 celery_app = Celery()
 celery_app.config_from_object(CeleryConfig(app_settings))
 
-instrument()
-apm = Client(service_name='validator', env=os.getenv('sysenv', 'dev'))
-register_exception_tracking(apm)
-register_instrumentation(apm)
-register_dcu_transaction_handler(apm)
+instrument(service_name='validator', env=os.getenv('sysenv', 'dev'))
 
 aps = APS()
 aps.scheduler.start()
 scheduler = Service(aps)
-logger = get_logging()
 
 
 # turning off global qos in celery

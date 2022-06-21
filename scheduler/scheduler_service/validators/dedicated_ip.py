@@ -1,4 +1,4 @@
-from dcustructuredlogginggrpc import get_logging
+import logging
 
 from scheduler_service.utils.enrichment import nutrition_label
 from scheduler_service.utils.ipam import Ipam
@@ -11,7 +11,7 @@ class DedicatedIpValidator(ValidatorInterface):
     handlers = ['NETWORK_ABUSE']
 
     def __init__(self):
-        self._logger = get_logging()
+        self._logger = logging.getLogger()
 
     def validate_ticket(self, ticket):
         """

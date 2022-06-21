@@ -1,8 +1,8 @@
 import json
+import logging
 import os
 
 import requests
-from dcustructuredlogginggrpc import get_logging
 
 from .validator_interface import ValidatorInterface
 
@@ -21,7 +21,7 @@ class DomainStatusValidator(ValidatorInterface):
                        'PENDING_UPDATE_OWNERSHIP', 'PENDING_TRANSFER_OUT']
 
     def __init__(self):
-        self._logger = get_logging()
+        self._logger = logging.getLogger()
         endpoint = os.getenv('DOMAIN_SERVICE') or 'domainservice:8080'
         self._query_domain_endpoint = f'http://{endpoint}/v1/domains/domaininfo'
 

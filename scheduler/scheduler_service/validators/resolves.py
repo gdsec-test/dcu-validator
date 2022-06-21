@@ -1,4 +1,5 @@
-from dcustructuredlogginggrpc import get_logging
+import logging
+
 from requests import sessions
 from requests.exceptions import ConnectionError
 
@@ -12,7 +13,7 @@ class ResolvesValidator(ValidatorInterface):
     ALLOWED_PROXY_VALUES = ['', 'USA']
 
     def __init__(self):
-        self._logger = get_logging()
+        self._logger = logging.getLogger()
 
     def validate_ticket(self, ticket):
         """

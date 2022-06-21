@@ -1,8 +1,8 @@
+import logging
 from datetime import datetime, timedelta
 
 import requests
 from bs4 import BeautifulSoup
-from dcustructuredlogginggrpc import get_logging
 
 from settings import AppConfig
 
@@ -17,7 +17,7 @@ class NetcraftValidator(ValidatorInterface):
     # Not checking proxy values here as this is for Netcraft's own status updates
 
     def __init__(self):
-        self._logger = get_logging()
+        self._logger = logging.getLogger()
 
     def validate_ticket(self, ticket):
         """

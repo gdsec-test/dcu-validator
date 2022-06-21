@@ -8,9 +8,9 @@ from .validator_interface import ValidatorInterface
 """Any class that defines handlers must be imported, these imports will appear unused
 but are necessary in order to provide classes that define handlers"""
 
-from dcustructuredlogginggrpc import get_logging
+import logging
 
-logger = get_logging()
+logger = logging.getLogger()
 
 
 # Route tickets based on type

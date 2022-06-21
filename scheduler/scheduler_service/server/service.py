@@ -1,9 +1,9 @@
+import logging
 import os
 from datetime import datetime, timedelta
 
 from apscheduler import jobstores
 from dcdatabase.phishstorymongo import PhishstoryMongo
-from dcustructuredlogginggrpc import get_logging
 
 from scheduler_service.schedulers.aps import APS
 from scheduler_service.utils.api_helper import APIHelper
@@ -11,7 +11,7 @@ from scheduler_service.utils.db_settings import create_db_settings
 from scheduler_service.utils.lock import Lock
 from scheduler_service.validators.route import route
 
-LOGGER = get_logging()
+LOGGER = logging.getLogger()
 TTL = os.getenv('TTL') or 300
 TTL *= 1000
 ONEWEEK = 604800

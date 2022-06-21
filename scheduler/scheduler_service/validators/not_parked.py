@@ -1,6 +1,6 @@
+import logging
 from ipaddress import ip_address
 
-from dcustructuredlogginggrpc import get_logging
 from dns import resolver
 
 from .validator_interface import ValidatorInterface
@@ -13,7 +13,7 @@ class ParkedValidator(ValidatorInterface):
     parked_ips = ['34.102.136.180', '34.98.99.30']
 
     def __init__(self):
-        self._logger = get_logging()
+        self._logger = logging.getLogger()
 
     def validate_ticket(self, ticket: dict) -> tuple:
         """
