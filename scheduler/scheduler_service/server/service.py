@@ -36,17 +36,18 @@ def validate(ticket: str, data=None):
     else:
         if lock.acquire():
             try:
-                resp = route(ticket_data)
-                if not resp[0]:
-                    if data and data.get('close', False):
-                        # close ticket
-                        LOGGER.info(f'Closing ticket {ticket}')
-                        # add close action reason and specific validator as user to mongodb ticket
-                        db_handle.update_actions_sub_document(ticket, f'closed as {resp[1]}', resp[2])
-                        if not APIHelper().close_incident(ticket, resp[1]):
-                            LOGGER.error(f'Unable to close ticket {ticket}')
-                    remove_job(ticket)
-                    return 'INVALID', resp[1]
+                if 'jomax' not in ticket_data.get('reporter', ''):
+                    resp = route(ticket_data)
+                    if not resp[0]:
+                        if data and data.get('close', False):
+                            # close ticket
+                            LOGGER.info(f'Closing ticket {ticket}')
+                            # add close action reason and specific validator as user to mongodb ticket
+                            db_handle.update_actions_sub_document(ticket, f'closed as {resp[1]}', resp[2])
+                            if not APIHelper().close_incident(ticket, resp[1]):
+                                LOGGER.error(f'Unable to close ticket {ticket}')
+                        remove_job(ticket)
+                        return 'INVALID', resp[1]
             except Exception as e:
                 LOGGER.error(f'Unable to validate {ticket}:{e}')
             finally:

@@ -1,3 +1,5 @@
+import unittest
+
 from mock import MagicMock, patch
 from redlock import RedLockFactory
 
@@ -5,8 +7,7 @@ from scheduler_service.server.service import validate
 from scheduler_service.utils.api_helper import APIHelper
 
 
-class TestValidate:
-
+class TestValidate(unittest.TestSuite):
     @patch.object(APIHelper, '_get_jwt')
     @patch('scheduler_service.server.service.get_redlock')
     @patch('scheduler_service.server.service.phishstory_db')
