@@ -7,6 +7,12 @@ BUILD_BRANCH=origin/main
 SCHEDULER_IMAGE=$(DOCKERREPO)/dcu-validator-scheduler
 
 .PHONY: prep dev stage test-env ote prod clean dev-deploy ote-deploy prod-deploy prod-deploy
+define deploy_k8s
+	docker push $(SCHEDULER_IMAGE):$(2)
+	cd k8s/$(1) && kustomize edit set image $$(docker inspect --format='{{index .RepoDigests 0}}' $(SCHEDULER_IMAGE):$(2))
+	kubectl --context $(1)-dcu apply -k k8s/$(1)
+	cd k8s/$(1) && kustomize edit set image $(SCHEDULER_IMAGE):$(1)
+endef
 
 all: prep
 
@@ -45,45 +51,36 @@ prod: prep
 	if [[ `git status --porcelain | wc -l` -gt 0 ]] ; then echo "You must stash your changes before proceeding" ; exit 1 ; fi
 	git fetch && git checkout $(BUILD_BRANCH)
 	$(eval GIT_COMMIT:=$(shell git rev-parse --short HEAD))
-	sed -ie 's/THIS_STRING_IS_REPLACED_DURING_BUILD/$(DATE)/' $(BUILDROOT)/k8s/prod/deployment.yaml
-	sed -ie 's/REPLACE_WITH_GIT_COMMIT/$(GIT_COMMIT)/' $(BUILDROOT)/k8s/prod/deployment.yaml
 	cd scheduler && $(MAKE) build TAG=$(GIT_COMMIT) IMAGE=$(SCHEDULER_IMAGE)
 	git checkout -
 
 ote: prep
 	@echo "----- building $(BUILDNAME) ote -----"
-	sed -ie 's/THIS_STRING_IS_REPLACED_DURING_BUILD/$(DATE)/g' $(BUILDROOT)/k8s/ote/deployment.yaml
 	cd scheduler && $(MAKE) build IMAGE=$(SCHEDULER_IMAGE) TAG=ote
 
 test-env: prep
 	@echo "----- building $(BUILDNAME) dev -----"
-	sed -ie 's/THIS_STRING_IS_REPLACED_DURING_BUILD/$(DATE)/g' $(BUILDROOT)/k8s/test/deployment.yaml
 	cd scheduler && $(MAKE) build IMAGE=$(SCHEDULER_IMAGE) TAG=test
 
 dev: prep
 	@echo "----- building $(BUILDNAME) dev -----"
-	sed -ie 's/THIS_STRING_IS_REPLACED_DURING_BUILD/$(DATE)/g' $(BUILDROOT)/k8s/dev/deployment.yaml
 	cd scheduler && $(MAKE) build IMAGE=$(SCHEDULER_IMAGE) TAG=dev
 
 prod-deploy: prod
 	@echo "----- deploying $(BUILDNAME) prod -----"
-	docker push $(SCHEDULER_IMAGE):$(GIT_COMMIT)
-	kubectl --context prod-dcu apply -f $(BUILDROOT)/k8s/prod/deployment.yaml
+	$(call deploy_k8s,prod,$(GIT_COMMIT))
 
 ote-deploy: ote
 	@echo "----- deploying $(BUILDNAME) ote -----"
-	docker push $(SCHEDULER_IMAGE):ote
-	kubectl --context ote-dcu apply -f $(BUILDROOT)/k8s/ote/deployment.yaml
+	$(call deploy_k8s,ote,ote)
 
 test-deploy: test-env
 	@echo "----- deploying $(BUILDNAME) test -----"
-	docker push $(SCHEDULER_IMAGE):test
-	kubectl --context test-dcu apply -f $(BUILDROOT)/k8s/test/deployment.yaml
+	$(call deploy_k8s,test,test)
 
 dev-deploy: dev
 	@echo "----- deploying $(BUILDNAME) dev -----"
-	docker push $(SCHEDULER_IMAGE):dev
-	kubectl --context dev-dcu apply -f $(BUILDROOT)/k8s/dev/deployment.yaml
+	$(call deploy_k8s,dev,dev)
 
 clean:
 	@echo "----- cleaning $(BUILDNAME) app -----"
