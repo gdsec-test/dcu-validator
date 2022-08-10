@@ -17,7 +17,7 @@ configMapGenerator:
   - DB_HOST=10.36.190.222
   - DB=devphishstory
   - API_UPDATE_URL=http://api.abuse-api-dev.svc.cluster.local:5000/v1/abuse/tickets
-  - SSO_URL=https://sso.dev-godaddy.com
+  - SSO_URL=https://sso.dev-gdcorp.tools
   - DOMAIN_SERVICE=domainservice-rest.abuse-api-dev.svc.cluster.local:8080
   - RESULT_BACKEND_HOSTNAME=godaddy-service-redis.abuse-api-dev.svc.cluster.local
   - ELASTIC_APM_ENVIRONMENT=dev

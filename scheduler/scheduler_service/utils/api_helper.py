@@ -14,7 +14,7 @@ class APIHelper:
     def __init__(self):
         self._logger = logging.getLogger()
         self._url = os.getenv('API_UPDATE_URL') or 'http://localhost/v1/abuse/tickets'
-        self._sso_endpoint = os.getenv('SSO_URL') or 'https://sso.dev-godaddy.com'
+        self._sso_endpoint = os.getenv('SSO_URL') or 'https://sso.dev-gdcorp.tools'
         self._user = os.getenv('SSO_USER')
         self._password = os.getenv('SSO_PASSWORD')
         self._header = {'Authorization': self._get_jwt()}
