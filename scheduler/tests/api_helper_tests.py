@@ -6,7 +6,7 @@ from scheduler_service.utils.api_helper import APIHelper
 
 class TestAPIHelper:
 
-    _jwt_call = call('https://sso.dev-godaddy.com/v1/api/token', json={'username': 'test-user', 'password': 'test-password'}, params={'realm': 'idp'})
+    _jwt_call = call('https://sso.dev-gdcorp.tools/v1/api/token', json={'username': 'test-user', 'password': 'test-password'}, params={'realm': 'idp'})
     _status_check_call = call().raise_for_status()
     _patch_call = call(
         'http://localhost/v1/abuse/tickets/123',
