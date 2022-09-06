@@ -16,7 +16,7 @@ configMapGenerator:
   - DB_USER=sau_o_phish
   - DB_HOST=10.22.9.209
   - DB=otephishstory
-  - API_UPDATE_URL=http://api.abuse-api-ote.svc.cluster.local:5000/v1/abuse/tickets
+  - API_UPDATE_URL=https://abuse.api.int.ote-godaddy.com/v1/abuse/tickets
   - SSO_URL=https://sso.ote-gdcorp.tools
   - DOMAIN_SERVICE=domainservice-rest.abuse-api-ote.svc.cluster.local:8080
   - RESULT_BACKEND_HOSTNAME=godaddy-service-redis.abuse-api-ote.svc.cluster.local
