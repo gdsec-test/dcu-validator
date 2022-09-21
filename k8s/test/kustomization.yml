@@ -14,7 +14,7 @@ configMapGenerator:
   - sysenv=test
   - REDIS=phishnet-redis.abuse-api-test.svc.cluster.local
   - DB_USER=testuser
-  - DB_HOST=10.36.190.222
+  - DB_HOST=mongodb.cset.int.dev-gdcorp.tools
   - DB=testphishstory
   - API_UPDATE_URL=https://abuse.api.int.test-godaddy.com/v1/abuse/tickets
   - SSO_URL=https://sso.gdcorp.tools
