@@ -19,6 +19,5 @@ configMapGenerator:
   - API_UPDATE_URL=https://abuse.api.int.dev-godaddy.com/v1/abuse/tickets
   - SSO_URL=https://sso.dev-gdcorp.tools
   - DOMAIN_SERVICE=domainservice-rest.abuse-api-dev.svc.cluster.local:8080
-  - RESULT_BACKEND_HOSTNAME=godaddy-service-redis.abuse-api-dev.svc.cluster.local
   - ELASTIC_APM_ENVIRONMENT=dev
   name: env-specific-values

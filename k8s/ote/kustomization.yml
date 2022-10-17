@@ -19,6 +19,5 @@ configMapGenerator:
   - API_UPDATE_URL=https://abuse.api.int.ote-godaddy.com/v1/abuse/tickets
   - SSO_URL=https://sso.ote-gdcorp.tools
   - DOMAIN_SERVICE=domainservice-rest.abuse-api-ote.svc.cluster.local:8080
-  - RESULT_BACKEND_HOSTNAME=godaddy-service-redis.abuse-api-ote.svc.cluster.local
   - ELASTIC_APM_ENVIRONMENT=ote
   name: env-specific-values
