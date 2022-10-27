@@ -28,12 +28,15 @@ class ResolvesValidator(ValidatorInterface):
             # If proxy is not set to one of the allowed values, mark it as resolved.
             if ticket.get('proxy', '') in self.ALLOWED_PROXY_VALUES:
                 with sessions.Session() as session:
-                    resp = session.request(method='GET', url=source_url, timeout=10)
+                    resp = session.request(method='GET', url=source_url, timeout=10, verify=False)
                     status = str(resp.status_code)
                     resolves = status[0] in ["1", "2", "3"] or status in ["403", "406"]
                 if not resolves:
                     return False, 'unresolvable'
         except ConnectionError as e:
-            self._logger.error(e)
+            if '[Errno 8] nodename nor servname provided, or not known' in e.args[0].args[0]:
+                return False, 'unresolvable'
+            else:
+                self._logger.error(e)
 
         return (True,)
