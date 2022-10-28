@@ -14,6 +14,13 @@ define deploy_k8s
 	cd k8s/$(1) && kustomize edit set image $(SCHEDULER_IMAGE):$(1)
 endef
 
+define deploy_cset_k8s
+	docker push $(SCHEDULER_IMAGE):$(2)
+	cd k8s/$(1) && kustomize edit set image $$(docker inspect --format='{{index .RepoDigests 0}}' $(SCHEDULER_IMAGE):$(2))
+	kubectl --context $(1)-cset apply -k k8s/$(1)
+	cd k8s/$(1) && kustomize edit set image $(SCHEDULER_IMAGE):$(1)
+endef
+
 all: prep
 
 .PHONY: env
@@ -76,11 +83,11 @@ ote-deploy: ote
 
 test-deploy: test-env
 	@echo "----- deploying $(BUILDNAME) test -----"
-	$(call deploy_k8s,test,test)
+	$(call deploy_cset_k8s,test,test)
 
 dev-deploy: dev
 	@echo "----- deploying $(BUILDNAME) dev -----"
-	$(call deploy_k8s,dev,dev)
+	$(call deploy_cset_k8s,dev,dev)
 
 clean:
 	@echo "----- cleaning $(BUILDNAME) app -----"
