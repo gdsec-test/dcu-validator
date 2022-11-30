@@ -10,10 +10,10 @@ def create_db_settings():
     client_cert = os.getenv("MONGO_CLIENT_CERT", '')
     collection = os.getenv('COLLECTION', 'incidents')
     if db_user and db_pass and os.getenv("sysenv") in ["dev", "test"]:
-        db_url = 'mongodb://{}:{}@{}/?authSource={}&readPreference=primary&directConnection=true&tls=true&tlsCertificateKeyFile={}'.format(db_user, db_pass, db_host, db, client_cert)
+        db_url = f'mongodb://{db_user}:{db_pass}@{db_host}/?authSource={db}&readPreference=primary&directConnection=true&tls=true&tlsCertificateKeyFile={client_cert}'
     elif db_user and db_pass:
-        db_url = 'mongodb://{}:{}@{}/?authSource={}'.format(db_user, db_pass, db_host, db)
+        db_url = f'mongodb://{db_user}:{db_pass}@{db_host}/?authSource={db}'
     else:
-        db_url = 'mongodb://{}/{}'.format(db_host, db)
+        db_url = f'mongodb://{db_host}/{db}'
     settings = namedtuple('settings', 'DB COLLECTION DBURL')
     return settings(DB=db, COLLECTION=collection, DBURL=db_url)
