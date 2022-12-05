@@ -1,6 +1,5 @@
 from .dedicated_ip import DedicatedIpValidator  # noqa: F401
 from .domain_status import DomainStatusValidator  # noqa: F401
-from .netcraft_check import NetcraftValidator  # noqa: F401
 from .resolves import ResolvesValidator  # noqa: F401
 from .validator_interface import ValidatorInterface
 
