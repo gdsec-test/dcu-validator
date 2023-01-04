@@ -14,7 +14,7 @@ configMapGenerator:
   - sysenv=prod
   - REDIS=phishnet-redis.abuse-api-prod.svc.cluster.local
   - DB_USER=sau_p_phishv2
-  - DB_HOST=10.22.9.209
+  - DB_HOST=p3plsocritmdb00-00-f0.prod.phx3.gdg
   - DB=phishstory
   - API_UPDATE_URL=https://abuse.api.int.godaddy.com/v1/abuse/tickets
   - SSO_URL=https://sso.gdcorp.tools
