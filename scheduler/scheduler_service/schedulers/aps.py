@@ -25,10 +25,7 @@ class APS(metaclass=Singleton):
 
     def _get_jobstore(self):
         settings = create_db_settings()
-        if os.getenv("sysenv") in ["dev", "test"]:
-            client = pymongo.MongoClient(settings.DBURL, connect=False, tls=True, tlsCertificateKeyFile=os.getenv("MONGO_CLIENT_CERT"))
-        else:
-            client = pymongo.MongoClient(settings.DBURL, connect=False)
+        client = pymongo.MongoClient(settings.DBURL, connect=False, tls=True, tlsCertificateKeyFile=os.getenv("MONGO_CLIENT_CERT"))
         return MongoDBJobStore(database=settings.DB,
                                collection=os.getenv('JOBS_COLLECTION', 'jobs'),
                                client=client)

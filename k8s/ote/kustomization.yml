@@ -14,7 +14,7 @@ configMapGenerator:
   - sysenv=ote
   - REDIS=phishnet-redis.abuse-api-ote.svc.cluster.local
   - DB_USER=sau_o_phish
-  - DB_HOST=10.22.9.209
+  - DB_HOST=p3plsocritmdb00-00-f0.prod.phx3.gdg
   - DB=otephishstory
   - API_UPDATE_URL=https://abuse.api.int.ote-godaddy.com/v1/abuse/tickets
   - SSO_URL=https://sso.ote-gdcorp.tools
