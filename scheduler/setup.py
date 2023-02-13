@@ -9,15 +9,15 @@ with open('test_requirements.txt') as f:
 setup(
     name='dcu-validator-scheduler',
     version='1.0',
-    description='gRPC service for periodically validating DCU tickets',
+    description='Celery service for periodically validating DCU tickets',
     author='DCU',
     author_email='dcueng@godaddy.com',
-    url='https://github.secureserver.net/digital-crimes/dcu-validator',
+    url='https://github.com/gdcorp-infosec/dcu-validator',
     packages=find_packages(exclude=['tests']),
     install_requires=install_reqs,
     tests_require=testing_reqs,
     test_suite='nose.collector',
     classifiers=[
-        'Programming Language :: Python :: 3.7'
+        'Programming Language :: Python :: 3.11.1'
     ]
 )

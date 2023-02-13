@@ -1,12 +1,13 @@
+from unittest import TestCase
+from unittest.mock import patch
+
 import requests
-from mock import patch
-from nose.tools import assert_true
 from requests.sessions import Session
 
 from scheduler_service.validators.domain_status import DomainStatusValidator
 
 
-class TestDomainStatus:
+class TestDomainStatus(TestCase):
     """Tests for the Domain Status Validator"""
 
     _ticket = {'sourceDomainOrIp': 'dmvsuspension.com', 'number': '123'}
@@ -24,7 +25,7 @@ class TestDomainStatus:
 
         result = self._domain_status.validate_ticket(self._ticket)
 
-        assert_true(result, (True,))
+        self.assertTrue(result, (True,))
 
     @patch.object(Session, 'request')
     def test_get_validate_ticket_true_400(self, request):
@@ -36,7 +37,7 @@ class TestDomainStatus:
 
         result = self._domain_status.validate_ticket(self._ticket)
 
-        assert_true(result, (True,))
+        self.assertTrue(result, (True,))
 
     @patch.object(Session, 'request')
     def test_validate_ticket_true_500(self, request):
@@ -48,7 +49,7 @@ class TestDomainStatus:
 
         result = self._domain_status.validate_ticket(self._ticket)
 
-        assert_true(result, (True,))
+        self.assertTrue(result, (True,))
 
     @patch.object(Session, 'request')
     def test_validate_ticket_true(self, request):
@@ -64,7 +65,7 @@ class TestDomainStatus:
 
         result = self._domain_status.validate_ticket(self._ticket)
 
-        assert_true(result, (True,))
+        self.assertTrue(result, (True,))
 
     @patch.object(Session, 'request')
     def test_validate_ticket_false(self, request):
@@ -81,4 +82,4 @@ class TestDomainStatus:
 
         result = self._domain_status.validate_ticket(self._ticket)
 
-        assert_true(result, (False, 'unworkable'))
+        self.assertTrue(result, (False, 'unworkable'))

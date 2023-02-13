@@ -138,7 +138,7 @@ def get_scheduler():
 
 class Service():
     """
-    Handles scheduling and validating DCU tickets via gRPC
+    Handles scheduling and validating DCU tickets via Celery
     """
 
     def __init__(self, scheduler):

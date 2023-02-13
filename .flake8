@@ -1,9 +1,4 @@
 [flake8]
 ignore = E501
-exclude =
-    # Don't check proto generated files as these shouldn't be edited
-    scheduler/scheduler_service/grpc_stub/*,
-    scheduler/scheduler_service/validators/route.py,
-    .venv,
-    rest/rest_service/grpc_stub/*
+exclude = .venv,
 

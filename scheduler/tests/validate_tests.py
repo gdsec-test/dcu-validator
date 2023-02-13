@@ -1,13 +1,14 @@
 import unittest
+from unittest.mock import MagicMock, patch
 
-from mock import MagicMock, patch
 from redlock import RedLockFactory
 
 from scheduler_service.server.service import validate
 from scheduler_service.utils.api_helper import APIHelper
 
 
-class TestValidate(unittest.TestSuite):
+class TestValidate(unittest.TestCase):
+
     @patch.object(APIHelper, '_get_jwt')
     @patch('scheduler_service.server.service.get_redlock')
     @patch('scheduler_service.server.service.phishstory_db')
@@ -19,7 +20,7 @@ class TestValidate(unittest.TestSuite):
                                          release=lambda: True)
         phishstory.return_value = MagicMock(get_incident=lambda x: ticket_data)
         res = validate('12345')
-        assert (res[0] == 'VALID')
+        self.assertEqual(res[0], 'VALID')
 
     @patch.object(APIHelper, '_get_jwt')
     @patch('scheduler_service.server.service.get_redlock')
@@ -31,7 +32,7 @@ class TestValidate(unittest.TestSuite):
         redlock.return_value = MagicMock(spec=RedLockFactory, create_lock=lambda x: True)
         phishstory.return_value = MagicMock(get_incident=lambda x: ticket_data)
         res = validate('12345')
-        assert (res[0] == 'INVALID')
+        self.assertEqual(res[0], 'INVALID')
 
     @patch.object(APIHelper, '_get_jwt')
     @patch.object(APIHelper, 'close_incident')
@@ -48,4 +49,4 @@ class TestValidate(unittest.TestSuite):
         redlock.return_value = MagicMock(spec=RedLockFactory, acquire=lambda: True, create_lock=lambda x: True,
                                          release=lambda: True)
         res = validate('12345')
-        assert (res[0] == 'INVALID')
+        self.assertEqual(res[0], 'INVALID')

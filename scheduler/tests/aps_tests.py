@@ -1,10 +1,11 @@
+from unittest import TestCase
+
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from scheduler_service.schedulers.aps import APS
 
 
-class TestAPS:
-
+class TestAPS(TestCase):
     def test_aps(self):
         aps = APS()
-        assert(type(aps.scheduler) is BackgroundScheduler)
+        self.assertTrue(type(aps.scheduler) is BackgroundScheduler)

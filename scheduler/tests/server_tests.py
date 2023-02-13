@@ -1,9 +1,10 @@
-from mock import MagicMock, patch
+from unittest import TestCase
+from unittest.mock import MagicMock, patch
 
 from scheduler_service.server.service import Service
 
 
-class TestScheduler:
+class TestScheduler(TestCase):
 
     def test_add_schedule(self):
         service = Service(MagicMock())
@@ -22,4 +23,4 @@ class TestScheduler:
         validate.return_value = (0, 'blah')
         service = Service(MagicMock())
         resp = service.ValidateTicket('12345')
-        assert(resp[0] == 0)
+        self.assertEqual(resp[0], 0)

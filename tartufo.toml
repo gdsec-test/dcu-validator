@@ -2,8 +2,8 @@
 repo-path = "."
 exclude-path-patterns = [
     'tartufo.*',
-    'scheduler/certs/DC1Issuing-CA',
-    'scheduler/certs/DC1Root-CA'
+    'scheduler/certs/*',
+    'certs/*'
 ]
 exclude-signatures = [
     '972b853ae626af10700f049663f05e0bece9b1e28f4d5f64ed5d8928ceb165c5',

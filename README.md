@@ -2,7 +2,7 @@
 
 This project provides a mechanism to periodically validate DCU abuse complaints. Complaints that are determined to be false positives are closed.
 
-The project is broken into two major components. A REST server and a gRPC scheduling and validation service.
+The project is a celery validation service.
 
 [This document](https://confluence.godaddy.com/pages/viewpage.action?pageId=176456269) attempts to explore why each open PHISHING/MALWARE/NETABUSE ticket doesnt have a corresponding scheduled job.
 
@@ -32,8 +32,6 @@ To install all dependencies for development and testing simply run `make` from t
 Building a local Docker image for the respective development environments can be achieved with the following commands from the parent level only:
 
 `make [dev, ote, prod]`
-
-*Important Note: `pip install grpcio-tools==1.36.1` must be performed separately from above `make` instructions
 
 ## Deploying
 Deploying the Docker image to Kubernetes can be achieved with the
@@ -72,7 +70,6 @@ These can be performed from parent and sub-project levels.
 2. [Flask-RestPlus](http://flask-restplus.readthedocs.io/en/stable/)
 3. dcdatabase
 4. [APS](https://apscheduler.readthedocs.io/en/latest/#)
-5. [gRPC](https://grpc.io)
 
 ## Documentation
 OpenAPI documentation can be found at
@@ -82,7 +79,6 @@ OpenAPI documentation can be found at
 after starting the rest service.
 
 ## Running Locally
-You will need to install the certificates in `scheduler/certs` into your CA chain to perform DC1 validation.
 
 ### Running everything in Docker
 1. Define these environment variables.
@@ -129,7 +125,6 @@ COLLECTION=incidents
 DB=devphishstory
 DB_HOST=localhost
 DOMAIN_SERVICE=localhost:8080
-GRPC_VERBOSITY=debug
 JOBS_COLLECTION=jobs
 LISTEN_IP=127.0.0.1
 MIN_PERIOD=10
