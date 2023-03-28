@@ -11,7 +11,7 @@ lxml==4.9.1
 netaddr==0.8.0
 pyaml==20.4.0
 PyYAML==5.4.1
-redis==3.5.3
+redis==4.5.3
 redlock==1.2.0
 requests==2.25.1
 requests-ntlm==1.1.0
