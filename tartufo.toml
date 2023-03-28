@@ -1,14 +1,38 @@
 [tool.tartufo]
 repo-path = "."
 exclude-path-patterns = [
-    'tartufo.*',
-    'scheduler/certs/*',
-    'certs/*'
+    { path-pattern = 'tartufo.*'},
+    { path-pattern = 'scheduler/certs/*'},
+    { path-pattern = 'certs/*'},
 ]
 exclude-signatures = [
-    '972b853ae626af10700f049663f05e0bece9b1e28f4d5f64ed5d8928ceb165c5',
-    'ff3b87eb950805cfd822a51329bbf2e2d1ff14023be12a927e5c26de4220ae2b',
-    'b01243cc81f427d9d38c1fc772b0d40402307fa511e46ca47fd371d2eb5add6b',
-    '70fd5d1e9c31b7349a913d326c22acd34d4dfae13bc54c1a2064b6087fad2bf9',
-    '9d03cfa8d98677c59e9dd7cf74dc19d28bb4a101caa96ece69673b97bc532c93'
+    { signature = '972b853ae626af10700f049663f05e0bece9b1e28f4d5f64ed5d8928ceb165c5'},
+    { signature = 'ff3b87eb950805cfd822a51329bbf2e2d1ff14023be12a927e5c26de4220ae2b'},
+    { signature = 'b01243cc81f427d9d38c1fc772b0d40402307fa511e46ca47fd371d2eb5add6b'},
+    { signature = '70fd5d1e9c31b7349a913d326c22acd34d4dfae13bc54c1a2064b6087fad2bf9'},
+    { signature = '9d03cfa8d98677c59e9dd7cf74dc19d28bb4a101caa96ece69673b97bc532c93'},
+    { signature = '3b7989b94177dd6d084f0b8d39e419bbdf88129c28a975e367f356487082d0be'},
+    { signature = 'a5ed1e732677ab62bf1219b92e1f4311714fd72dad4417ce76090810581697ad'},
+    { signature = '1c089c228451ca05c8f8e96600444c9d216b1fcd922836c59d53d977d85a2f31'},
+    { signature = '3b7989b94177dd6d084f0b8d39e419bbdf88129c28a975e367f356487082d0be'},
+    { signature = 'c0f6aa1c6671e9935d3e0ff44dc5c42a58321718d23d5f714b96faca30f61520'},
+    { signature = '6cc5ee9e6c1d63e303da85741ae1565fd780742cc5fd0e05dada141809ba1698'},
+    { signature = '08408c778a8c532ce781a81b0aedf2b54f448cfa3d774cf5e73dad715b1cd1c3'},
+    { signature = '090bb612183f61344d11f0110703d1fd4ff4061b68f266a4b729daf7a9899812'},
+    { signature = '1089ae48b643ae16a3edddb23d78b52e3a509ea979aac570c1a996baddde1ad6'},
+    { signature = 'f08342f127241cdf1008fc03fabb82b0c93269d61a1e682240ff1da63a35a28f'},
+    { signature = 'adc1a640f2a4ecd0bde0d085768d8027379f78f52221a6a253e739566668822e'},
+    { signature = '5f123055e8d41168b343b4eddc44aacb36b67aa8e98b3c5e8bd9dcdd2279105e'},
+    { signature = '1a4ed181811cf9fcc71f19d62a250669a3b0c3347def63cbe8f4506c4ec58365'},
+    { signature = '801131bd72515498f17f3c41d2fa9fc280cd838a719bd57e1779fcec01615b9f'},
+    { signature = '98482f9fd3d6ba9142463e9427d95fee6ba4024e91d537b6382caa3bb219e75a'},
+    { signature = 'cdd6ecd2ec8c1bf0b6581b4a4600a5468bb0775406eb6c749f18309726268eb7'},
+    { signature = '2b092d3de9c37f374298d53af2891a617a12e33c9eba604a48fc419142694263'},
+    { signature = 'c0ca2fab1a980434a3048f437b6d490cd9aceb42012f4a40090b7b15d805f34b'},
+    { signature = '32031264e080f57d521d5f46c36584db3510d9bda79b2352ac9bbaf254d610af'},
+    { signature = '4b50b6612efb1409dab2019a18943952df5e99dce34cf92c9a2336b8afbb25db'},
+    { signature = 'c80e985e6c04574c7d42145813b8e511b092da19bb33d5fe61b2d7c353884dc8'},
+    { signature = '75afc66ab388b9de84a41aa15112361ac56da0c88e810ab554b644797e7cc1fd'},
+    { signature = 'f7fd49f48d8e91bb2e6dc642fc00dc88da41bce2297441a76238ebdbd19647da'},
+    { signature = 'cca193ad2c6ea1607e0fa1cbe181bd221f2087fa3f225a24d06b1f3f5cee9571'},
 ]
