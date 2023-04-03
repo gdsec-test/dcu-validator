@@ -87,7 +87,7 @@ def close_ticket(ticket: str):
                         replace_existing=True)
                     return 'being worked'
                 LOGGER.info(f'Closing ticket {ticket}')
-                if not APIHelper().close_incident(ticket, 'resolved'):
+                if not APIHelper().close_incident(ticket, 'resolved_no_action'):
                     LOGGER.error(f'Unable to close ticket {ticket}')
                     return 'unworkable'
                 remove_job(f'{ticket}-close-job')
