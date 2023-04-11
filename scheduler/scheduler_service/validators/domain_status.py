@@ -36,7 +36,9 @@ class DomainStatusValidator(ValidatorInterface):
         workable = True
         reason = None
 
-        if self._get_domain_status(domain_name) not in self.workable_status:
+        vip_portfolio = ticket.get('data', {}).get('domainQuery', {}).get('shopperInfo', {}).get('vip', {}).get('portfolioType', None)
+
+        if vip_portfolio != 'CN' and self._get_domain_status(domain_name) not in self.workable_status:
             workable = False
             reason = 'unworkable'
             self._logger.info(f'{domain_name} - domain status is NOT ACTIVE')

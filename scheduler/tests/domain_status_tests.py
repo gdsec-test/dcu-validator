@@ -83,3 +83,29 @@ class TestDomainStatus(TestCase):
         result = self._domain_status.validate_ticket(self._ticket)
 
         self.assertTrue(result, (False, 'unworkable'))
+
+    @patch.object(Session, 'request')
+    def test_validate_ticket_corporate_name_portfolio(self, request):
+
+        domain_service_resp = requests.Response()
+        domain_service_resp.status_code = 200
+        domain_service_resp._content = b'{"domain":"dmvsuspension.com",' \
+                                       b'"shopperId":"187897", ' \
+                                       b'"domainId":12345, ' \
+                                       b'"createDate":"10-15-2017", ' \
+                                       b'"status":"SUSPENDED"}'
+
+        request.return_value = domain_service_resp
+        self._ticket['data'] = {
+            'domainQuery': {
+                'shopperInfo': {
+                    'vip': {
+                        'portfolioType': 'CN'
+                    }
+                }
+            }
+        }
+
+        result = self._domain_status.validate_ticket(self._ticket)
+
+        self.assertEqual(result, (True, None))
