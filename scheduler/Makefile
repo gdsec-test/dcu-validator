@@ -3,27 +3,19 @@ BUILDROOT=$(HOME)/dockerbuild/$(BUILDNAME)
 
 .PHONY: prep build
 
-all: env
+all: init
 
-env:
+init:
 	pip install -r test_requirements.txt
 	pip install -r requirements.txt
 
-.PHONY: flake8
-flake8:
-	@echo "----- Running linter -----"
-	flake8 --config ./.flake8 .
+.PHONY: lint
+lint:
+	@flake8 --config ./.flake8 .
+	@isort --atomic --skip .venv/ .
 
-.PHONY: isort
-isort:
-	@echo "----- Optimizing imports -----"
-	isort --atomic --skip .venv/ .
-
-.PHONY: tools
-tools: flake8 isort
-
-.PHONY: test
-test: tools
+.PHONY: unit-test
+unit-test: lint
 	@echo "----- Running tests -----"
 	python -m unittest discover tests "*_tests.py"
 

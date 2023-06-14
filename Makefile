@@ -17,18 +17,18 @@ endef
 
 all: prep
 
-.PHONY: env
-env:
+.PHONY: init
+init:
 	pip install -r scheduler/test_requirements.txt
 	pip install -r scheduler/requirements.txt
 
-.PHONY: tools
-tools:
-	cd scheduler && $(MAKE) tools
+.PHONY: lint
+lint:
+	cd scheduler && $(MAKE) lint
 
-.PHONY: test
-test:
-	cd scheduler && $(MAKE) test
+.PHONY: unit-test
+unit-test:
+	cd scheduler && $(MAKE) unit-test
 
 .PHONY: testcov
 testcov:
@@ -38,7 +38,7 @@ testcov:
 	coverage xml
 
 .PHONY: prep
-prep: tools test
+prep: lint unit-test
 	@echo "----- preparing $(BUILDNAME) build -----"
 	mkdir -p $(BUILDROOT)/k8s && rm -rf $(BUILDROOT)/k8s/*
 	# copy k8s configs to BUILDROOT
