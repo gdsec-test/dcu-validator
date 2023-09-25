@@ -6,7 +6,7 @@ resources:
 namespace: abuse-api-ote
 
 images:
-- name: docker-dcu-local.artifactory.secureserver.net/dcu-validator-scheduler
+- name: gdartifactory1.jfrog.io/docker-dcu-local/dcu-validator-scheduler
   newTag: ote
 
 configMapGenerator:

@@ -1,5 +1,5 @@
 BUILDNAME=digital-crimes/dcu-validator
-DOCKERREPO=docker-dcu-local.artifactory.secureserver.net
+DOCKERREPO=gdartifactory1.jfrog.io/docker-dcu-local
 BUILDROOT=$(HOME)/dockerbuild/$(BUILDNAME)
 DATE=$(shell date)
 GIT_COMMIT=
