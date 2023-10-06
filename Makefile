@@ -6,7 +6,7 @@ GIT_COMMIT=
 BUILD_BRANCH=origin/main
 SCHEDULER_IMAGE=$(DOCKERREPO)/dcu-validator-scheduler
 
-.PHONY: prep dev stage test-env ote prod clean dev-deploy ote-deploy prod-deploy prod-deploy
+.PHONY: prep dev stage test-env ote prod clean dev-deploy ote-deploy prod-deploy prod-deploy test-deploy
 
 define deploy_k3s
 	docker push $(SCHEDULER_IMAGE):$(2)
