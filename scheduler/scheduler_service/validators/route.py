@@ -15,9 +15,10 @@ logger = logging.getLogger()
 def route(ticket):
     logger.debug('Validating:{}'.format(ticket.get('type')))
     handlers = ValidatorInterface.registry.get(ticket.get('type'))
-    for clazz in handlers:
-        ret = clazz().validate_ticket(ticket)
-        if not ret[0]:
-            return (*ret, str(clazz).lower().split('.')[3].replace("'>", "") + '_automation')
+    if handlers:
+        for clazz in handlers:
+            ret = clazz().validate_ticket(ticket)
+            if not ret[0]:
+                return (*ret, str(clazz).lower().split('.')[3].replace("'>", "") + '_automation')
 
     return (True,)
