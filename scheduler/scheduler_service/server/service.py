@@ -31,15 +31,20 @@ def validate(ticket: str, data=None):
     ticket_data = db_handle.get_incident(ticket)
 
     if ticket_data is None or ticket_data.get('phishstory_status', 'OPEN') == 'CLOSED':
+        LOGGER.info('if ticket data is None or phishstory status is CLOSED. -> returns INVALID, unworkable')
         remove_job(ticket)
         return 'INVALID', 'unworkable'
     else:
+        LOGGER.info('In the else, about to acquire the lock')
         if lock.acquire():
             try:
                 if 'jomax' not in ticket_data.get('reporter', ''):
+                    LOGGER.info('if jomax is not in reporter')
                     resp = route(ticket_data)
                     if not resp[0]:
+                        LOGGER.info('if handlers/route returned false')
                         if data and data.get('close', False):
+                            LOGGER.info('if data exists and close is False')
                             # close ticket
                             LOGGER.info(f'Closing ticket {ticket}')
                             # add close action reason and specific validator as user to mongodb ticket
@@ -53,7 +58,9 @@ def validate(ticket: str, data=None):
             finally:
                 lock.release()
         else:
+            LOGGER.info('Could not acquire lock')
             return 'LOCKED', 'being worked'
+    LOGGER.info('return VALID')
     return 'VALID', ''
 
 
