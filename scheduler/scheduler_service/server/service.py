@@ -31,20 +31,21 @@ def validate(ticket: str, data=None):
     ticket_data = db_handle.get_incident(ticket)
 
     if ticket_data is None or ticket_data.get('phishstory_status', 'OPEN') == 'CLOSED':
-        LOGGER.info(f'{ticket}: if ticket data is None or phishstory status is CLOSED. -> returns INVALID, unworkable')
+        LOGGER.info(f'{ticket}: if ticket data is None or phishstory status is CLOSED. -> returns INVALID, unworkable. 34')
         remove_job(ticket)
         return 'INVALID', 'unworkable'
     else:
-        LOGGER.info(f'{ticket}: In the else, about to acquire the lock')
+        LOGGER.info(f'{ticket}: In the else, about to acquire the lock. 38')
         if lock.acquire():
             try:
                 if 'jomax' not in ticket_data.get('reporter', ''):
-                    LOGGER.info(f'{ticket}: if jomax is not in reporter')
+                    LOGGER.info(f'{ticket}: if jomax is not in reporter. 42')
                     resp = route(ticket_data)
+                    LOGGER.info(f'{ticket}: just came back from route, resp: {resp}. 44')
                     if not resp[0]:
-                        LOGGER.info(f'{ticket}: if handlers/route returned false')
+                        LOGGER.info(f'{ticket}: if handlers/route[0] returned false. 46')
                         if data and data.get('close', False):
-                            LOGGER.info(f'{ticket}: if data exists and close is False')
+                            LOGGER.info(f'{ticket}: if data exists and close is False. 48')
                             # close ticket
                             LOGGER.info(f'Closing ticket {ticket}')
                             # add close action reason and specific validator as user to mongodb ticket
@@ -58,9 +59,9 @@ def validate(ticket: str, data=None):
             finally:
                 lock.release()
         else:
-            LOGGER.info(f'{ticket}: Could not acquire lock -> return LOCKED, being worked')
+            LOGGER.info(f'{ticket}: Could not acquire lock -> return LOCKED, being worked. 62')
             return 'LOCKED', 'being worked'
-    LOGGER.info(f'{ticket}: return VALID')
+    LOGGER.info(f'{ticket}: return VALID. 64')
     return 'VALID', ''
 
 

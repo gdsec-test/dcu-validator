@@ -13,12 +13,16 @@ logger = logging.getLogger()
 
 # Route tickets based on type
 def route(ticket):
+    logger.info('{} in route'.format(ticket.get('type')))
     logger.debug('Validating:{}'.format(ticket.get('type')))
     handlers = ValidatorInterface.registry.get(ticket.get('type'))
     if handlers:
+        logger.info('{} in route, if handlers'.format(ticket.get('type')))
         for clazz in handlers:
             ret = clazz().validate_ticket(ticket)
             if not ret[0]:
+                logger.info('{} in route, return something else'.format(ticket.get('type')))
                 return (*ret, str(clazz).lower().split('.')[3].replace("'>", "") + '_automation')
 
+    logger.info('{} in route, return True'.format(ticket.get('type')))
     return (True,)
