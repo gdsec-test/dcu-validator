@@ -14,6 +14,7 @@ from scheduler_service.validators.route import route
 LOGGER = logging.getLogger()
 TTL = os.getenv('TTL') or 300
 TTL *= 1000
+ONEDAY = 86400
 ONEWEEK = 604800
 KEY_LAST_MODIFIED = "last_modified"
 # Need to support empty strings so we don't break behavior for older tickets.
@@ -31,21 +32,15 @@ def validate(ticket: str, data=None):
     ticket_data = db_handle.get_incident(ticket)
 
     if ticket_data is None or ticket_data.get('phishstory_status', 'OPEN') == 'CLOSED':
-        LOGGER.info(f'{ticket}: if ticket data is None or phishstory status is CLOSED. -> returns INVALID, unworkable. 34')
         remove_job(ticket)
         return 'INVALID', 'unworkable'
     else:
-        LOGGER.info(f'{ticket}: In the else, about to acquire the lock. 38')
         if lock.acquire():
             try:
                 if 'jomax' not in ticket_data.get('reporter', ''):
-                    LOGGER.info(f'{ticket}: if jomax is not in reporter. 42')
                     resp = route(ticket_data)
-                    LOGGER.info(f'{ticket}: just came back from route, resp: {resp}. 44')
                     if not resp[0]:
-                        LOGGER.info(f'{ticket}: if handlers/route[0] returned false. 46')
                         if data and data.get('close', False):
-                            LOGGER.info(f'{ticket}: if data exists and close is False. 48')
                             # close ticket
                             LOGGER.info(f'Closing ticket {ticket}')
                             # add close action reason and specific validator as user to mongodb ticket
@@ -59,10 +54,26 @@ def validate(ticket: str, data=None):
             finally:
                 lock.release()
         else:
-            LOGGER.info(f'{ticket}: Could not acquire lock -> return LOCKED, being worked. 62')
             return 'LOCKED', 'being worked'
-    LOGGER.info(f'{ticket}: return VALID. 64')
     return 'VALID', ''
+
+
+def close_ticket_helper(ticket: str, time_period: int):
+    '''
+    Removes current close job and reschedules it with given time period.
+    Param: ticket, a string with the ticket ID. Ex: DCU_____
+    Param: time period, and int representing the seconds. Ex: 1 day
+    '''
+    remove_job(f'{ticket}-close-job')
+    get_scheduler().add_job(
+        close_ticket,
+        'interval',
+        seconds=time_period,
+        args=[
+            ticket
+        ],
+        id=f'{ticket}-close-job',
+        replace_existing=True)
 
 
 def close_ticket(ticket: str):
@@ -83,24 +94,17 @@ def close_ticket(ticket: str):
                 diff = now - timedelta(hours=72)
                 if diff <= last_modified <= now:
                     LOGGER.info(f'{ticket} was recently modified, rescheduling closure for next week')
-                    remove_job(f'{ticket}-close-job')
-                    get_scheduler().add_job(
-                        close_ticket,
-                        'interval',
-                        seconds=ONEWEEK,
-                        args=[
-                            ticket
-                        ],
-                        id=f'{ticket}-close-job',
-                        replace_existing=True)
+                    close_ticket_helper(ticket, ONEWEEK)
                     return 'being worked'
                 LOGGER.info(f'Closing ticket {ticket}')
                 if not APIHelper().close_incident(ticket, 'resolved_no_action'):
-                    LOGGER.error(f'Unable to close ticket {ticket}')
-                    return 'unworkable'
+                    LOGGER.error(f'Unable to close ticket {ticket}, rescheduling closure for tomorrow.')
+                    close_ticket_helper(ticket, ONEDAY)
+                    return 'rescheduled'
                 remove_job(f'{ticket}-close-job')
         except Exception as e:
-            LOGGER.error(f'Unable to close exception {ticket}:{e}')
+            LOGGER.error(f'Unable to close ticket {ticket} with Exception: {e}. Rescheduling closure for tomorrow.')
+            close_ticket_helper(ticket, ONEDAY)
         finally:
             lock.release()
     else:
@@ -205,14 +209,18 @@ class Service():
         """
         Adds a schedule for closing a ticket
         """
-        self._logger.info(f"Scheduling ticket {ticketid} for {period} seconds")
-        self.aps.scheduler.add_job(
-            close_ticket,
-            'interval',
-            seconds=period,
-            args=[
-                ticketid
-            ],
-            id=f'{ticketid}-close-job',
-            replace_existing=True)
+        job = self.aps.scheduler.get_job(ticketid)
+        if not job:
+            self._logger.info(f"Scheduling ticket {ticketid} for {period} seconds")
+            self.aps.scheduler.add_job(
+                close_ticket,
+                'interval',
+                seconds=period,
+                args=[
+                    ticketid
+                ],
+                id=f'{ticketid}-close-job',
+                replace_existing=True)
+        else:
+            self._logger.info(f"Skipping scheduling ticket {ticketid} since closure schedule already exists.")
         return True
